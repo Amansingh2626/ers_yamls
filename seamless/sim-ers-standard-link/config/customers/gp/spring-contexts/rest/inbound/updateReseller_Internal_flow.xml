@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration https://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd"
+       xmlns:integration="http://www.springframework.org/schema/integration"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:integration-http="http://www.springframework.org/schema/integration/http">
+
+    <task:executor id="updateResellerInternalExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="updateResellerInternalValidExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="updateResellerInternalResponseExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="updateResellerInternalRestTemplateExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+
+    <integration:channel id="updateResellerInternalRequestChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="updateResellerInternalValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="updateResellerInternalRestTemplateInputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="updateResellerInternalInValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="updateResellerInternalResponseChainInputChannel">
+        <integration:queue/>
+    </integration:channel>
+
+    <integration:channel id="updateResellerInternalTransformerResponseChannel"/>
+    <integration:channel id="updateResellerInternalPollerServiceActivatorResponseChannel"/>
+    <integration:channel id="updateResellerInternalServiceActivatorResponseChannel"/>
+    <integration:channel id="updateResellerInternalOperationHeaderEnricherOutputChannel"/>
+    <integration:channel id="updateResellerInternalValidatorOutputChannel"/>
+    <integration:channel id="updateResellerInternalValidationChainOutputChannel"/>
+
+
+    <!--  Validator Chain  -->
+    <integration:chain input-channel="updateResellerInternalRequestChannel"
+                       output-channel="updateResellerInternalValidationChainOutputChannel">
+        <integration:poller task-executor="updateResellerInternalExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:header-enricher>
+            <integration:header name="OPERATION" value="UPDATERESELLERINTERNAL"/>
+        </integration:header-enricher>
+        <integration:service-activator ref="standardRequestValidator"/>
+    </integration:chain>
+
+    <integration:header-value-router input-channel="updateResellerInternalValidationChainOutputChannel" header-name="IS_VALID_REQUEST">
+        <integration:mapping value="TRUE" channel="updateResellerInternalValidRequestOutputChannel"/>
+        <integration:mapping value="FALSE" channel="updateResellerInternalResponseChainInputChannel"/>
+    </integration:header-value-router>
+
+    <!--  Successful Validation Chains  -->
+    <integration:chain input-channel="updateResellerInternalValidRequestOutputChannel" send-timeout="1000000"
+                       output-channel="updateResellerInternalRestTemplateInputChannel">
+        <integration:poller task-executor="updateResellerInternalValidExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="updateResellerInternalRequestTransformer"
+                                 ref="updateResellerInternalTransformer"
+                                 method="transformInboundRequest">
+        </integration:transformer>
+        <integration:object-to-json-transformer content-type="application/json"/>
+    </integration:chain>
+
+    <!--  Outbound Call Chain  -->
+    <integration:chain input-channel="updateResellerInternalRestTemplateInputChannel" send-timeout="1000000"
+                       output-channel="updateResellerInternalResponseChainInputChannel">
+        <integration:poller task-executor="updateResellerInternalRestTemplateExecutor" time-unit="MILLISECONDS" fixed-delay="1200"
+                            max-messages-per-poll="-1"/>
+        <integration:service-activator ref="standardRestTemplateServiceActivator" async="true"/>
+    </integration:chain>
+
+    <!--  Response Chain  -->
+    <integration:chain input-channel="updateResellerInternalResponseChainInputChannel" send-timeout="1000000"
+                       output-channel="inboundRequestMarshallerOutputChannel">
+        <integration:poller task-executor="updateResellerInternalResponseExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="updateResellerInternalResponseTransformer"
+                                 ref="updateResellerInternalTransformer"
+                                 method="transformOutboundResponse"/>
+<!--        <integration:transformer ref="standardMarshalingTransformer"/>-->
+    </integration:chain>
+</beans>

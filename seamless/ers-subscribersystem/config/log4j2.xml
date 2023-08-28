@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+    <Appenders>
+        <Console name="LogToConsole" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{ISO8601} [%t] [%X{correlationId}] %-5p [%c{1}] - %X{ersReference} %m%n"/>
+        </Console>
+<!--	
+        <File name="LogToFile" fileName="/var/seamless/log/subscribersystem/subscribersystem.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} [%t] [%X{correlationId}] %-5p [%c{1}] - %X{ersReference} %m%n</Pattern>
+            </PatternLayout>
+        </File>
+-->
+    <RollingFile name="LogToFile" fileName="/var/seamless/log/subscribersystem/subscribersystem.log"
+         filePattern="/var/seamless/log/subscribersystem/subscribersystem.log.%d{yyyy-MM-dd}">
+         <PatternLayout>
+               <Pattern>%d{ISO8601} [%t] [%X{correlationId}] %-5p [%c{1}] - %X{ersReference} %m%n</Pattern>
+         </PatternLayout>
+    <TimeBasedTriggeringPolicy />
+    </RollingFile>	
+    </Appenders>
+    <Loggers>
+        <Logger name="com.seamless" level="INFO" additivity="false">
+            <AppenderRef ref="LogToFile"/>
+            <AppenderRef ref="LogToConsole"/>
+        </Logger>
+        <Logger name="org.apache.cxf" level="ERROR" additivity="false">
+            <AppenderRef ref="LogToFile"/>
+            <AppenderRef ref="LogToConsole"/>
+        </Logger>
+        <Logger name="etm.core.monitor" level="ERROR" additivity="false">
+            <AppenderRef ref="LogToFile"/>
+            <AppenderRef ref="LogToConsole"/>
+        </Logger>
+        <Logger name="etm.core.monitor" level="ERROR" additivity="false">
+            <AppenderRef ref="LogToFile"/>
+            <AppenderRef ref="LogToConsole"/>
+        </Logger>
+        <Logger name="etm-result" level="error" additivity="false">
+            <AppenderRef ref="LogToConsole"/>
+        </Logger>
+    </Loggers>
+</Configuration>

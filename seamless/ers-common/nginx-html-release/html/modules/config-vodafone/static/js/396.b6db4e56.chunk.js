@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_config_vodafone=self.webpackChunk_unified_config_vodafone||[]).push([[396],{396:(e,n,i)=>{"use strict";i.r(n),i.d(n,{default:()=>c});var a=i(411),t=i(565);const c=function(){return a.createElement("img",{src:t.Z,style:{maxWidth:200,display:"block",margin:"0 auto"}})}}}]);

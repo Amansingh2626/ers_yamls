@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_inventory=self.webpackChunk_unified_inventory||[]).push([[1554],{55518:(n,e,i)=>{"use strict";i.d(e,{Z:()=>u});const u=function(n,e){}}}]);

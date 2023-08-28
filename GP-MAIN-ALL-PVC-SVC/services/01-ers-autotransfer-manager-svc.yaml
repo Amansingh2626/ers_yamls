@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: ers-prod
+  labels:
+    app: ers-autotransfer-manager 
+  name: ers-autotransfer-manager-service
+spec:
+  ports:
+    - name: http-ers-autotransfer-manager-service
+      port: 8086
+      targetPort: 8086
+  selector:
+    app: ers-autotransfer-manager 
+  type: ClusterIP
+

@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: ers-prod
+  labels:
+    app: ers-bi-engine
+  name: ers-bi-engine-service
+spec:
+  ports:
+    - name: http-ers-bi-engine
+      port: 8917
+      targetPort: 8917
+  selector:
+    app: ers-bi-engine
+  type: ClusterIP
+

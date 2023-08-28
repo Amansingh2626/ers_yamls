@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_contract=self.webpackChunk_unified_contract||[]).push([[8221],{98221:(c,t,a)=>{"use strict";a.r(t),a.d(t,{default:()=>n});const n=[{name:"contracts",path:"contract/contracts"},{name:"c2sRules",path:"contract/c2sRules"}]}}]);

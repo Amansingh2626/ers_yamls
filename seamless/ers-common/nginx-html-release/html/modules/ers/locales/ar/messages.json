@@ -1,0 +1,86 @@
+{
+  "logoAlt": "Seamless Distribution Systems",
+  "resellerId": "معرف الموزع",
+  "userId": "معرف المستخدم",
+  "password": "كلمه السر",
+  "confirmPassword": "تأكيد كلمة المرور",
+  "msisdn": "مسيسدن",
+  "pin": "دبوس",
+  "confirmPin": "تأكيد دبوس",
+  "languageLabel": "لغة التطبيق",
+  "languages": {
+    "en": "EN - الإنجليزية",
+    "ar": "AR - عربى"
+  },
+
+  "loginTitle": "{{element}} تسجيل الدخول",
+  "loginSideBarTitle": "أو سجل الدخول عبر {{element}}",
+  "loginSideBarDescription": "استخدم {{element}} لتسجيل الدخول إلى بوابة الوكيل!",
+  "loginHelperText": "ألديك مشكلة في تسجيل الدخول ؟",
+  "loginButton": "تسجيل الدخول",
+
+  "customerSupport": "اتصل بدعم العملاء",
+
+  "recoverForgot": "هل نسيت {{element}}؟",
+  "nextButton": "التالى",
+  "viaSms": "عبر الرسائل القصيرة",
+  "viaEmail": "عبر البريد الالكتروني",
+
+  "otpVerify": "تحقق من OTP",
+  "otpTimerText": "يجب أن تتلقى OTP في غضون 02:30 دقيقة",
+
+  "resetModal": {
+    "title": "تم تغيير {{element}}",
+    "description": "تم تغيير حسابك {{element}} بنجاح",
+    "submitButton": "استمر في تسجيل الدخول"
+  },
+
+  "resetSubmitButton": "حفظ جديد {{element}}",
+
+  "error": {
+    "required": "{{element}} مطلوب"
+  },
+  
+  "recovery": {
+      "title": "استرداد حسابك",
+      "description": "يمكننا مساعدتك في استعادة حسابك. فقط دعنا نعرف ماذا نسيت؟",
+      "account": {
+        "title": "هل نسيت كلمة المرور",
+        "description": "أدخل معرف المستخدم ومعرف البائع لتأكيد حسابك.",
+        "pin": {
+          "title": "نسيت رقم التعريف الشخصي",
+          "description": "أدخل مسيسدن الخاص بك لتأكيد حسابك."
+        }
+      },
+      "forgot": {
+        "password": {
+          "title": "هل نسيت كلمة المرور",
+          "description": "هل تريد استلام رمز التوثيق عبر البريد الإلكتروني أو الرسائل القصيرة أم تريد التواصل مع دعم العملاء؟"
+        },
+        "pin": {
+          "title": "نسيت رقم التعريف الشخصي",
+          "description": "هل تريد استلام رمز التوثيق عبر البريد الإلكتروني أو الرسائل القصيرة أم تريد التواصل مع دعم العملاء؟"
+        }
+      },
+      "otp": {
+        "password": {
+          "title": "هل نسيت كلمة المرور",
+          "description": "يرجى إدخال كلمة المرور لمرة واحدة التي تم إرسالها إليك عبر الرسائل القصيرة."
+        },
+        "pin": {
+          "title": "نسيت رقم التعريف الشخصي",
+          "description": "يرجى إدخال كلمة المرور لمرة واحدة التي تم إرسالها إليك عبر الرسائل القصيرة."
+        }
+      },
+      "reset": {
+        "pin": {
+          "title": "إعادة تعيين دبوس",
+          "description": "تم التحقق من OTP. الرجاء إدخال رقم التعريف الشخصي الجديد الخاص بك وحفظه."
+        },
+        "password": {
+          "title": "Reset Password",
+          "description": "تم التحقق من OTP. الرجاء إدخال كلمة المرور الجديدة وحفظها."
+        }
+      }
+  }
+}

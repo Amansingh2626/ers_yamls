@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration https://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd"
+       xmlns:integration="http://www.springframework.org/schema/integration"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:integration-http="http://www.springframework.org/schema/integration/http">
+
+    <task:executor id="skittoQueryExecutor"  keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+    <task:executor id="skittoQueryValidExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+    <task:executor id="skittoQueryResponseExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+    <task:executor id="skittoQueryRestTemplateExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+
+    <integration:channel id="skittoQueryRequestChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="skittoQueryValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="skittoQueryRestTemplateInputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="skittoQueryInValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="skittoQueryResponseChainInputChannel">
+        <integration:queue/>
+    </integration:channel>
+
+    <integration:channel id="skittoQueryTransformerResponseChannel"/>
+    <integration:channel id="skittoQueryPollerServiceActivatorResponseChannel"/>
+    <integration:channel id="skittoQueryServiceActivatorResponseChannel"/>
+    <integration:channel id="skittoQueryOperationHeaderEnricherOutputChannel"/>
+    <integration:channel id="skittoQueryValidatorOutputChannel"/>
+    <integration:channel id="skittoQueryValidationChainOutputChannel"/>
+
+
+    <!--  Validator Chain  -->
+    <integration:chain input-channel="skittoQueryRequestChannel" output-channel="skittoQueryValidationChainOutputChannel">
+        <integration:poller task-executor="skittoQueryExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:header-enricher>
+            <integration:header name="OPERATION" value="SKITTOQUERY"/>
+        </integration:header-enricher>
+        <integration:service-activator ref="standardRequestValidator"/>
+    </integration:chain>
+
+    <integration:header-value-router input-channel="skittoQueryValidationChainOutputChannel" header-name="IS_VALID_REQUEST">
+        <integration:mapping value="TRUE" channel="skittoQueryValidRequestOutputChannel"/>
+        <integration:mapping value="FALSE" channel="skittoQueryResponseChainInputChannel"/>
+    </integration:header-value-router>
+
+    <!--  Successful Validation Chains  -->
+    <integration:chain input-channel="skittoQueryValidRequestOutputChannel" send-timeout="1000000"
+                       output-channel="skittoQueryRestTemplateInputChannel">
+        <integration:poller task-executor="skittoQueryValidExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="skittoQueryRequestTransformer"
+                                 ref="skittoQueryTransformer"
+                                 method="transformOutboundRestRequest">
+        </integration:transformer>
+        <integration:object-to-json-transformer content-type="application/json" />
+    </integration:chain>
+
+    <!--  Outbound Call Chain  -->
+    <integration:chain input-channel="skittoQueryRestTemplateInputChannel" send-timeout="1000000"
+                       output-channel="skittoQueryResponseChainInputChannel">
+        <integration:poller task-executor="skittoQueryRestTemplateExecutor" time-unit="MILLISECONDS" fixed-delay="1200"
+                            max-messages-per-poll="-1"/>
+        <integration:service-activator  ref="standardRestTemplateServiceActivator" async="true" />
+    </integration:chain>
+
+    <!--  Response Chain  -->
+    <integration:chain input-channel="skittoQueryResponseChainInputChannel" send-timeout="1000000"
+                       output-channel="inboundRequestMarshallerOutputChannel">
+        <integration:poller task-executor="skittoQueryResponseExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="skittoQueryResponseTransformer"
+                                 ref="skittoQueryTransformer"
+                                 method="transformInboundRestResponse"/>
+        <integration:object-to-json-transformer />
+    </integration:chain>
+
+</beans>

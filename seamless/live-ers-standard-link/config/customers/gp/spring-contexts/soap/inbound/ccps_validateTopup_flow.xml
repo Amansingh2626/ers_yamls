@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:integration="http://www.springframework.org/schema/integration"
+        xmlns:http="http://www.springframework.org/schema/integration/http"
+        xmlns:task="http://www.springframework.org/schema/task"
+        xsi:schemaLocation="http://www.springframework.org/schema/integration/http http://www.springframework.org/schema/integration/http/spring-integration-http.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+
+    <task:executor id="ccpsValidateTopupExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <integration:channel id="ccpsValidateTopupRequestChannel">
+        <integration:queue/>
+    </integration:channel>
+
+    <integration:chain input-channel="ccpsValidateTopupRequestChannel">
+        <integration:poller task-executor="ccpsValidateTopupExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="ccpsValidateTopupResponseTransformer"
+                                 requires-reply="false"
+                                 ref="cCPSValidateTopupTransformer"
+                                 method="transformInboundRestResponse"/>
+    </integration:chain>
+
+</beans>

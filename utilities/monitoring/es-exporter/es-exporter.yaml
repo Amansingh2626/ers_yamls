@@ -1,0 +1,268 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mon-es-exporter-1
+  namespace: ers-prod
+  labels:
+    component: es-1
+    role: exporter-1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: es-1
+      role: exporter-1
+  template:
+    metadata:
+      labels:
+        component: es-1
+        role: exporter-1
+    spec:
+      containers:
+      - name: es-exporter-1
+        imagePullPolicy: IfNotPresent
+        image: sdsdockerhub/elasticsearch-exporter:latest
+        command:
+          - "/bin/elasticsearch_exporter"
+        args:
+          - "--es.uri=https://elastic:Seamless%40123@10.18.68.76:9200"
+          - "--es.ca=/certs/ca.crt"
+          - "--es.all"
+          - "--es.indices"
+          - "--es.indices_settings"
+          - "--es.indices_mappings"
+          - "--es.cluster_settings"
+          - "--es.snapshots"
+          - "--es.clusterinfo.interval=1m"
+          - "--es.timeout=5s"
+          - "--log.level=info"
+          - "--log.format=logfmt"
+          - "--log.output=stdout"
+        ports:
+          - containerPort: 9114
+            name: scrape
+        env:
+        - name: TZ
+          value: "Asia/Dhaka"
+        resources:
+          limits:
+            memory: 256Mi
+            cpu: 100m
+          requests:
+            memory: 65Mi
+            cpu: 50m
+        volumeMounts:
+          - name: es-exp-secret
+            mountPath: /certs/ca.crt
+            readOnly: true
+            subPath: ca.crt
+          - mountPath: /usr/share/zoneinfo/Asia/Dhaka
+            name: tz-dhaka
+            subPath: Dhaka
+      volumes:
+        - name: tz-dhaka
+          configMap:
+            name: asia-dhaka-tz-config
+            items:
+            - key: Dhaka
+              path: Dhaka
+        - name: es-exp-secret
+          secret:
+            secretName: es-exp-secret
+            optional: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: es-exporter-1
+  namespace: ers-prod
+  labels:
+    component: es-1
+    role: exporter-1
+spec:
+  ports:
+  - port: 9114
+    name: scrape
+  selector:
+    component: es-1
+    role: exporter-1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mon-es-exporter-2
+  namespace: ers-prod
+  labels:
+    component: es-2
+    role: exporter-2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: es-2
+      role: exporter-2
+  template:
+    metadata:
+      labels:
+        component: es-2
+        role: exporter-2
+    spec:
+      containers:
+      - name: es-exporter-2
+        imagePullPolicy: IfNotPresent
+        image: sdsdockerhub/elasticsearch-exporter:latest
+        command:
+          - "/bin/elasticsearch_exporter"
+        args:
+          - "--es.uri=https://elastic:Seamless%40123@10.18.68.90:9200"
+          - "--es.ca=/certs/ca.crt"
+          - "--es.all"
+          - "--es.indices"
+          - "--es.indices_settings"
+          - "--es.indices_mappings"
+          - "--es.cluster_settings"
+          - "--es.snapshots"
+          - "--es.clusterinfo.interval=1m"
+          - "--es.timeout=5s"
+          - "--log.level=info"
+          - "--log.format=logfmt"
+          - "--log.output=stdout"
+        ports:
+          - containerPort: 9114
+            name: scrape
+        env:
+        - name: TZ
+          value: "Asia/Dhaka"
+        resources:
+          limits:
+            memory: 256Mi
+            cpu: 100m
+          requests:
+            memory: 65Mi
+            cpu: 50m
+        volumeMounts:
+          - name: es-exp-secret
+            mountPath: /certs/ca.crt
+            readOnly: true
+            subPath: ca.crt
+          - mountPath: /usr/share/zoneinfo/Asia/Dhaka
+            name: tz-dhaka
+            subPath: Dhaka
+      volumes:
+        - name: tz-dhaka
+          configMap:
+            name: asia-dhaka-tz-config
+            items:
+            - key: Dhaka
+              path: Dhaka
+        - name: es-exp-secret
+          secret:
+            secretName: es-exp-secret
+            optional: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: es-exporter-2
+  namespace: ers-prod
+  labels:
+    component: es-2
+    role: exporter-2
+spec:
+  ports:
+  - port: 9114
+    name: scrape
+  selector:
+    component: es-2
+    role: exporter-2
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mon-es-exporter-3
+  namespace: ers-prod
+  labels:
+    component: es-3
+    role: exporter-3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: es-3
+      role: exporter-3
+  template:
+    metadata:
+      labels:
+        component: es-3
+        role: exporter-3
+    spec:
+      containers:
+      - name: es-exporter-3
+        imagePullPolicy: IfNotPresent
+        image: sdsdockerhub/elasticsearch-exporter:latest
+        command:
+          - "/bin/elasticsearch_exporter"
+        args:
+          - "--es.uri=https://elastic:Seamless%40123@10.18.68.94:9200"
+          - "--es.ca=/certs/ca.crt"
+          - "--es.all"
+          - "--es.indices"
+          - "--es.indices_settings"
+          - "--es.indices_mappings"
+          - "--es.cluster_settings"
+          - "--es.snapshots"
+          - "--es.clusterinfo.interval=1m"
+          - "--es.timeout=5s"
+          - "--log.level=info"
+          - "--log.format=logfmt"
+          - "--log.output=stdout"
+        ports:
+          - containerPort: 9114
+            name: scrape
+        env:
+        - name: TZ
+          value: "Asia/Dhaka"
+        resources:
+          limits:
+            memory: 256Mi
+            cpu: 100m
+          requests:
+            memory: 65Mi
+            cpu: 50m
+        volumeMounts:
+          - name: es-exp-secret
+            mountPath: /certs/ca.crt
+            readOnly: true
+            subPath: ca.crt
+          - mountPath: /usr/share/zoneinfo/Asia/Dhaka
+            name: tz-dhaka
+            subPath: Dhaka
+      volumes:
+        - name: tz-dhaka
+          configMap:
+            name: asia-dhaka-tz-config
+            items:
+            - key: Dhaka
+              path: Dhaka
+        - name: es-exp-secret
+          secret:
+            secretName: es-exp-secret
+            optional: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: es-exporter-3
+  namespace: ers-prod
+  labels:
+    component: es-3
+    role: exporter-3
+spec:
+  ports:
+  - port: 9114
+    name: scrape
+  selector:
+    component: es-3
+    role: exporter-3
+

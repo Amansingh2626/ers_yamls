@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="ERROR">
+    <Properties>
+        <Property name="LOG_PATTERN">%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} %p %m%n</Property>
+        <Property name="APP_LOG_ROOT">/var/seamless/log/identity-management</Property>
+    </Properties>
+    <Appenders>
+	<Console name="LogToConsole" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>    
+
+	<!--
+        <File name="LogToFile" fileName="${APP_LOG_ROOT}/identity-management.log">
+            <PatternLayout>
+                <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+            </PatternLayout>
+        </File>
+        <File name="dataDump" fileName="${APP_LOG_ROOT}/dump/identity-management.dump">
+        </File>
+        <File name="auditDump" fileName="${APP_LOG_ROOT}/audit-dump/identity-management-audit-data.dump">
+        </File>
+	-->
+                <RollingFile name="LogToFile"
+                             fileName="${APP_LOG_ROOT}/identity-management.log"
+                             filePattern="${APP_LOG_ROOT}/identity-management.log.%i.%d{dd-MM-yyyy-HH-mm-ss}.gz"
+                             immediateFlush="true">
+                             <PatternLayout>
+                             <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+                             </PatternLayout>
+                        <Policies>
+                                <SizeBasedTriggeringPolicy size="200 MB" />
+                        </Policies>
+                        <DefaultRolloverStrategy />
+                </RollingFile>
+
+                <RollingFile name="dataDump"
+			fileName="${APP_LOG_ROOT}/dump/identity-management.dump"
+			filePattern="${APP_LOG_ROOT}/dump/identity-management.dump.%i.%d{dd-MM-yyyy-HH-mm-ss}.gz"
+                             immediateFlush="true">
+                             <PatternLayout>
+			    <!--  <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>-->
+                             <Pattern>%m%n</Pattern>
+                             </PatternLayout>
+                        <Policies>
+                                <SizeBasedTriggeringPolicy size="200 MB" />
+                        </Policies>
+                        <DefaultRolloverStrategy />
+                </RollingFile>
+<!--
+                <Socket name="Socket" host="gp-logstash-nginx-9044.ers-prod.svc.cluster.local" port="9044">
+                      <PatternLayout>
+                         <Pattern>%m%n</Pattern>
+                      </PatternLayout>
+                </Socket>
+-->
+                <RollingFile name="auditDump"
+                             fileName="${APP_LOG_ROOT}/audit-dump/identity-management-audit-data.dump"
+                             filePattern="${APP_LOG_ROOT}/audit-dump/identity-management-audit-data.dump.%i.%d{dd-MM-yyyy-HH-mm-ss}.gz"
+                             immediateFlush="true">
+                             <PatternLayout>
+                        <!-- <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>-->
+                             <Pattern>%m%n</Pattern>
+                             </PatternLayout>
+                        <Policies>
+                                <SizeBasedTriggeringPolicy size="200 MB" />
+                        </Policies>
+                        <DefaultRolloverStrategy />
+                </RollingFile>
+
+
+    </Appenders>
+    <Loggers>
+        <Logger name="com.seamless.common.data.dump.DataFeeder" level="info">
+            <AppenderRef ref="dataDump" />
+      <!--  <AppenderRef ref="Socket"/> -->
+	</Logger>
+        <Logger name="com.seamless.common.data.dump.AuditFeeder" level="info">
+            <AppenderRef ref="auditDump" />
+	</Logger> 
+        <!-- avoid duplicated logs with additivity=false -->
+         <Logger name="com.seamless" level="INFO">
+            <AppenderRef ref="LogToFile"/>
+	    <AppenderRef ref="LogToConsole"/>
+        </Logger> 
+         <Root level="INFO">
+            <AppenderRef ref="LogToFile"/>
+	    <AppenderRef ref="LogToConsole"/>
+        </Root> 
+    </Loggers>
+</Configuration>

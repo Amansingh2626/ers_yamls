@@ -1,0 +1,14 @@
+ - pipeline.id: logstash_nginx
+   path.config: "/usr/share/logstash/custom/pipeline/logstash_nginx.conf"
+   queue.type: persisted
+   pipeline.workers: 16 
+   pipeline.batch.size: 1024
+   pipeline.batch.delay: 500
+   validate_after_inactivity: 1000
+ - pipeline.id: logstash_kannel
+   path.config: "/usr/share/logstash/custom/pipeline/logstash_kannel.conf"
+   queue.type: persisted
+   pipeline.workers: 1 
+   pipeline.batch.size: 1
+   pipeline.batch.delay: 50
+   validate_after_inactivity: 1000

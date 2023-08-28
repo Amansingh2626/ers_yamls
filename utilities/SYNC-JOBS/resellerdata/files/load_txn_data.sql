@@ -1,0 +1,1 @@
+load data local infile '/data/txn_data.csv' REPLACE into table bi.reseller_hourly_balance fields terminated by ',' enclosed by '"' lines terminated by '\n' ( accountId, balance,accountTypeId,lastUpdateTime);

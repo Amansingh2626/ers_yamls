@@ -1,0 +1,156 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ers-coreproxy
+  namespace: ers-prod
+  labels:
+    app: ers-coreproxy
+    version: v1
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+       maxSurge:  40%
+       maxUnavailable: 20%
+  selector:
+    matchLabels:
+      app: ers-coreproxy
+      version: v1
+  template:
+    metadata:
+#      annotations:
+#        sidecar.istio.io/proxyCPULimit: 100m
+#        sidecar.istio.io/proxyMemoryLimit: 200Mi
+#        sidecar.istio.io/proxyCPU: 50m
+#        sidecar.istio.io/proxyMemory: 128Mi
+#        status.sidecar.istio.io/port: "0"
+#        traffic.sidecar.istio.io/includeOutboundIPRanges: 10.18.72.46/32,10.18.72.42/32,10.18.72.45/32
+#        traffic.sidecar.istio.io/excludeInboundPorts: "0"
+#        sidecar.istio.io/inject: "true"
+      labels:
+        app: ers-coreproxy
+        version: v1
+    spec:
+      serviceAccountName: ers-prod-app-sa
+      securityContext:
+        fsGroupChangePolicy: "OnRootMismatch"
+        seLinuxOptions:
+          type: "spc_t"
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "4"
+      initContainers:
+        - name: copy-configs
+          image: sdsdockerhub/ubuntu:latest
+          env:
+          - name: POD_NAME 
+            valueFrom:
+              fieldRef: {fieldPath: metadata.name}
+        #  resources:
+        #    limits:
+        #      cpu: '200m'
+        #      memory: 200Mi
+        #    requests:
+        #      cpu: '100m'
+        #      memory: 100Mi
+          command: ['bash','/scripts/copy-coreproxy-configs']
+          volumeMounts:
+            - mountPath: /opt/seamless/conf
+              name: ers-config-path
+            - mountPath: /ers-common-config
+              name: vol-common-conf
+            - mountPath: /coreproxy
+              name: vol-conf
+            - mountPath: /core
+              name: vol-core-conf
+            - mountPath: /core-defaults
+              name: vol-core-conf-defaults
+            - mountPath: /core-jetm
+              name: vol-core-conf-jetm
+            - mountPath: /core-langmaps
+              name: vol-core-conf-langmaps
+            - mountPath: /core-log4j
+              name: vol-core-conf-log4j
+            - mountPath: /scripts
+              name: copy-coreproxy-configs    
+      containers:
+        - name: ers-coreproxy
+          image: sdsdockerhub/ers-coreproxy:feature-GPB-1122-3
+          #image: sdsdockerhub/ers-coreproxy:feature-GPB-916-11
+          imagePullPolicy: IfNotPresent
+          env:
+          #- name: JAVA_TOOL_OPTIONS
+          #  value: "-Xms200M -Xmx200M -XX:+UseContainerSupport -XX:MaxRAMPercentage=90.0 -XX:ActiveProcessorCount=2"
+          - name: DEFAULT_TIME_ZONE
+            value: "Asia/Dhaka" 
+          - name: TZ
+            value: "Asia/Dhaka"
+          #resources:
+          #  limits:
+          #    cpu: '1'
+          #    memory: 200Mi
+          #  requests:
+          #    cpu: '500m'
+           #  memory: 200Mi
+          readinessProbe:
+            tcpSocket:
+              port: 8912
+            initialDelaySeconds: 30
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 8912
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          ports:
+            - containerPort: 8912
+            - containerPort: 8983
+          #dnsPolicy: Default  
+          volumeMounts:
+            - mountPath: /var/seamless/log/coreproxy
+              name: vol-log
+            - mountPath: /opt/seamless/conf
+              name: ers-config-path
+            - mountPath: /usr/share/zoneinfo/Asia/Dhaka
+              name: tz-dhaka
+              subPath: Dhaka                      
+      volumes:
+        - name: tz-dhaka
+          configMap:
+            name: asia-dhaka-tz-config
+            items:
+            - key: Dhaka
+              path: Dhaka              
+        - name: vol-common-conf
+          configMap:
+            name: ers-common-config
+        - name: vol-conf
+          configMap:
+            name: coreproxy-config
+        - name: vol-core-conf
+          configMap:
+            name: core-config
+        - name: vol-core-conf-defaults
+          configMap:
+            name: core-config-defaults
+        - name: vol-core-conf-jetm
+          configMap:
+            name: core-config-jetm
+        - name: vol-core-conf-langmaps
+          configMap:
+            name: core-config-langmaps
+        - name: vol-core-conf-log4j
+          configMap:
+            name: core-config-log4j
+        - name: vol-log
+          persistentVolumeClaim:
+            claimName: coreproxy-log
+        - name: copy-coreproxy-configs
+          configMap:
+            name: copy-coreproxy-configs
+        - name: ers-config-path
+          emptyDir: {}  
+      imagePullSecrets:
+        - name: private-repo                      

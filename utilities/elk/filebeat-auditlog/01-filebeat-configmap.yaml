@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gp-filebeat-configmap-auditlog
+  namespace: ers-prod
+data:
+  filebeat.yml: |
+    filebeat.registry.path: /usr/share/filebeat/registry/
+    filebeat.inputs:
+    - type: filestream
+      id: auditlog
+      paths:
+        - /var/seamless/log/identity-management/*/audit-dump/identity-management-audit-data.dump*
+        - /var/seamless/log/identity-management/*/dump/identity-management.dump*
+        - /var/seamless/log/dealer-management-system/*/dealer-management-system-data.dump*
+        - /var/seamless/log/dealer-management-system/*/dealer-management-system-audit.dump*
+        - /var/seamless/log/access-management-system/*/dump/access-management-system-audit.dump*
+        - /var/seamless/log/access-management-system/*/dump/access-management-system-data.dump*
+        - /var/seamless/log/product-management/*/product-management-datafeed.log*
+        - /var/seamless/log/contract-management-system/*/dump/contract-management-system-audit.dump*
+        - /var/seamless/log/notification-ui/*/dump/notification-ui-audit.dump*
+        - /var/seamless/log/region-management-core/*/region-management-core-audit.dump*
+        - /var/seamless/log/region-management-core/*/region-management-core-data.dump*
+        - /var/seamless/log/batch-scheduling/*/batch-scheduling-data.dump*
+      tags: ["auditlog"]
+      fields:
+        logtype: "auditlog"
+      ignore_older: 24h
+      clean_inactive: 8h
+      close_inactive: 8h
+      exclude_files: ['\.gz$']      
+    filebeat.config:
+      modules:
+        path: ${path.config}/modules.d/*.yml
+        reload.enabled: false
+    logging.level: info
+    logging.to_files: true
+    logging.selectors: [ harvester, input ]
+    logging.files:
+      rotateeverybytes: 5000000
+      path: /usr/share/filebeat/logs
+      name: filebeat.log
+      keepfiles: 5
+    output.logstash:
+      hosts: ["gp-logstash-others:9032"]
+      loadbalance: true
+      bulk_max_size: 1024
+      worker: 32
+      compression_level: 1
+    queue.mem:
+      events: 32768
+      flush.min_events: 1
+      flush.timeout: 3s      
+

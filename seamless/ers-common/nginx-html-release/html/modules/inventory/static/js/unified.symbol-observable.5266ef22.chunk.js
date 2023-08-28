@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_inventory=self.webpackChunk_unified_inventory||[]).push([[7193],{7288:(e,n,o)=>{"use strict";o.d(n,{Z:()=>b}),e=o.hmd(e);const b=(i="undefined"!=typeof self?self:"undefined"!=typeof window?window:void 0!==o.g?o.g:e,"function"==typeof(f=i.Symbol)?f.observable?s=f.observable:(s=f("observable"),f.observable=s):s="@@observable",s);var i,s,f}}]);

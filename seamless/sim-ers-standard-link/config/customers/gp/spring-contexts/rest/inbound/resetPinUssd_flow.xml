@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration https://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd"
+       xmlns:integration="http://www.springframework.org/schema/integration"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:integration-http="http://www.springframework.org/schema/integration/http">
+
+    <task:executor id="resetPinUssdExecutor"  keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+    <task:executor id="resetPinUssdValidExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+    <task:executor id="resetPinUssdResponseExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+    <task:executor id="resetPinUssdRestTemplateExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+
+    <integration:channel id="resetPinUssdRequestChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="resetPinUssdValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="resetPinUssdRestTemplateInputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="resetPinUssdInValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="resetPinUssdResponseChainInputChannel">
+        <integration:queue/>
+    </integration:channel>
+
+    <integration:channel id="resetPinUssdTransformerResponseChannel"/>
+    <integration:channel id="resetPinUssdPollerServiceActivatorResponseChannel"/>
+    <integration:channel id="resetPinUssdServiceActivatorResponseChannel"/>
+    <integration:channel id="resetPinUssdOperationHeaderEnricherOutputChannel"/>
+    <integration:channel id="resetPinUssdValidatorOutputChannel"/>
+    <integration:channel id="resetPinUssdValidationChainOutputChannel"/>
+
+
+    <!--  Validator Chain  -->
+    <integration:chain input-channel="resetPinUssdRequestChannel" output-channel="resetPinUssdValidationChainOutputChannel">
+        <integration:poller task-executor="resetPinUssdExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:header-enricher>
+            <integration:header name="OPERATION" value="RESETPINUSSD"/>
+        </integration:header-enricher>
+        <integration:service-activator ref="standardRequestValidator"/>
+        <integration:service-activator ref="standardRequestDecoder"/>
+    </integration:chain>
+
+    <integration:header-value-router input-channel="resetPinUssdValidationChainOutputChannel" header-name="IS_VALID_REQUEST">
+        <integration:mapping value="TRUE" channel="resetPinUssdValidRequestOutputChannel"/>
+        <integration:mapping value="FALSE" channel="resetPinUssdResponseChainInputChannel"/>
+    </integration:header-value-router>
+
+    <!--  Successful Validation Chains  -->
+    <integration:chain input-channel="resetPinUssdValidRequestOutputChannel" send-timeout="1000000"
+                       output-channel="resetPinUssdRestTemplateInputChannel">
+        <integration:poller task-executor="resetPinUssdValidExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="resetPinUssdRequestTransformer"
+                                 ref="resetPinUssdTransformer"
+                                 method="transformOutboundSoapRequest">
+        </integration:transformer>
+    </integration:chain>
+
+    <!--  Outbound Call Chain  -->
+    <integration:chain input-channel="resetPinUssdRestTemplateInputChannel" send-timeout="1000000"
+                       output-channel="resetPinUssdResponseChainInputChannel">
+        <integration:poller task-executor="resetPinUssdRestTemplateExecutor" time-unit="MILLISECONDS" fixed-delay="1200"
+                            max-messages-per-poll="-1"/>
+        <integration:service-activator ref="standardERSSoapServiceActivator" async="true"/>
+    </integration:chain>
+
+    <!--  Response Chain  -->
+    <integration:chain input-channel="resetPinUssdResponseChainInputChannel" send-timeout="1000000"
+                       output-channel="inboundRequestMarshallerOutputChannel">
+        <integration:poller task-executor="resetPinUssdResponseExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="resetPinUssdResponseTransformer"
+                                 ref="resetPinUssdTransformer"
+                                 method="transformInboundSoapResponse"/>
+        <integration:transformer ref="standardMarshalingTransformer"/>
+    </integration:chain>
+
+</beans>

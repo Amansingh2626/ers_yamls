@@ -1,0 +1,333 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: ers-prod-application-alert 
+  namespace: ers-prod
+spec:
+  groups:
+  - name: ERS-PROD-ALERTS
+    rules:
+    - alert: ers-access-management-system-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-access-management-system",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-access-management-system in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical 
+    - alert: ers-account-management-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-account-management",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-account-management in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical 
+    - alert: ers-alert-app-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-alert-app",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-alert-app in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: warning 
+    - alert: ers-autotransfer-manager-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-autotransfer-manager",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-autotransfer-manager in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: warning 
+    - alert: ers-batch-scheduling-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-batch-scheduling",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-batch-scheduling in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical 
+    - alert: ers-bi-aggregator-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-bi-aggregator",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-bi-aggregator in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical 
+    - alert: ers-bi-aggregator-two-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-bi-aggregator2",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-bi-aggregator-two in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical 
+    - alert: ers-bi-aggregator-three-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-bi-aggregator3",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: 'ers-bi-aggregator-three in ers-prod  namespace is Down. Which runs ResellerDataAggregator'
+      for: 60s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical        
+    - alert: ers-bi-engine-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-bi-engine",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-bi-engine in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical 
+    - alert: ers-bi-tdr-multiw-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-bi-tdr-multiw",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-bi-tdr-multiw in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical 
+    - alert: ers-bimail-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-bimail",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-bimail in ers-prod  namespace is Down.'
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: warning
+    - alert: ers-businesslogic-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-businesslogic",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-businesslogic in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical 
+    - alert: ers-commission-aggregator-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-commission-aggregator",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-commission-aggregator in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: warning 
+    - alert: ers-commission-engine-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-commission-engine",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-commission-engine in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: warning 
+    - alert: ers-contract-management-system-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-contract-management-system",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-contract-management-system in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical 
+    - alert: ers-coreproxy-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-coreproxy",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-coreproxy in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical 
+#   - alert: ers-dealer-management-system-down
+#     expr: absent(kube_deployment_status_replicas{deployment="ers-dealer-management-system",namespace="ers-prod"})
+#     annotations:
+#       summary: Service missing  {{ .deployment }}
+#       message: ' ers-dealer-management-system in ers-prod  namespace is Down.' 
+#     for: 2s
+#     labels:
+#       service: "{{ .deployment }}-Service"
+#       severity: critical 
+    - alert: ers-dealer-management-no-cache-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-dealer-management-system-no-cache",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-dealer-management-system No Cache version in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical 
+    - alert: ers-group-management-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-group-management",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-group-management in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical 
+    - alert: ers-identity-management-down
+      expr: absent(kube_statefulset_status_replicas{statefulset="ers-identity-management",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-identity-management in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical 
+    - alert: ers-ims-bridge-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-ims-bridge",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-ims-bridge in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical 
+    - alert: ers-ldaplink-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-ldaplink",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-ldaplink in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: warning 
+    - alert: ers-nginx-one-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-nginx-one",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-nginx-one in ers-prod  namespace is Down.'
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical
+    - alert: ers-nginx-two-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-nginx-two",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-nginx-two in ers-prod  namespace is Down.'
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical
+    - alert: ers-nginx-three-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-nginx-three",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-nginx-three in ers-prod  namespace is Down.'
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical
+    - alert: ers-notification-manager-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-notification-manager",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-notification-manager in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical 
+    - alert: ers-notification-ui-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-notification-ui",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-notification-ui in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: warning 
+    - alert: ers-object-store-manager-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-object-store-manager",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-object-store-manager in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical 
+    - alert: ers-product-management-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-product-management",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-product-management in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical 
+    - alert: ers-region-management-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-region-management",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-region-management in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical 
+    - alert: ers-standard-link-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-standard-link-live",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-standard-link-live in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical 
+    - alert: ers-subscribersystem-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-subscribersystem",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-subscribersystem in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical 
+    - alert: ers-template-management-system-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-template-management-system",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-template-management-system in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical 
+    - alert: ers-txe-down
+      expr: absent(kube_statefulset_status_replicas{statefulset="ers-txe",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-txe in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical 
+    - alert: ers-txe-proxy-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-txe-proxy",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' ers-txe-proxy in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical 
+    - alert: ers-uciplink-down
+      expr: absent(kube_deployment_status_replicas{deployment="ers-uciplink-live",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ $labels.app }}
+        message: ' ers-uciplink-live in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical 

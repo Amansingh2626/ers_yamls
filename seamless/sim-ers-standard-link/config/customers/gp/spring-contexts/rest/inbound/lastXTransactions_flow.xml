@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration https://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd"
+       xmlns:integration="http://www.springframework.org/schema/integration"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:integration-http="http://www.springframework.org/schema/integration/http">
+
+
+    <task:executor id="lastXTransactionsExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="lastXTransactionsValidExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="lastXTransactionsResponseExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="lastXTransactionsRestTemplateExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+
+    <integration:channel id="lastXTransactionsRequestChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="lastXTransactionsValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="lastXTransactionsRestTemplateInputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="lastXTransactionsInValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="lastXTransactionsResponseChainInputChannel">
+        <integration:queue/>
+    </integration:channel>
+
+    <integration:channel id="lastXTransactionsTransformerResponseChannel"/>
+    <integration:channel id="lastXTransactionsPollerServiceActivatorResponseChannel"/>
+    <integration:channel id="lastXTransactionsServiceActivatorResponseChannel"/>
+    <integration:channel id="lastXTransactionsOperationHeaderEnricherOutputChannel"/>
+    <integration:channel id="lastXTransactionsValidatorOutputChannel"/>
+    <integration:channel id="lastXTransactionsValidationChainOutputChannel"/>
+
+
+    <!--  Validator Chain  -->
+    <integration:chain input-channel="lastXTransactionsRequestChannel" output-channel="lastXTransactionsValidationChainOutputChannel">
+        <integration:poller task-executor="lastXTransactionsExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:header-enricher>
+            <integration:header name="OPERATION" value="LASTXTRANSACTIONS"/>
+        </integration:header-enricher>
+        <integration:service-activator ref="standardRequestValidator"/>
+    </integration:chain>
+
+    <integration:header-value-router input-channel="lastXTransactionsValidationChainOutputChannel" header-name="IS_VALID_REQUEST">
+        <integration:mapping value="TRUE" channel="lastXTransactionsValidRequestOutputChannel"/>
+        <integration:mapping value="FALSE" channel="lastXTransactionsResponseChainInputChannel"/>
+    </integration:header-value-router>
+
+    <!--  Successful Validation Chains  -->
+    <integration:chain input-channel="lastXTransactionsValidRequestOutputChannel" send-timeout="1000000"
+                       output-channel="lastXTransactionsRestTemplateInputChannel">
+        <integration:poller task-executor="lastXTransactionsValidExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="lastXTransactionsRequestTransformer"
+                                 ref="lastXTransactionsTransformer"
+                                 method="transformInboundRequest">
+        </integration:transformer>
+        <integration:object-to-json-transformer result-type="NODE" content-type="application/json"/>
+    </integration:chain>
+
+    <!--  Outbound Call Chain  -->
+    <integration:chain input-channel="lastXTransactionsRestTemplateInputChannel" send-timeout="1000000"
+                       output-channel="lastXTransactionsResponseChainInputChannel">
+        <integration:poller task-executor="lastXTransactionsRestTemplateExecutor" time-unit="MILLISECONDS" fixed-delay="1200"
+                            max-messages-per-poll="-1"/>
+        <integration:service-activator ref="standardRestTemplateServiceActivator" async="true"/>
+    </integration:chain>
+
+    <!--  Response Chain  -->
+    <integration:chain input-channel="lastXTransactionsResponseChainInputChannel" send-timeout="1000000"
+                       output-channel="inboundRequestMarshallerOutputChannel">
+        <integration:poller task-executor="lastXTransactionsResponseExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="lastXTransactionsResponseTransformer"
+                                 ref="lastXTransactionsTransformer"
+                                 method="transformOutboundResponse"/>
+        <integration:transformer ref="standardMarshalingTransformer"/>
+    </integration:chain>
+
+</beans>

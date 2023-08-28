@@ -1,0 +1,10 @@
+#!/bin/bash
+name=`echo ${POD_NAME} | rev |cut -d'-' -f1 | rev `
+
+mkdir -p /opt/seamless/conf/ims-bridge 
+
+
+cp /ers-common-config/* /opt/seamless/conf/
+cp /ims-config/* /opt/seamless/conf/ims-bridge 
+
+sed -i "s+/var/seamless/log/ims-bridge/+/var/seamless/log/ims-bridge/${name}/+g" /opt/seamless/conf/ims-bridge/log4j.properties

@@ -1,0 +1,139 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-server-conf
+  labels:
+    name: prometheus-server-conf
+  namespace: ers-prod 
+data:
+  prometheus.rules: |-
+    groups:
+    - name: devopscube demo alert
+      rules:
+      - alert: High Pod Memory
+        expr: sum(container_memory_usage_bytes) > 1
+        for: 1m
+        labels:
+          severity: slack
+        annotations:
+          summary: High Memory Usage
+  prometheus.yml: |-
+    global:
+      evaluation_interval: 1m
+      scrape_interval: 15s
+      scrape_timeout: 10s
+      query_log_file: /prometheus/query.log
+    rule_files:
+      - /etc/config/recording_rules.yml
+      - /etc/config/alerting_rules.yml
+      - /etc/config/rules
+      - /etc/config/alerts
+      - /etc/config/01_ESRules.yaml
+      - /etc/config/02_MySQLRules.yaml
+      - /etc/config/03_RedisRules.yaml 
+      - /etc/config/04_HostRules.yaml
+      - /etc/config/05_pushGatewayRules.yaml
+    alerting:
+      alertmanagers:
+      - static_configs:
+        - targets:
+          - 'alertmanager:9093'        
+  
+    scrape_configs:
+      - job_name: elastic_search_app
+        metrics_path: '/metrics'
+        static_configs:
+        - targets: ['es-exporter-1:9114']
+        - targets: ['es-exporter-2:9114']
+        - targets: ['es-exporter-3:9114']
+        scheme: http
+      
+      - job_name: push_gateway_app
+        static_configs:
+        - targets: ['prod-gw01-monitor:9091']
+        - targets: ['prod-gw02-monitor:9091']
+        - targets: ['prod-nms-monitor:9091']
+        scheme: https
+        tls_config:
+          insecure_skip_verify: true
+
+ 
+      - job_name: mysqld-exporter_app
+        static_configs:
+        - targets: ['prod-db01-monitor:9104']
+        - targets: ['prod-db02-monitor:9104']
+        - targets: ['prod-db03-monitor:9104']
+        - targets: ['prod-db04-monitor:9104']
+        - targets: ['prod-db05-monitor:9104']
+        - targets: ['prod-db06-monitor:9104']
+        - targets: ['prod-db07-monitor:9104']
+        - targets: ['prod-db08-monitor:9104']
+        scheme: https
+        tls_config:
+          insecure_skip_verify: true
+
+      - job_name: redis_exporter_app
+        static_configs:
+        - targets: ['prod-redis-gw01-monitor:9121']
+        scheme: http
+
+      - job_name: mariadb_db_node
+        static_configs:
+        - targets: ['mariadb-db01-node:9200']
+        - targets: ['mariadb-db02-node:9200']
+        - targets: ['mariadb-db03-node:9200']
+        - targets: ['mariadb-db04-node:9200']
+        - targets: ['mariadb-db05-node:9200']
+        - targets: ['mariadb-db06-node:9200']
+        - targets: ['mariadb-db07-node:9200']
+        - targets: ['mariadb-db08-node:9200']
+        scheme: https
+        tls_config:
+          insecure_skip_verify: true
+
+      - job_name: es_db_node
+        static_configs:
+        - targets: ['es-01-monitor:9104']
+        - targets: ['es-02-monitor:9104']
+        - targets: ['es-03-monitor:9104']
+        scheme: https
+        tls_config:
+          insecure_skip_verify: true
+
+      - job_name: push_gateway_node
+        static_configs:
+        - targets: ['prod-gw01-node:9200']
+        - targets: ['prod-gw02-node:9200']
+        - targets: ['prod-nms01-node:9200']
+        scheme: https
+        tls_config:
+          insecure_skip_verify: true
+
+
+      - job_name: maxscale_node
+        static_configs:
+        - targets: ['maxscale-node-01:9100']
+        - targets: ['maxscale-node-02:9100']
+        scheme: https
+        tls_config:
+          insecure_skip_verify: true
+
+      - bearer_token_file: /opt/bitnami/prometheus/data/custom/bearertoken
+        job_name: openshift_internals
+        static_configs:
+        - targets: ['kube-state-metrics.openshift-monitoring.svc.cluster.local:8443']
+        scheme: https
+        tls_config:
+          insecure_skip_verify: true
+#       - targets: ['kubelet.kube-system.svc.cluster.local:10250']
+#       - targets: ['node-exporter.openshift-monitoring.svc.cluster.local:9100']
+#       - targets: ['openshift-state-metrics.openshift-monitoring.svc.cluster.local:8443']
+
+#     - bearer_token_file: /opt/bitnami/prometheus/data/custom/bearertoken
+#       job_name: openshift_internals_cadvisor
+#       metrics_path: "/metrics/cadvisor"
+#       static_configs:
+#       - targets: ['kubelet.kube-system.svc.cluster.local:10250']
+#       scheme: https
+#       tls_config:
+#         insecure_skip_verify: true

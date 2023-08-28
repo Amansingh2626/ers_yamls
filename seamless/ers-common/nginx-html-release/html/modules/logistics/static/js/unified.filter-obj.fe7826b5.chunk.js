@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_logistics=self.webpackChunk_unified_logistics||[]).push([[633],{63:e=>{"use strict";e.exports=function(e,i){for(var s={},r=Object.keys(e),n=Array.isArray(i),t=0;t<r.length;t++){var u=r[t],c=e[u];(n?-1!==i.indexOf(u):i(u,c,e))&&(s[u]=c)}return s}}}]);

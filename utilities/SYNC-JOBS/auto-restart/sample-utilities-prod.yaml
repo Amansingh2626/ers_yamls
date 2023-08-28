@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auto-restart 
+  namespace: ers-prod 
+  labels:
+    app: auto-restart 
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auto-restart 
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: auto-restart 
+        version: v1
+    spec:
+      serviceAccountName: filebeat 
+#     securityContext:
+#       runAsUser: 0
+#       privileged: true
+      containers:
+      - name: all-utilities
+        image: default-route-openshift-image-registry.apps.pocpbm-nexp.grameenphone.com/openshift/auto-restart:v1
+        imagePullPolicy: Always
+        resources:
+          limits:
+            cpu: '200m'
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi

@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_config_djb=self.webpackChunk_unified_config_djb||[]).push([[396],{396:(e,n,i)=>{"use strict";i.r(n),i.d(n,{default:()=>c});var t=i(2411),s=i(551),a=i.n(s);const c=function(){return t.createElement("img",{src:a(),style:{maxWidth:100,display:"block",margin:"0 auto"}})}},551:(e,n,i)=>{e.exports=i.p+"images/djbLogin.png"}}]);

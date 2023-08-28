@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_order=self.webpackChunk_unified_order||[]).push([[4867],{54867:(n,e,i)=>{"use strict";i.d(e,{Z:()=>u});const u=function(n){var e=null==n?void 0:n.additionalFields.find((function(n){return"snic_category"===n.name}));return e?e.value:null}}}]);

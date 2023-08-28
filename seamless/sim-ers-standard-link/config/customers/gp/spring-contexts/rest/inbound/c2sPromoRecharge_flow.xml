@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration https://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd"
+       xmlns:integration="http://www.springframework.org/schema/integration"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:integration-http="http://www.springframework.org/schema/integration/http">
+
+    <task:executor id="c2sPromoRechargeExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="c2sPromoRechargeValidExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="c2sPromoRechargeResponseExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="c2sPromoRechargeRestTemplateExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+
+    <integration:channel id="c2sPromoRechargeRequestChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="c2sPromoRechargeValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="c2sPromoRechargeRestTemplateInputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="c2sPromoRechargeInValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="c2sPromoRechargeResponseChainInputChannel">
+        <integration:queue/>
+    </integration:channel>
+
+    <integration:channel id="c2sPromoRechargeTransformerResponseChannel"/>
+    <integration:channel id="c2sPromoRechargePollerServiceActivatorResponseChannel"/>
+    <integration:channel id="c2sPromoRechargeServiceActivatorResponseChannel"/>
+    <integration:channel id="c2sPromoRechargeOperationHeaderEnricherOutputChannel"/>
+    <integration:channel id="c2sPromoRechargeValidatorOutputChannel"/>
+    <integration:channel id="c2sPromoRechargeValidationChainOutputChannel"/>
+
+
+    <!--  Validator Chain  -->
+    <integration:chain input-channel="c2sPromoRechargeRequestChannel" output-channel="c2sPromoRechargeValidationChainOutputChannel">
+        <integration:poller task-executor="c2sPromoRechargeExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:header-enricher>
+            <integration:header name="OPERATION" value="C2SPROMORECHARGE"/>
+        </integration:header-enricher>
+        <integration:service-activator ref="standardRequestValidator"/>
+    </integration:chain>
+
+    <integration:header-value-router input-channel="c2sPromoRechargeValidationChainOutputChannel" header-name="IS_VALID_REQUEST">
+        <integration:mapping value="TRUE" channel="c2sPromoRechargeValidRequestOutputChannel"/>
+        <integration:mapping value="FALSE" channel="c2sPromoRechargeResponseChainInputChannel"/>
+    </integration:header-value-router>
+
+    <!--  Successful Validation Chains  -->
+    <integration:chain input-channel="c2sPromoRechargeValidRequestOutputChannel" send-timeout="1000000"
+                       output-channel="c2sPromoRechargeRestTemplateInputChannel">
+        <integration:poller task-executor="c2sPromoRechargeValidExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="c2sPromoRechargeRequestTransformer"
+                                 ref="c2SPromoRechargeTransformer"
+                                 method="transformInboundRequest">
+        </integration:transformer>
+        <integration:object-to-json-transformer content-type="application/json"/>
+
+    </integration:chain>
+
+    <!--  Outbound Call Chain  -->
+    <integration:chain input-channel="c2sPromoRechargeRestTemplateInputChannel" send-timeout="1000000"
+                       output-channel="c2sPromoRechargeResponseChainInputChannel">
+        <integration:poller task-executor="c2sPromoRechargeRestTemplateExecutor" time-unit="MILLISECONDS" fixed-delay="1200"
+                            max-messages-per-poll="-1"/>
+        <integration:service-activator ref="standardRestTemplateServiceActivator" async="true"/>
+    </integration:chain>
+
+    <!--  Response Chain  -->
+    <integration:chain input-channel="c2sPromoRechargeResponseChainInputChannel" send-timeout="1000000"
+                       output-channel="inboundRequestMarshallerOutputChannel">
+        <integration:poller task-executor="c2sPromoRechargeResponseExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="c2sPromoRechargeResponseTransformer"
+                                 ref="c2SPromoRechargeTransformer"
+                                 method="transformOutboundResponse"/>
+        <integration:transformer ref="standardMarshalingTransformer"/>
+    </integration:chain>
+
+</beans>

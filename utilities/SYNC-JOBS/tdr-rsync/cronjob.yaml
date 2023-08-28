@@ -1,0 +1,81 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: gp-rsync-c2s-tdr
+spec:
+  schedule: "*/2 * * * *"
+  successfulJobsHistoryLimit: 0
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: ers-prod-app-sa
+          securityContext:
+            fsGroupChangePolicy: "OnRootMismatch"
+            seLinuxOptions:
+              type: "spc_t"                
+          containers:
+          - name: gp-rsync-c2s-tdr
+            image: sdsdockerhub/rsync-tdr:v7
+            #image: sdsdockerhub/rsync-tdr:v6
+          # imagePullPolicy: IfNotPresent
+            imagePullPolicy: Always
+            env:
+            - name: SERVER
+              value: "10.10.2.240"
+            - name: PORT
+              value: "22"
+            - name: USER
+              value: "admin"
+            - name: REMOTE_PATH
+              value: "/app/C2S_SYNC"          
+            - name: TZ
+              value: "Asia/Dhaka"  
+            - name: DAYS
+              value: "7"  
+            - name: EXT
+              value: "csv"  
+            command: 
+            - /bin/sh
+            - -c
+            - /others/sync-tdr.sh
+            volumeMounts:
+            - name: id-rsa
+              mountPath: /home/admin/.ssh/id_rsa
+              readOnly: true
+              subPath: id_rsa
+            - name: id-rsa-pub
+              mountPath: /home/admin/.ssh/id_rsa.pub
+              readOnly: true
+              subPath: id_rsa.pub
+            - name: known-host
+              mountPath: /home/admin/.ssh/known_hosts
+              readOnly: true
+              subPath: known_hosts
+            - name: datadir
+              mountPath: /data     
+            - mountPath: /usr/share/zoneinfo/Asia/Dhaka
+              name: tz-dhaka
+              subPath: Dhaka               
+          restartPolicy: OnFailure
+          volumes:
+          - name: tz-dhaka
+            configMap:
+              name: asia-dhaka-tz-config
+              items:
+              - key: Dhaka
+                path: Dhaka          
+          - name: id-rsa
+            configMap:
+              name: rsync-ssh-cm-id
+          - name: id-rsa-pub
+            configMap:
+              name: rsync-ssh-cm-idpub
+          - name: known-host
+            configMap:
+              name: rsync-ssh-cm-kh
+          - name: datadir
+            persistentVolumeClaim:
+              claimName: txe-log          
+         #imagePullSecrets:
+           #- name: private-repo

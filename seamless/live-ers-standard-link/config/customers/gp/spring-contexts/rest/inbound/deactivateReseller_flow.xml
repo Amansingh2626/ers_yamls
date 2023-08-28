@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration https://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd"
+       xmlns:integration="http://www.springframework.org/schema/integration"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:integration-http="http://www.springframework.org/schema/integration/http">
+
+    <task:executor id="deactivateResellerExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="deactivateResellerValidExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="deactivateResellerResponseExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="deactivateResellerRestTemplateExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+
+    <integration:channel id="deactivateResellerRequestChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="deactivateResellerValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="deactivateResellerRestTemplateInputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="deactivateResellerInValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="deactivateResellerResponseChainInputChannel">
+        <integration:queue/>
+    </integration:channel>
+
+    <integration:channel id="deactivateResellerTransformerResponseChannel"/>
+    <integration:channel id="deactivateResellerPollerServiceActivatorResponseChannel"/>
+    <integration:channel id="deactivateResellerServiceActivatorResponseChannel"/>
+    <integration:channel id="deactivateResellerOperationHeaderEnricherOutputChannel"/>
+    <integration:channel id="deactivateResellerValidatorOutputChannel"/>
+    <integration:channel id="deactivateResellerValidationChainOutputChannel"/>
+
+
+    <!--  Validator Chain  -->
+    <integration:chain input-channel="deactivateResellerRequestChannel" output-channel="deactivateResellerValidationChainOutputChannel">
+        <integration:poller task-executor="deactivateResellerExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:header-enricher>
+            <integration:header name="OPERATION" value="DEACTIVATERESELLER"/>
+        </integration:header-enricher>
+        <integration:service-activator ref="standardRequestValidator"/>
+    </integration:chain>
+
+    <integration:header-value-router input-channel="deactivateResellerValidationChainOutputChannel" header-name="IS_VALID_REQUEST">
+        <integration:mapping value="TRUE" channel="deactivateResellerValidRequestOutputChannel"/>
+        <integration:mapping value="FALSE" channel="deactivateResellerResponseChainInputChannel"/>
+    </integration:header-value-router>
+
+    <!--  Successful Validation Chains  -->
+    <integration:chain input-channel="deactivateResellerValidRequestOutputChannel" send-timeout="1000000"
+                       output-channel="deactivateResellerRestTemplateInputChannel">
+        <integration:poller task-executor="deactivateResellerValidExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="deactivateResellerRequestTransformer"
+                                 ref="deactivateResellerTransformer"
+                                 method="transformInboundRequest">
+        </integration:transformer>
+        <integration:object-to-json-transformer content-type="application/json"/>
+    </integration:chain>
+
+    <!--  Outbound Call Chain  -->
+    <integration:chain input-channel="deactivateResellerRestTemplateInputChannel" send-timeout="1000000"
+                       output-channel="deactivateResellerResponseChainInputChannel">
+        <integration:poller task-executor="deactivateResellerRestTemplateExecutor" time-unit="MILLISECONDS" fixed-delay="1200"
+                            max-messages-per-poll="-1"/>
+        <integration:service-activator ref="standardRestTemplateServiceActivator" async="true"/>
+    </integration:chain>
+
+    <!--  Response Chain  -->
+    <integration:chain input-channel="deactivateResellerResponseChainInputChannel" send-timeout="1000000"
+                       output-channel="inboundRequestMarshallerOutputChannel">
+        <integration:poller task-executor="deactivateResellerResponseExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="deactivateResellerResponseTransformer"
+                                 ref="deactivateResellerTransformer"
+                                 method="transformOutboundResponse"/>
+        <integration:transformer ref="standardMarshalingTransformer"/>
+    </integration:chain>
+</beans>

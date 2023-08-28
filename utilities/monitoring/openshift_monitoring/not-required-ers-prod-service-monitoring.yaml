@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: ers-prod-service-monitor
+  namespace: ers-prod
+  labels:
+    release: prometheus 
+spec:
+  endpoints:
+  - interval: 30s
+    port: http-txe-8088 
+    scheme: http
+  - interval: 30s
+    port: http-txe-proxy 
+    scheme: http

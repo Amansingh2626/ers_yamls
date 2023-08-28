@@ -1,0 +1,69 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: gp-account-data-sync
+spec:
+  schedule: "*/1 * * * *"
+  successfulJobsHistoryLimit: 0
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: gp-account-data-sync 
+            image: default-route-openshift-image-registry.apps.pocpbm-nexp.grameenphone.com/openshift/sync-reseller-data:v1
+            imagePullPolicy: Always
+            resources:
+              limits:
+                cpu: '200m'
+                memory: 200Mi
+              requests:
+                cpu: 100m
+                memory: 100Mi
+            env:
+            - name: DB_IP
+              value: "10.18.65.4"  
+            - name: DB_PORT_1 
+              value: "3360"  
+            - name: DB_PORT_2 
+              value: "3361"  
+            - name: DB_PORT_3
+              value: "3362"  
+            - name: ACCDB 
+              value: "accountmanagement"  
+            - name: BIDB 
+              value: "bi"  
+            - name: DBUSER
+              valueFrom:
+                secretKeyRef:
+                  name: db-user 
+                  key: dbuser 
+            - name: DBPASS
+              valueFrom:
+                secretKeyRef:
+                  name: db-pass 
+                  key: dbpass 
+            - name: TZ
+              value: "Asia/Dhaka"  
+            command:
+            - /bin/sh
+            - -c
+            - /others/sync-script.sh
+            volumeMounts:
+            - mountPath: /usr/share/zoneinfo/Asia/Dhaka
+              name: tz-dhaka
+              subPath: Dhaka               
+            - mountPath: /others
+              name: all-scripts  
+          restartPolicy: OnFailure
+          volumes:
+          - name: tz-dhaka
+            configMap:
+              name: asia-dhaka-tz-config
+              items:
+              - key: Dhaka
+                path: Dhaka          
+          - name: all-scripts
+            configMap:
+              name: scriptfiles 
+              defaultMode: 0777

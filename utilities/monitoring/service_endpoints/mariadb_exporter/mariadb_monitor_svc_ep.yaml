@@ -1,0 +1,208 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prod-db01-monitor
+  namespace: ers-prod
+  labels:
+    app: mysqld-exporter-db01
+spec:
+  clusterIP: None
+  ports:
+  - protocol: TCP
+    port: 9104
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: prod-db01-monitor
+  namespace: ers-prod
+  labels:
+    app: mysqld-exporter-db01  
+subsets:
+  - addresses:
+    - ip: 10.18.68.82
+    ports:
+    - port: 9104
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prod-db02-monitor
+  namespace: ers-prod
+  labels:
+    app: mysqld-exporter-db02
+spec:
+  clusterIP: None
+  ports:
+  - protocol: TCP
+    port: 9104
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: prod-db02-monitor
+  namespace: ers-prod
+  labels:
+    app: mysqld-exporter-db02
+subsets:
+  - addresses:
+    - ip: 10.18.68.88
+    ports:
+    - port: 9104
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prod-db03-monitor
+  namespace: ers-prod
+  labels:
+    app: mysqld-exporter-db03
+spec:
+  clusterIP: None
+  ports:
+  - protocol: TCP
+    port: 9104
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: prod-db03-monitor
+  namespace: ers-prod
+  labels:
+    app: mysqld-exporter-db03
+subsets:
+  - addresses:
+    - ip: 10.18.68.84
+    ports:
+    - port: 9104
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prod-db04-monitor
+  namespace: ers-prod
+  labels:
+    app: mysqld-exporter-db04
+spec:
+  clusterIP: None
+  ports:
+  - protocol: TCP
+    port: 9104
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: prod-db04-monitor
+  namespace: ers-prod
+  labels:
+    app: mysqld-exporter-db04
+subsets:
+  - addresses:
+    - ip: 10.18.68.75
+    ports:
+    - port: 9104
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prod-db05-monitor
+  namespace: ers-prod
+  labels:
+    app: mysqld-exporter-db05
+spec:
+  clusterIP: None
+  ports:
+  - protocol: TCP
+    port: 9104
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: prod-db05-monitor
+  namespace: ers-prod
+  labels:
+    app: mysqld-exporter-db05
+subsets:
+  - addresses:
+    - ip: 10.18.68.77
+    ports:
+    - port: 9104
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prod-db06-monitor
+  namespace: ers-prod
+  labels:
+    app: mysqld-exporter-db06
+spec:
+  clusterIP: None
+  ports:
+  - protocol: TCP
+    port: 9104
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: prod-db06-monitor
+  namespace: ers-prod
+  labels:
+    app: mysqld-exporter-db06
+subsets:
+  - addresses:
+    - ip: 10.18.68.93
+    ports:
+    - port: 9104
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prod-db07-monitor
+  namespace: ers-prod
+  labels:
+    app: mysqld-exporter-db07
+spec:
+  clusterIP: None
+  ports:
+  - protocol: TCP
+    port: 9104
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: prod-db07-monitor
+  namespace: ers-prod
+  labels:
+    app: mysqld-exporter-db07
+subsets:
+  - addresses:
+    - ip: 10.18.68.83
+    ports:
+    - port: 9104
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prod-db08-monitor
+  namespace: ers-prod
+  labels:
+    app: mysqld-exporter-db08
+spec:
+  clusterIP: None
+  ports:
+  - protocol: TCP
+    port: 9104
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: prod-db08-monitor
+  namespace: ers-prod
+  labels:
+    app: mysqld-exporter-db08
+subsets:
+  - addresses:
+    - ip: 10.18.68.80
+    ports:
+    - port: 9104

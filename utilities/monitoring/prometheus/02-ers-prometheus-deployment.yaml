@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mon-prometheus
+  namespace: ers-prod
+  labels:
+    app: mon-prometheus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mon-prometheus
+  template:
+    metadata:
+      labels:
+        app: mon-prometheus
+    spec:
+      serviceAccountName: ers-prod-mon-sa
+      securityContext:
+        fsGroupChangePolicy: "OnRootMismatch"
+        seLinuxOptions:
+          type: "spc_t"      
+      containers:
+        - name: prometheus
+          image: prom/prometheus
+          image: sdsdockerhub/prometheus:latest
+          imagePullPolicy: IfNotPresent
+          args:
+            - "--storage.tsdb.retention.time=5d"
+            - "--config.file=/etc/prometheus/prometheus.yml"
+            - "--storage.tsdb.path=/prometheus/"
+            - "--web.console.libraries=/etc/prometheus/console_libraries"
+            - "--web.console.templates=/etc/prometheus/consoles"
+            - "--web.enable-lifecycle"
+          ports:
+            - containerPort: 9090
+          resources:
+            requests:
+              cpu: '200m'
+              memory: 2Gi
+            limits:
+              cpu: '500m'
+              memory: 3Gi
+          volumeMounts:
+            - name: prometheus-storage-volume
+              mountPath: /opt/bitnami/prometheus/data 
+            - name: prometheus-bearertoken
+              mountPath: /opt/bitnami/prometheus/data/custom 
+            - name: prometheus-rules
+              mountPath: /etc/config/
+            - name: prometheus-config-volume
+              mountPath: /etc/prometheus/
+      volumes:
+        - name: prometheus-storage-volume
+          persistentVolumeClaim:
+            claimName: mon-prometheus-data 
+        - name: prometheus-rules 
+          configMap:
+            name: prometheus-ers-prod-rules
+        - name: prometheus-bearertoken 
+          configMap:
+            name: prometheus-bearertoken 
+        - name: prometheus-config-volume
+          configMap:
+            defaultMode: 420
+            name: prometheus-server-conf

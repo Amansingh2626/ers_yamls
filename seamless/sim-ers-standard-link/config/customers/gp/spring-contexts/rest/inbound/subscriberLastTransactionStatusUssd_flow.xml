@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration https://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd"
+       xmlns:integration="http://www.springframework.org/schema/integration"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:integration-http="http://www.springframework.org/schema/integration/http">
+
+    <task:executor id="subscriberLastTransactionStatusUssdExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="subscriberLastTransactionStatusUssdValidExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="subscriberLastTransactionStatusUssdResponseExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="subscriberLastTransactionStatusUssdRestTemplateExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"
+                   rejection-policy="DISCARD"/>
+
+    <integration:channel id="subscriberLastTransactionStatusUssdRequestChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="subscriberLastTransactionStatusUssdValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="subscriberLastTransactionStatusUssdRestTemplateInputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="subscriberLastTransactionStatusUssdInValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="subscriberLastTransactionStatusUssdResponseChainInputChannel">
+        <integration:queue/>
+    </integration:channel>
+
+    <integration:channel id="subscriberLastTransactionStatusUssdTransformerResponseChannel"/>
+    <integration:channel id="subscriberLastTransactionStatusUssdPollerServiceActivatorResponseChannel"/>
+    <integration:channel id="subscriberLastTransactionStatusUssdServiceActivatorResponseChannel"/>
+    <integration:channel id="subscriberLastTransactionStatusUssdOperationHeaderEnricherOutputChannel"/>
+    <integration:channel id="subscriberLastTransactionStatusUssdValidatorOutputChannel"/>
+    <integration:channel id="subscriberLastTransactionStatusUssdValidationChainOutputChannel"/>
+
+
+    <!--  Validator Chain  -->
+    <integration:chain input-channel="subscriberLastTransactionStatusUssdRequestChannel"
+                       output-channel="subscriberLastTransactionStatusUssdValidationChainOutputChannel">
+        <integration:poller task-executor="subscriberLastTransactionStatusUssdExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:header-enricher>
+            <integration:header name="OPERATION" value="SUBSCRIBERLASTTRANSACTIONSTATUSUSSD"/>
+        </integration:header-enricher>
+        <integration:service-activator ref="standardRequestValidator"/>
+    </integration:chain>
+
+    <integration:header-value-router input-channel="subscriberLastTransactionStatusUssdValidationChainOutputChannel"
+                                     header-name="IS_VALID_REQUEST">
+        <integration:mapping value="TRUE" channel="subscriberLastTransactionStatusUssdValidRequestOutputChannel"/>
+        <integration:mapping value="FALSE" channel="subscriberLastTransactionStatusUssdResponseChainInputChannel"/>
+    </integration:header-value-router>
+
+    <!--  Successful Validation Chains  -->
+    <integration:chain input-channel="subscriberLastTransactionStatusUssdValidRequestOutputChannel" send-timeout="1000000"
+                       output-channel="subscriberLastTransactionStatusUssdRestTemplateInputChannel">
+        <integration:poller task-executor="subscriberLastTransactionStatusUssdValidExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="subscriberLastTransactionStatusUssdRequestTransformer"
+                                 ref="subscriberLastTransactionStatusUssdTransformer"
+                                 method="transformInboundRequest">
+        </integration:transformer>
+        <integration:object-to-json-transformer content-type="application/json"/>
+    </integration:chain>
+
+    <!--  Outbound Call Chain  -->
+    <integration:chain input-channel="subscriberLastTransactionStatusUssdRestTemplateInputChannel" send-timeout="1000000"
+                       output-channel="subscriberLastTransactionStatusUssdResponseChainInputChannel">
+        <integration:poller task-executor="subscriberLastTransactionStatusUssdRestTemplateExecutor" time-unit="MILLISECONDS" fixed-delay="1200"
+                            max-messages-per-poll="-1"/>
+        <integration:service-activator ref="standardRestTemplateServiceActivator" async="true"/>
+    </integration:chain>
+
+    <!--  Response Chain  -->
+    <integration:chain input-channel="subscriberLastTransactionStatusUssdResponseChainInputChannel" send-timeout="1000000"
+                       output-channel="inboundRequestMarshallerOutputChannel">
+        <integration:poller task-executor="subscriberLastTransactionStatusUssdResponseExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="subscriberLastTransactionStatusUssdResponseTransformer"
+                                 ref="subscriberLastTransactionStatusUssdTransformer"
+                                 method="transformOutboundResponse"/>
+        <integration:transformer ref="standardMarshalingTransformer"/>
+    </integration:chain>
+</beans>

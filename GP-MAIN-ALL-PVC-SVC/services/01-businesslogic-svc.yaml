@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: ers-prod
+  labels:
+    app: ers-businesslogic
+  name: ers-businesslogic-service
+spec:
+  ports:
+    - name: http-ers-businesslogic-service
+      port: 8922
+      targetPort: 8922
+  selector:
+    app: ers-businesslogic
+  type: ClusterIP

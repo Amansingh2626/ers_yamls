@@ -1,0 +1,50 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: c2s-rc-basic-2
+  namespace: ers-prod
+  app: c2s-rc-basic
+spec:
+  template:
+    spec:
+      containers:
+      - name: seamless-one-perf
+#       image: image-registry.openshift-image-registry.svc:5000/openshift/seamless-one-performance:GP-PROD-DATA13
+#       image: image-registry.openshift-image-registry.svc:5000/openshift/seamless-one-performance:POST-LIVE-LT-V1
+#       image: image-registry.openshift-image-registry.svc:5000/openshift/seamless-one-performance:GP-LOAD-TEST2-1 
+#       image: default-route-openshift-image-registry.apps.pocpbm-nexp.grameenphone.com/openshift/seamless-one-performance:post-live-o2c-v1 
+        image: default-route-openshift-image-registry.apps.pocpbm-nexp.grameenphone.com/openshift/seamless-one-performance:PL-PROMOVAS-P1
+        imagePullPolicy: Always
+        env:
+          - name: CLASS
+            value: "simulations.GP.C2SEXTPROMOVASTRFREQSimulation"
+          - name: HOST
+            value: "nginx-service.ers-prod.svc.cluster.local:18080"
+          - name: USERS
+            value: "100"
+          - name: TIME
+            value: "100"
+          - name: LOGIN
+            value: "pretups"
+          - name: PASSWORD
+            value: "1357"
+          - name: REQUEST_GATEWAY_CODE
+            value: "USSDT"
+          - name: REQUEST_GATEWAY_TYPE
+            value: "USSD"
+          - name: SERVICE_PORT
+            value: "190"
+          - name: SOURCE_TYPE    
+            value: "USSD"
+          - name: PROTOCOL
+            value: "http://"
+          - name: AUTH
+            value: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwYXlsb2FkIjoiMkpNUWl2TlFYM0lhcVd3OGg0WHVEa205UWwzM2FZZEFPZkNCbkFINDc0T1I1U1hEWTR1eW95NVl4a2UxR1dnNGJLU0xJNFU2aDFRTk5VRkpSbEdZN0lUdVVLOEZvbE5nakxUT0pUY2RoenlmL1RwbzlBL1JHN1ZLV29nY1h5eFVTclNuUXBubXZpNERnZDE0WSsxVmpzNTYrVGEvMmU1L2RkV1BZd3J4YXlOeDExVlcvc1k0dDl1NFRnTXlSQUR2dlRraEkxMXRIUXV6N2FVM0NVVUluYTErdG1XZ0xwVXpJZW93MENFbmNxN3R2TkEvQ3czMmZLYytNdW5zTlRPdjFGVEtRQ3RkVEYzVFo1R3Q4L3hqZUN5Q256aUNMS2VhIiwiaXNzIjoiRVJTMzYwIiwiZXhwIjoxNjU3MTUwMzM5LCJpYXQiOjE2NTcxMjAzMzl9.SrT7YUZ2CnduI4X3GzvbINka1KU6ESNaLqQpI20XCok"
+      restartPolicy: OnFailure
+      volumeMounts:
+        - mountPath: /results
+          name: ers-config-path
+    volumes:
+      - name: ers-config-path
+        emptyDir: {}
+            

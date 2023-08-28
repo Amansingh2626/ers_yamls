@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_config_grameenphone=self.webpackChunk_unified_config_grameenphone||[]).push([[396],{396:(e,n,i)=>{"use strict";i.r(n),i.d(n,{default:()=>r});var a=i(2411),t=i(6098),o=i.n(t);const r=function(){return a.createElement("img",{src:o(),style:{maxWidth:250,display:"block",margin:"0 auto"}})}},6098:(e,n,i)=>{e.exports=i.p+"images/logo.png"}}]);

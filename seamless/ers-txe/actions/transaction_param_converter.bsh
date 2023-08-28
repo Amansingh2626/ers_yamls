@@ -1,0 +1,36 @@
+/***************************
+Following is a script for replacing few values of transaction
+
+Below code will replace the supplierReference value with the one in flytxt_supplierReference(in case of special bundle purchase).
+
+If an exception is thrown while evaluating this script, the exception will be logged.
+However, this will not make the transaction to fail.
+
+Only transaction and logger objects are available to this script.
+
+****************************/
+
+public void action(TXETransaction transaction) {
+
+    logger.debug("Converting params");
+    if (transaction.getProfileId().equalsIgnoreCase("SPECIAL_BUNDLE")) {
+
+        String flytxtSupplierRefField = ERSWSLinkConstants.FLYTXT_PREFIX + ERSWSLinkConstants.SUPPLIER_REFERENCE;
+        String flytxtSupplierRefValue = transaction.getField(flytxtSupplierRefField);
+
+        String ersSupplierRefField = ERSWSLinkConstants.SUPPLIER_REFERENCE;
+        String ersSupplierRefValue = transaction.getField(ersSupplierRefField);
+
+        if (ersSupplierRefValue != null && flytxtSupplierRefValue != null) {
+            logger.info("Changing supplierReference value from " + ersSupplierRefValue + " to " + flytxtSupplierRefValue);
+
+            //Make sure that no data is lost. So, first move flytxt_supplierReference param value to some field and then replace it.
+            transaction.putField(ersSupplierRefField + "_OLD", ersSupplierRefValue);
+            transaction.putField(ersSupplierRefField, flytxtSupplierRefValue);
+        }
+
+        if(transaction.getReceiverPrincipal().getPrincipalId().getType().equalsIgnoreCase("SUBSCRIBERANONYMOUSID"))  {
+            transaction.putField("NOTIFY_RECEIVER_MSISDN",transaction.getCustomerPrincipal().getSubscriberData().getSubscriberMSISDN());
+        }
+    }
+}

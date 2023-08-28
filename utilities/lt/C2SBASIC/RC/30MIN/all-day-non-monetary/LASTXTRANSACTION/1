@@ -1,0 +1,44 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ers-perf-nm-exlastxtrfreq-24hrs
+spec:
+  schedule: "00 18 * * *"
+  successfulJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: seamless-one-perf
+            image: default-route-openshift-image-registry.apps.pocpbm-nexp.grameenphone.com/openshift/gp_exlastxtrfreq_lt:v1 
+            imagePullPolicy: Always
+            resources:
+              limits:
+                cpu: '200m'
+                memory: '2Gi'
+              requests:
+                cpu: 100m
+                memory: '1Gi'            
+            command: ['sh','-c','/home/locust/scripts/run.sh']
+            env:
+            - name: SERVER_FQDN
+              value: "http://nginx-service.ers-prod.svc.cluster.local:18080"
+            - name: USER_COUNT
+              value: "50"
+            - name: SPAWN_RATE
+              value: "1"
+            - name: EXTRA_PARAMS
+              value: "-t 86200s"
+            volumeMounts:
+            - mountPath: /usr/share/zoneinfo/Asia/Dhaka
+              name: tz-dhaka
+              subPath: Dhaka
+          restartPolicy: OnFailure
+          volumes:
+          - name: tz-dhaka
+            configMap:
+              name: asia-dhaka-tz-config
+              items:
+              - key: Dhaka
+                path: Dhaka

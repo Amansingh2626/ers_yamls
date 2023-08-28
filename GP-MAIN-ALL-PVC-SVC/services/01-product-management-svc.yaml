@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: ers-prod
+  labels:
+    app: ers-product-management
+  name: ers-product-management-service
+spec:
+  ports:
+    - name: http-ers-product-management
+      port: 8012
+      targetPort: 8012
+  selector:
+    app: ers-product-management
+  type: ClusterIP
+

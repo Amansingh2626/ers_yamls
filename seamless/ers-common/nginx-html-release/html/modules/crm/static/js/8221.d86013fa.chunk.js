@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_crm=self.webpackChunk_unified_crm||[]).push([[8221],{98221:(e,t,c)=>{"use strict";c.r(t),c.d(t,{default:()=>a});const a=[{name:"Tickets",path:"crm/tickets"},{name:"Create ticket",path:"crm/tickets/create"}]}}]);

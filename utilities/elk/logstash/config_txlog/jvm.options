@@ -1,0 +1,1 @@
+-Djava.io.tmpdir -Xmx10g -Xms8g

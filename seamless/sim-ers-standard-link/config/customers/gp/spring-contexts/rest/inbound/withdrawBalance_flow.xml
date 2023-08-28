@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration https://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd"
+       xmlns:integration="http://www.springframework.org/schema/integration"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:integration-http="http://www.springframework.org/schema/integration/http">
+
+    <task:executor id="withdrawBalanceExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="withdrawBalanceValidExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="withdrawBalanceResponseExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="withdrawBalanceRestTemplateExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+
+    <integration:channel id="withdrawBalanceRequestChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="withdrawBalanceValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="withdrawBalanceRestTemplateInputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="withdrawBalanceInValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="withdrawBalanceResponseChainInputChannel">
+        <integration:queue/>
+    </integration:channel>
+
+    <integration:channel id="withdrawBalanceTransformerResponseChannel"/>
+    <integration:channel id="withdrawBalancePollerServiceActivatorResponseChannel"/>
+    <integration:channel id="withdrawBalanceServiceActivatorResponseChannel"/>
+    <integration:channel id="withdrawBalanceOperationHeaderEnricherOutputChannel"/>
+    <integration:channel id="withdrawBalanceValidatorOutputChannel"/>
+    <integration:channel id="withdrawBalanceValidationChainOutputChannel"/>
+
+
+    <!--  Validator Chain  -->
+    <integration:chain input-channel="withdrawBalanceRequestChannel"
+                       output-channel="withdrawBalanceValidationChainOutputChannel">
+        <integration:poller task-executor="withdrawBalanceExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:header-enricher>
+            <integration:header name="OPERATION" value="WITHDRAWBALANCE"/>
+        </integration:header-enricher>
+        <integration:service-activator ref="standardRequestValidator"/>
+    </integration:chain>
+
+    <integration:header-value-router input-channel="withdrawBalanceValidationChainOutputChannel" header-name="IS_VALID_REQUEST">
+        <integration:mapping value="TRUE" channel="withdrawBalanceValidRequestOutputChannel"/>
+        <integration:mapping value="FALSE" channel="withdrawBalanceResponseChainInputChannel"/>
+    </integration:header-value-router>
+
+    <!--  Successful Validation Chains  -->
+    <integration:chain input-channel="withdrawBalanceValidRequestOutputChannel" send-timeout="1000000"
+                       output-channel="withdrawBalanceRestTemplateInputChannel">
+        <integration:poller task-executor="withdrawBalanceValidExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="withdrawBalanceRequestTransformer"
+                                 ref="withdrawBalanceTransformer"
+                                 method="transformInboundRequest">
+        </integration:transformer>
+        <integration:object-to-json-transformer content-type="application/json"/>
+    </integration:chain>
+
+    <!--  Outbound Call Chain  -->
+    <integration:chain input-channel="withdrawBalanceRestTemplateInputChannel" send-timeout="1000000"
+                       output-channel="withdrawBalanceResponseChainInputChannel">
+        <integration:poller task-executor="withdrawBalanceRestTemplateExecutor" time-unit="MILLISECONDS" fixed-delay="1200"
+                            max-messages-per-poll="-1"/>
+        <integration:service-activator ref="standardRestTemplateServiceActivator" async="true"/>
+    </integration:chain>
+
+    <!--  Response Chain  -->
+    <integration:chain input-channel="withdrawBalanceResponseChainInputChannel" send-timeout="1000000"
+                       output-channel="inboundRequestMarshallerOutputChannel">
+        <integration:poller task-executor="withdrawBalanceResponseExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="withdrawBalanceResponseTransformer"
+                                 ref="withdrawBalanceTransformer"
+                                 method="transformOutboundResponse"/>
+        <integration:transformer ref="standardMarshalingTransformer"/>
+    </integration:chain>
+</beans>

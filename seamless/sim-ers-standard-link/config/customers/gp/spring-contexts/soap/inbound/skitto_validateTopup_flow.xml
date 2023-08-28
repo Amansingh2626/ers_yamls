@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:integration="http://www.springframework.org/schema/integration"
+       xmlns:http="http://www.springframework.org/schema/integration/http"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:ws="http://www.springframework.org/schema/integration/ws"
+       xsi:schemaLocation="http://www.springframework.org/schema/integration/http http://www.springframework.org/schema/integration/http/spring-integration-http.xsd
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/integration/ws http://www.springframework.org/schema/integration/ws/spring-integration-ws.xsd
+http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+
+    <task:executor id="skittoValidateTopupExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="skittoValidateTopupValidExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="skittoValidateTopupResponseExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="skittoValidateTopupRestTemplateExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+
+    <integration:channel id="skittoValidateTopupRequestChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="skittoValidateTopupValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="skittoValidateTopupRestTemplateInputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="skittoValidateTopupInValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="skittoValidateTopupResponseChainInputChannel">
+        <integration:queue/>
+    </integration:channel>
+
+    <integration:channel id="skittoValidateTopupTransformerResponseChannel"/>
+    <integration:channel id="skittoValidateTopupPollerServiceActivatorResponseChannel"/>
+    <integration:channel id="skittoValidateTopupServiceActivatorResponseChannel"/>
+    <integration:channel id="skittoValidateTopupOperationHeaderEnricherOutputChannel"/>
+    <integration:channel id="skittoValidateTopupValidatorOutputChannel"/>
+    <integration:channel id="skittoValidateTopupValidationChainOutputChannel"/>
+
+    <!--  Validator Chain  -->
+    <integration:chain input-channel="skittoValidateTopupRequestChannel" output-channel="skittoValidateTopupValidationChainOutputChannel"
+                       send-timeout="1000000">
+        <integration:poller task-executor="skittoValidateTopupExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:object-to-map-transformer flatten="false"/>
+        <integration:header-enricher>
+            <integration:header name="OPERATION" value="SkittoValidateTopup"/>
+        </integration:header-enricher>
+        <integration:service-activator ref="standardRequestValidator"/>
+    </integration:chain>
+
+    <integration:header-value-router input-channel="skittoValidateTopupValidationChainOutputChannel" header-name="IS_VALID_REQUEST">
+        <integration:mapping value="TRUE" channel="skittoValidateTopupValidRequestOutputChannel"/>
+        <integration:mapping value="FALSE" channel="skittoValidateTopupResponseChainInputChannel"/>
+    </integration:header-value-router>
+
+
+    <!--  Successful Validation Chains  -->
+    <integration:chain input-channel="skittoValidateTopupValidRequestOutputChannel" send-timeout="1000000"
+                       output-channel="skittoValidateTopupRestTemplateInputChannel">
+        <integration:poller task-executor="skittoValidateTopupValidExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                            max-messages-per-poll="100"/>
+        <integration:transformer id="skittoValidateTopupRequestTransformer"
+                                 ref="skittoValidateTopupTransformer"
+                                 method="transformOutboundSoapRequest">
+        </integration:transformer>
+    </integration:chain>
+
+    <!--  Outbound Call Chain  -->
+    <integration:chain input-channel="skittoValidateTopupRestTemplateInputChannel" output-channel="skittoValidateTopupResponseChainInputChannel" send-timeout="1000000">
+        <integration:poller task-executor="skittoValidateTopupRestTemplateExecutor" time-unit="MILLISECONDS" fixed-delay="1200"
+                            max-messages-per-poll="-1"/>
+        <integration:service-activator ref="standardERSSoapServiceActivator" async="true"/>
+    </integration:chain>
+
+    <!--  Response Chain  -->
+    <integration:chain input-channel="skittoValidateTopupResponseChainInputChannel" send-timeout="1000000">
+        <integration:poller task-executor="skittoValidateTopupResponseExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                            max-messages-per-poll="100"/>
+        <integration:transformer id="skittoValidateTopupResponseTransformer"
+                                 ref="skittoValidateTopupTransformer"
+                                 method="transformInboundSoapResponse"/>
+    </integration:chain>
+</beans>

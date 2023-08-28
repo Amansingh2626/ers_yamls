@@ -1,0 +1,208 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb-db01-node 
+  namespace: ers-prod
+  labels:
+    app: mariadb-db01-node
+spec:
+  clusterIP: None
+  ports:
+  - protocol: TCP
+    port: 9200
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: mariadb-db01-node
+  namespace: ers-prod
+  labels:
+    app: mariadb-db01-node  
+subsets:
+  - addresses:
+    - ip: 10.18.68.82
+    ports:
+    - port: 9200
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb-db02-node
+  namespace: ers-prod
+  labels:
+    app: mariadb-db02-node
+spec:
+  clusterIP: None
+  ports:
+  - protocol: TCP
+    port: 9200
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: mariadb-db02-node
+  namespace: ers-prod
+  labels:
+    app: mariadb-db02-node
+subsets:
+  - addresses:
+    - ip: 10.18.68.88
+    ports:
+    - port: 9200
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb-db03-node
+  namespace: ers-prod
+  labels:
+    app: mariadb-db03-node
+spec:
+  clusterIP: None
+  ports:
+  - protocol: TCP
+    port: 9200
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: mariadb-db03-node
+  namespace: ers-prod
+  labels:
+    app: mariadb-db03-node
+subsets:
+  - addresses:
+    - ip: 10.18.68.84
+    ports:
+    - port: 9200
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb-db04-node
+  namespace: ers-prod
+  labels:
+    app: mariadb-db04-node
+spec:
+  clusterIP: None
+  ports:
+  - protocol: TCP
+    port: 9200
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: mariadb-db04-node
+  namespace: ers-prod
+  labels:
+    app: mariadb-db04-node
+subsets:
+  - addresses:
+    - ip: 10.18.68.75
+    ports:
+    - port: 9200
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb-db05-node
+  namespace: ers-prod
+  labels:
+    app: mariadb-db05-node
+spec:
+  clusterIP: None
+  ports:
+  - protocol: TCP
+    port: 9200
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: mariadb-db05-node
+  namespace: ers-prod
+  labels:
+    app: mariadb-db05-node
+subsets:
+  - addresses:
+    - ip: 10.18.68.77
+    ports:
+    - port: 9200
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb-db06-node
+  namespace: ers-prod
+  labels:
+    app: mariadb-db06-node
+spec:
+  clusterIP: None
+  ports:
+  - protocol: TCP
+    port: 9200
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: mariadb-db06-node
+  namespace: ers-prod
+  labels:
+    app: mariadb-db06-node
+subsets:
+  - addresses:
+    - ip: 10.18.68.93
+    ports:
+    - port: 9200
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb-db07-node
+  namespace: ers-prod
+  labels:
+    app: mariadb-db07-node
+spec:
+  clusterIP: None
+  ports:
+  - protocol: TCP
+    port: 9200
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: mariadb-db07-node
+  namespace: ers-prod
+  labels:
+    app: mariadb-db07-node
+subsets:
+  - addresses:
+    - ip: 10.18.68.83
+    ports:
+    - port: 9200
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb-db08-node
+  namespace: ers-prod
+  labels:
+    app: mariadb-db08-node
+spec:
+  clusterIP: None
+  ports:
+  - protocol: TCP
+    port: 9200
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: mariadb-db08-node
+  namespace: ers-prod
+  labels:
+    app: mariadb-db08-node
+subsets:
+  - addresses:
+    - ip: 10.18.68.80
+    ports:
+    - port: 9200

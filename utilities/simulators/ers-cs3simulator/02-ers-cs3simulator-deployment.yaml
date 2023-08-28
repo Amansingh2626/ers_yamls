@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ers-cs3simulator
+  namespace: ers-prod
+  labels:
+    app: ers-cs3simulator
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ers-cs3simulator
+      version: v1
+  template:
+    metadata:
+#      annotations:
+#        sidecar.istio.io/proxyCPULimit: 100m
+#        sidecar.istio.io/proxyMemoryLimit: 200Mi
+#        sidecar.istio.io/proxyCPU: 50m
+#        sidecar.istio.io/proxyMemory: 128Mi
+#        status.sidecar.istio.io/port: "0"
+#        traffic.sidecar.istio.io/includeOutboundIPRanges: 10.18.72.46/32,10.18.72.42/32,10.18.72.45/32
+#        traffic.sidecar.istio.io/excludeInboundPorts: "0"
+#        sidecar.istio.io/inject: "true"
+      labels:
+        app: ers-cs3simulator
+        version: v1
+    spec:
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "4"
+      containers:
+        - name: ers-cs3simulator
+          image: sdsdockerhub/cs3simulator:GPB-1
+          imagePullPolicy: IfNotPresent
+   #      resources:
+   #        limits:
+   #          cpu: '100m'
+   #          memory: 3Gi
+   #        requests:
+   #          cpu: '50m'
+   #          memory: 2Gi
+          env:
+   #       - name: JAVA_TOOL_OPTIONS
+   #         value: "-Xms2000M -Xmx3000M -XX:+UseContainerSupport -XX:MaxRAMPercentage=90.0 -XX:ActiveProcessorCount=2 "
+          - name: DEFAULT_TIME_ZONE
+            value: "Asia/Dhaka" 
+          - name: TZ
+            value: "Asia/Dhaka"        
+          ports:
+            - containerPort: 9080
+          volumeMounts:
+            - mountPath: /opt/seamless/conf/cs3simulator
+              name: vol-conf
+            - mountPath: /opt/seamless/conf
+              name: vol-common-conf
+            - mountPath: /usr/share/zoneinfo/Asia/Dhaka
+              name: tz-dhaka
+              subPath: Dhaka              
+      volumes:
+        - name: tz-dhaka
+          configMap:
+            name: asia-dhaka-tz-config
+            items:
+            - key: Dhaka
+              path: Dhaka              
+        - name: vol-common-conf
+          configMap:
+            name: ers-common-config
+        - name: vol-conf
+          configMap:
+            name: cs3simulator-config 
+        - name: vol-log
+          emptyDir: {}
+      imagePullSecrets:
+        - name: private-repo

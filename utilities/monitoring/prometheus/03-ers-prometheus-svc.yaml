@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-service
+  namespace: ers-prod
+  annotations:
+      prometheus.io/scrape: 'true'
+      prometheus.io/port:   '9090'
+spec:
+  selector: 
+    app: mon-prometheus
+  type: ClusterIP  
+  ports:
+    - port: 8080
+      targetPort: 9090 
+      name: prometheus-external-ports

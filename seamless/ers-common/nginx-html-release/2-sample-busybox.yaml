@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: my-busy-box
+  name: my-busy-box
+spec:
+  serviceAccountName: ers-prod-app-sa
+  securityContext:
+    fsGroupChangePolicy: "OnRootMismatch"
+    seLinuxOptions:
+      type: "spc_t"        
+  containers:
+  - image: busybox:latest
+    command: ['tail','-f','/dev/null'] 
+    name: my-busy-box
+    resources: 
+      limits:
+        cpu: "200m"
+        memory: 200Mi
+      requests:
+        cpu: "100m"
+        memory: 100Mi
+    volumeMounts:
+    - name: nginx-release
+      mountPath: /usr/share/nginx
+  volumes:
+    - name: nginx-release
+      persistentVolumeClaim:
+        claimName: nginx-html-release 
+

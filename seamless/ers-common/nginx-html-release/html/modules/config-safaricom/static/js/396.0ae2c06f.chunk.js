@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_config_safaricom=self.webpackChunk_unified_config_safaricom||[]).push([[396],{396:(e,i,a)=>{"use strict";a.r(i),a.d(i,{default:()=>t});var n=a(411),s=a(98),c=a.n(s);const t=function(){return n.createElement("img",{src:c(),style:{maxWidth:200,display:"block",margin:"0 auto"}})}},98:(e,i,a)=>{e.exports=a.p+"images/logo.png"}}]);

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:integration="http://www.springframework.org/schema/integration"
+       xmlns:http="http://www.springframework.org/schema/integration/http"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/integration/http http://www.springframework.org/schema/integration/http/spring-integration-http.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+
+
+    <task:executor id="sendSMSNotificationExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+
+    <integration:channel id="sendSMSNotificationRequestChannel">
+        <integration:queue/>
+    </integration:channel>
+
+    <integration:chain input-channel="sendSMSNotificationRequestChannel">
+        <integration:poller task-executor="sendSMSNotificationExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <http:outbound-gateway  id="sendNotificationOutboundGateway"
+                                url="#{providers['gp'].operations['sendNotification'].fields['server_url']}"
+                                mapped-request-headers="system-token,validateOnly,authorization"
+                                http-method="POST" rest-template="gpRestTemplate"
+                                expected-response-type="java.lang.Object">
+        </http:outbound-gateway>
+    </integration:chain>
+
+
+</beans>

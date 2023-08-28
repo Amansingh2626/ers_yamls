@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:integration="http://www.springframework.org/schema/integration"
+       xmlns:http="http://www.springframework.org/schema/integration/http"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/integration/http http://www.springframework.org/schema/integration/http/spring-integration-http.xsd
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+
+    <task:executor id="ccpsTopupExecutor"  keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+    <task:executor id="ccpsTopupValidExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+    <task:executor id="ccpsTopupResponseExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+    <task:executor id="ccpsTopupRestTemplateExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+
+    <integration:channel id="ccpsTopupRequestChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="ccpsTopupValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="ccpsTopupRestTemplateInputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="ccpsTopupInValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="ccpsTopupResponseChainInputChannel">
+        <integration:queue/>
+    </integration:channel>
+
+    <integration:channel id="ccpsTopupTransformerResponseChannel"/>
+    <integration:channel id="ccpsTopupPollerServiceActivatorResponseChannel"/>
+    <integration:channel id="ccpsTopupServiceActivatorResponseChannel"/>
+    <integration:channel id="ccpsTopupOperationHeaderEnricherOutputChannel"/>
+    <integration:channel id="ccpsTopupValidatorOutputChannel"/>
+    <integration:channel id="ccpsTopupValidationChainOutputChannel"/>
+
+    <!--  Validator Chain  -->
+    <integration:chain input-channel="ccpsTopupRequestChannel" output-channel="ccpsTopupValidationChainOutputChannel" send-timeout="1000000" >
+        <integration:poller task-executor="ccpsTopupExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:object-to-map-transformer flatten="false"/>
+        <integration:header-enricher>
+            <integration:header name="OPERATION" value="CCPSTOPUP"/>
+        </integration:header-enricher>
+        <integration:service-activator ref="standardRequestValidator"/>
+    </integration:chain>
+
+    <integration:header-value-router input-channel="ccpsTopupValidationChainOutputChannel" header-name="IS_VALID_REQUEST">
+        <integration:mapping value="TRUE" channel="ccpsTopupValidRequestOutputChannel"/>
+        <integration:mapping value="FALSE" channel="ccpsTopupResponseChainInputChannel"/>
+    </integration:header-value-router>
+
+
+    <!--  Successful Validation Chains  -->
+    <integration:chain input-channel="ccpsTopupValidRequestOutputChannel" send-timeout="1000000"
+                       output-channel="ccpsTopupRestTemplateInputChannel">
+        <integration:poller task-executor="ccpsTopupValidExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="ccpsTopupRequestTransformer"
+                                 ref="cCPSTopupTransformer"
+                                 method="transformOutboundRestRequest">
+        </integration:transformer>
+        <integration:object-to-json-transformer content-type="application/json"/>
+    </integration:chain>
+
+    <!--  Outbound Call Chain  -->
+    <integration:chain input-channel="ccpsTopupRestTemplateInputChannel" output-channel="ccpsTopupResponseChainInputChannel" send-timeout="1000000">
+        <integration:poller task-executor="ccpsTopupRestTemplateExecutor" time-unit="MILLISECONDS" fixed-delay="1200"
+                            max-messages-per-poll="-1"/>
+        <integration:service-activator ref="standardRestTemplateServiceActivator" async="true"/>
+    </integration:chain>
+
+    <!--  Response Chain  -->
+    <integration:chain input-channel="ccpsTopupResponseChainInputChannel"  send-timeout="1000000">
+        <integration:poller task-executor="ccpsTopupResponseExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="ccpsTopupResponseTransformer"
+                                 ref="cCPSTopupTransformer"
+                                 method="transformInboundRestResponse"/>
+    </integration:chain>
+</beans>
+

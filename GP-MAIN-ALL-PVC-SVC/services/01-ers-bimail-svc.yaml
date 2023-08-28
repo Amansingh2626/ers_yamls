@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: ers-prod
+  labels:
+    app: ers-bimail 
+  name: ers-bimail-service 
+spec:
+  ports:
+    - name: http-ers-bimail-service
+      port: 8918
+      targetPort: 8918
+  selector:
+    app: ers-bimail 
+  type: ClusterIP
+

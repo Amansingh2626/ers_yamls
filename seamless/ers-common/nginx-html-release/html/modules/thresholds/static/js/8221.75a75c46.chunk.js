@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_thresholds=self.webpackChunk_unified_thresholds||[]).push([[8221],{98221:(e,s,h)=>{"use strict";h.r(s),h.d(s,{default:()=>n});const n=[{name:"inventory",path:"thresholds/inventory"},{name:"balance",path:"thresholds/balance"}]}}]);

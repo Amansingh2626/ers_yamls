@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:integration="http://www.springframework.org/schema/integration"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+			https://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/integration
+			https://www.springframework.org/schema/integration/spring-integration.xsd">
+
+	<integration:logging-channel-adapter id="defaultLogger" logger-name="DefaultLogger" expression="'HEADERS: [[' + headers +']], PAYLOAD: [[' + payload +']]'" />
+	<integration:message-history />
+
+	<integration:channel id="entryChannel">
+		<integration:queue capacity="200" />
+	</integration:channel>
+
+	<integration:channel id="outboundSoapChannel">
+		<integration:queue />
+	</integration:channel>
+
+	<integration:channel id="sfcChannel" />
+	<integration:channel id="untChannel" />
+	<integration:channel id="gpChannel" />
+	<integration:channel id="vfoChannel"/>
+
+	<integration:channel id="authChannel">
+		<integration:queue capacity="200" />
+	</integration:channel>
+
+	<integration:header-value-router id="providerRouter" input-channel="entryChannel" header-name="PROVIDER_ID">
+		<integration:poller max-messages-per-poll="40" fixed-rate="100" time-unit="MILLISECONDS">
+		</integration:poller>
+		<integration:mapping value="SFC" channel="sfcChannel" />
+		<integration:mapping value="VFO" channel="vfoChannel" />
+		<integration:mapping value="UNT" channel="untChannel" />
+		<integration:mapping value="GP" channel="gpChannel" />
+	</integration:header-value-router>
+
+
+	<integration:header-value-router id="authRouter" input-channel="authChannel" header-name="PROVIDER_ID">
+		<integration:poller max-messages-per-poll="40" fixed-rate="100" time-unit="MILLISECONDS" />
+		<integration:mapping value="VFO" channel="vfoAuthChannel" />
+	</integration:header-value-router>
+
+</beans>

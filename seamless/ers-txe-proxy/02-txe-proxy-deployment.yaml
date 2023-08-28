@@ -1,0 +1,133 @@
+apiVersion: apps/v1
+kind: Deployment 
+metadata:
+  name: ers-txe-proxy
+  namespace: ers-prod
+  labels:
+    app: ers-txe-proxy
+    version: v1
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+       maxSurge:  40%
+       maxUnavailable: 20%
+  selector:
+    matchLabels:
+      app: ers-txe-proxy
+      version: v1
+  template:
+    metadata:
+#      annotations:
+#        sidecar.istio.io/proxyCPULimit: 100m
+#        sidecar.istio.io/proxyMemoryLimit: 200Mi
+#        sidecar.istio.io/proxyCPU: 50m
+#        sidecar.istio.io/proxyMemory: 128Mi
+#        status.sidecar.istio.io/port: "0"
+#        traffic.sidecar.istio.io/includeOutboundIPRanges: 10.18.72.46/32,10.18.72.42/32,10.18.72.45/32
+#        traffic.sidecar.istio.io/excludeInboundPorts: "0"
+#        sidecar.istio.io/inject: "true"
+      labels:
+        app: ers-txe-proxy
+        version: v1
+    spec:
+      serviceAccountName: ers-prod-app-sa
+      securityContext:
+        fsGroupChangePolicy: "OnRootMismatch"
+        seLinuxOptions:
+          type: "spc_t"
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "4"
+      initContainers:
+        - name: copy-configs
+          image: sdsdockerhub/ubuntu:latest
+          env:
+          - name: POD_NAME 
+            valueFrom:
+              fieldRef: {fieldPath: metadata.name}       
+#          resources:
+#            limits:
+#              cpu: '150m'
+#              memory: 150Mi
+#            requests:
+#              cpu: 100m
+#              memory: 100Mi
+          command: ['bash','/scripts/copy-txe-proxy-scripts']
+          volumeMounts:
+            - mountPath: /opt/seamless/conf
+              name: ers-config-path
+            - mountPath: /txe-proxy
+              name: vol-conf 
+            - mountPath: /ers-common
+              name: vol-common-conf
+            - mountPath: /scripts
+              name: vol-script
+      containers:       
+        - name: ers-txe-proxy
+#         image: sdsdockerhub/ers-txe-proxy:feature-GPB-1081-4  #LASTXTRANSACTION
+#         image: sdsdockerhub/ers-txe-proxy:feature-GPB-1076-5  #VIEWCUSER
+#         image: sdsdockerhub/ers-txe-proxy:feature-GPB-1076-8
+          image: sdsdockerhub/ers-txe-proxy:1.7.1
+          imagePullPolicy: IfNotPresent
+          env:
+ #         - name: JAVA_TOOL_OPTIONS
+ #           value: "-Xms200M -Xmx200M -XX:+UseContainerSupport -XX:MaxRAMPercentage=90.0 -XX:ActiveProcessorCount=4 "
+          - name: DEFAULT_TIME_ZONE
+            value: "Asia/Dhaka"
+          - name: TZ
+            value: "Asia/Dhaka"
+  #        resources:
+  #          limits:
+  #            cpu: '750m'
+  #            memory: 200Mi
+  #          requests:
+  #            cpu: '500m'
+  #            memory: 200Mi
+          readinessProbe:
+            tcpSocket:
+              port: 38777
+            initialDelaySeconds: 30
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 38777
+            initialDelaySeconds: 30
+            periodSeconds: 5
+          ports:
+            - containerPort: 38777
+#           - containerPort: 48077
+          #dnsPolicy: Default
+          volumeMounts:
+            - mountPath: /opt/seamless/conf/
+              name: ers-config-path
+            - mountPath: /var/seamless/log/txe-proxy
+              name: vol-log
+            - mountPath: /usr/share/zoneinfo/Asia/Dhaka
+              name: tz-dhaka
+              subPath: Dhaka              
+      volumes:
+        - name: tz-dhaka
+          configMap:
+            name: asia-dhaka-tz-config
+            items:
+            - key: Dhaka
+              path: Dhaka              
+        - name: vol-common-conf
+          configMap:
+            name: ers-common-config
+        - name: vol-script
+          configMap:
+            name: txe-proxy-copy-config 
+        - name: vol-conf
+          configMap:
+            name: txe-proxy-config
+        - name: ers-config-path
+          emptyDir: {}            
+        - name: vol-log
+          persistentVolumeClaim:
+            claimName: txe-proxy-log 
+      imagePullSecrets:
+        - name: private-repo

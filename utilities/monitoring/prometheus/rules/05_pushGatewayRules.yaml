@@ -1,0 +1,56 @@
+groups:
+    - name:  PROD PUSHGATEWAY
+      rules:
+
+      - alert: BiTDRDown
+        expr: custom_application{process="bi-tdr"} == 0 
+        for: 1m
+        labels:
+          severity: critical
+          messagecode: BiTDRDown 
+          application: BiTDR
+          service: '{{ $labels.instance }}'
+          namespace: ers-prod
+        annotations:
+          summary: BI-TDR DOWN (instance {{ $labels.instance }})
+          description: "BI-TDR DOWN\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+      - alert: TXE_MARIADB_REPLICATION_STOPPED
+        expr: txe_application{process="txe-replication"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          messagecode: TXE_MARIADB_REPLICATION_STOPPED
+          application: TXE_MARIADB_REPLICATION
+          service: '{{ $labels.instance }}'
+          namespace: ers-prod
+        annotations:
+          summary: TXE_MARIADB_REPLICATION_STOPPED (instance {{ $labels.instance }})
+          description: "TXE MARIADB REPLICATION STOPPED \n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+          
+      - alert: SYSTEM EXPERIENCING LATENCY 
+        expr: custom_monitoring{process="system_latency"} == 0 
+        for: 30s
+        labels:
+          severity: critical
+          messagecode: SYSTEM_EXPERIENCING_LATENCY
+          application: SYSTEM_EXPERIENCING_LATENCY 
+          service: '{{ $labels.instance }}'
+          namespace: ers-prod
+        annotations:
+          summary: SYSTEM_EXPERIENCING_LATENCY (instance {{ $labels.instance }})
+          description: "{{ $labels.message }}"
+          
+      - alert: MISMATCH IN ES AND TDR  
+        expr: custom_monitoring{process="tdr-vs-es-count"} == 0 
+        for: 30s
+        labels:
+          severity: critical
+          messagecode: MISMATCH_IN_ES_AND_TDR
+          application: MISMATCH_IN_ES_AND_TDR 
+          service: '{{ $labels.instance }}'
+          namespace: ers-prod
+        annotations:
+          summary: Mismatch in_ElasticSearch And TDR is observed (instance {{ $labels.instance }})
+          description: "{{ $labels.message }}"
+          

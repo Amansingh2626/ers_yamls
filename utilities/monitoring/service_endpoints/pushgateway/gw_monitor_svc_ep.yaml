@@ -1,0 +1,66 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prod-gw01-monitor
+  namespace: ers-prod
+spec:
+  clusterIP: None
+  ports:
+  - protocol: TCP
+    port: 9091
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: prod-gw01-monitor
+  namespace: ers-prod
+subsets:
+  - addresses:
+    - ip: 10.18.12.124
+    ports:
+    - port: 9091
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prod-gw02-monitor
+  namespace: ers-prod
+spec:
+  clusterIP: None
+  ports:
+  - protocol: TCP
+    port: 9091
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: prod-gw02-monitor
+  namespace: ers-prod
+subsets:
+  - addresses:
+    - ip: 10.18.12.122
+    ports:
+    - port: 9091
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prod-nms-monitor
+  namespace: ers-prod
+spec:
+  clusterIP: None
+  ports:
+  - protocol: TCP
+    port: 9091
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: prod-nms-monitor
+  namespace: ers-prod
+subsets:
+  - addresses:
+    - ip: 10.18.68.81
+    ports:
+    - port: 9091

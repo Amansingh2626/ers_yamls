@@ -1,0 +1,23 @@
+{
+<#compress>
+  "product": {
+    "productSKU":  "${configuration.getProductSKU()}",
+    "amount": {
+      "currency": "${configuration.getDefaultCurrency()}",
+      "value": "${resellerInformation.getTransferAmount()}"
+    }
+  },
+  "receiver": {
+    "accountTypeId": "${resellerInformation.getAccountTypeId()}",
+    "id": "${resellerInformation.getParentResellerId()}",
+    "type": "RESELLERID"
+  },
+  "sender": {
+    "accountTypeId": "${resellerInformation.getAccountTypeId()}",
+    "id": "${resellerInformation.getParentResellerId()}",
+    "type": "RESELLERID"
+  },
+  "transactionProperties": {
+  }
+  </#compress>
+}

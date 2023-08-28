@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_contract=self.webpackChunk_unified_contract||[]).push([[388],{23603:(e,t,n)=>{"use strict";n.d(t,{Z:()=>a});var r=/[A-Z]/g,c=/^ms-/,u={};function s(e){return"-"+e.toLowerCase()}const a=function(e){if(u.hasOwnProperty(e))return u[e];var t=e.replace(r,s);return u[e]=c.test(t)?"-"+t:t}}}]);

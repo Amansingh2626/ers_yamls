@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ers-group-management-log
+  namespace: ers-prod
+  annotations:
+    volume.beta.kubernetes.io/storage-provisioner: nfs.storage-class/nfs
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: nfs-storage-class

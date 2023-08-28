@@ -1,0 +1,4 @@
+Host 10.12.121.41
+    Ciphers 3des-cbc
+    KexAlgorithms +diffie-hellman-group1-sha1
+    HostkeyAlgorithms +ssh-rsa,ssh-dss

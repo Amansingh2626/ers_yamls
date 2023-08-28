@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_portal=self.webpackChunk_unified_portal||[]).push([["src_Rbac_RBACRoute_tsx"],{77857:(e,t,a)=>{"use strict";a.r(t),a.d(t,{default:()=>c});var r=a(22459),u=a.n(r),n=a(5700);const c=function(e){e.featureName;var t=e.path,a=e.children;return u().createElement(n.Route,{path:t},a)}}}]);

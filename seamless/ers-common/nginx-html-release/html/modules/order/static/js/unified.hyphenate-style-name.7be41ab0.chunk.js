@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_order=self.webpackChunk_unified_order||[]).push([[388],{23603:(e,r,n)=>{"use strict";n.d(r,{Z:()=>o});var t=/[A-Z]/g,u=/^ms-/,s={};function i(e){return"-"+e.toLowerCase()}const o=function(e){if(s.hasOwnProperty(e))return s[e];var r=e.replace(t,i);return s[e]=u.test(r)?"-"+r:r}}}]);

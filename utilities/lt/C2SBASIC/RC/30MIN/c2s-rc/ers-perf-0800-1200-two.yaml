@@ -1,0 +1,60 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ers-perf-0800-1200-two
+spec:
+  schedule: "15 02 * * *"
+  successfulJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: seamless-one-perf
+#           image: default-route-openshift-image-registry.apps.pocpbm-nexp.grameenphone.com/openshift/seamless-one-performance:POST-LIVE-LT-V1
+            image: default-route-openshift-image-registry.apps.pocpbm-nexp.grameenphone.com/openshift/seamless-one-performance:PL-C2SRC-P2
+            imagePullPolicy: Always
+            env:
+            - name: CLASS
+              value: "simulations.GP.C2SRCExGtSimulation"
+            - name: HOST
+              value: "nginx-service.ers-prod.svc.cluster.local:18080"
+            - name: USERS
+              value: "3888000"
+            - name: TIME
+              value: "21600"              
+            - name: LOGIN
+              value: "pretups"
+            - name: PASSWORD
+              value: "1357"
+            - name: REQUEST_GATEWAY_CODE
+              value: "USSDT"
+            - name: REQUEST_GATEWAY_TYPE
+              value: "USSD"
+            - name: SERVICE_PORT
+              value: "190"
+            - name: SOURCE_TYPE
+              value: "USSD"
+            - name: PROTOCOL
+              value: "http://"
+            - name: AUTH
+              value: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwYXlsb2FkIjoiMkpNUWl2TlFYM0lhcVd3OGg0WHVEa205UWwzM2FZZEFPZkNCbkFINDc0T1I1U1hEWTR1eW95NVl4a2UxR1dnNGJLU0xJNFU2aDFRTk5VRkpSbEdZN0lUdVVLOEZvbE5nakxUT0pUY2RoenlmL1RwbzlBL1JHN1ZLV29nY1h5eFVTclNuUXBubXZpNERnZDE0WSsxVmpzNTYrVGEvMmU1L2RkV1BZd3J4YXlOeDExVlcvc1k0dDl1NFRnTXlSQUR2dlRraEkxMXRIUXV6N2FVM0NVVUluYTErdG1XZ0xwVXpJZW93MENFbmNxN3R2TkEvQ3czMmZLYytNdW5zTlRPdjFGVEtRQ3RkVEYzVFo1R3Q4L3hqZUN5Q256aUNMS2VhIiwiaXNzIjoiRVJTMzYwIiwiZXhwIjoxNjU3MTUwMzM5LCJpYXQiOjE2NTcxMjAzMzl9.SrT7YUZ2CnduI4X3GzvbINka1KU6ESNaLqQpI20XCok"
+            - name: TZ
+              value: "Asia/Dhaka"
+            volumeMounts:
+            - mountPath: /usr/share/zoneinfo/Asia/Dhaka
+              name: tz-dhaka
+              subPath: Dhaka
+            - mountPath: /results
+              name: ers-config-path
+          restartPolicy: OnFailure
+          volumes:
+          - name: tz-dhaka
+            configMap:
+              name: asia-dhaka-tz-config
+              items:
+              - key: Dhaka
+                path: Dhaka
+          - name: ers-config-path
+            emptyDir: {}            

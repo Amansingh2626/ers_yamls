@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration https://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd"
+       xmlns:integration="http://www.springframework.org/schema/integration"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:integration-http="http://www.springframework.org/schema/integration/http">
+
+    <task:executor id="fetchRegionInfoInternalExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="fetchRegionInfoInternalValidExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="fetchRegionInfoInternalResponseExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="fetchRegionInfoInternalRestTemplateExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+
+    <integration:channel id="fetchRegionInfoInternalRequestChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="fetchRegionInfoInternalValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="fetchRegionInfoInternalRestTemplateInputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="fetchRegionInfoInternalInValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="fetchRegionInfoInternalResponseChainInputChannel">
+        <integration:queue/>
+    </integration:channel>
+
+    <integration:channel id="fetchRegionInfoInternalTransformerResponseChannel"/>
+    <integration:channel id="fetchRegionInfoInternalPollerServiceActivatorResponseChannel"/>
+    <integration:channel id="fetchRegionInfoInternalServiceActivatorResponseChannel"/>
+    <integration:channel id="fetchRegionInfoInternalOperationHeaderEnricherOutputChannel"/>
+    <integration:channel id="fetchRegionInfoInternalValidatorOutputChannel"/>
+    <integration:channel id="fetchRegionInfoInternalValidationChainOutputChannel"/>
+
+
+    <!--  Validator Chain  -->
+    <integration:chain input-channel="fetchRegionInfoInternalRequestChannel"
+                       output-channel="fetchRegionInfoInternalValidationChainOutputChannel">
+        <integration:poller task-executor="fetchRegionInfoInternalExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:header-enricher>
+            <integration:header name="OPERATION" value="FETCHREGIONINFOINTERNAL"/>
+        </integration:header-enricher>
+        <integration:service-activator ref="standardRequestValidator"/>
+    </integration:chain>
+
+    <integration:header-value-router input-channel="fetchRegionInfoInternalValidationChainOutputChannel" header-name="IS_VALID_REQUEST">
+        <integration:mapping value="TRUE" channel="fetchRegionInfoInternalValidRequestOutputChannel"/>
+        <integration:mapping value="FALSE" channel="fetchRegionInfoInternalResponseChainInputChannel"/>
+    </integration:header-value-router>
+
+    <!--  Successful Validation Chains  -->
+    <integration:chain input-channel="fetchRegionInfoInternalValidRequestOutputChannel" send-timeout="1000000"
+                       output-channel="fetchRegionInfoInternalRestTemplateInputChannel">
+        <integration:poller task-executor="fetchRegionInfoInternalValidExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="fetchRegionInfoInternalRequestTransformer"
+                                 ref="fetchRegionInfoInternalTransformer"
+                                 method="transformInboundRequest">
+        </integration:transformer>
+        <integration:object-to-json-transformer content-type="application/json"/>
+    </integration:chain>
+
+    <!--  Outbound Call Chain  -->
+    <integration:chain input-channel="fetchRegionInfoInternalRestTemplateInputChannel" send-timeout="1000000"
+                       output-channel="fetchRegionInfoInternalResponseChainInputChannel">
+        <integration:poller task-executor="fetchRegionInfoInternalRestTemplateExecutor" time-unit="MILLISECONDS" fixed-delay="1200"
+                            max-messages-per-poll="-1"/>
+        <integration:service-activator ref="standardRestTemplateServiceActivator" async="true"/>
+    </integration:chain>
+
+    <!--  Response Chain  -->
+    <integration:chain input-channel="fetchRegionInfoInternalResponseChainInputChannel" send-timeout="1000000"
+                       output-channel="inboundRequestMarshallerOutputChannel">
+        <integration:poller task-executor="fetchRegionInfoInternalResponseExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="fetchRegionInfoInternalResponseTransformer"
+                                 ref="fetchRegionInfoInternalTransformer"
+                                 method="transformOutboundResponse"/>
+    </integration:chain>
+</beans>

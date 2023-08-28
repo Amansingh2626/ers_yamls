@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration https://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd"
+       xmlns:integration="http://www.springframework.org/schema/integration"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:integration-http="http://www.springframework.org/schema/integration/http">
+
+    <task:executor id="viewChannelUserInternalExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="viewChannelUserInternalValidExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="viewChannelUserInternalResponseExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="viewChannelUserInternalRestTemplateExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+
+    <integration:channel id="viewChannelUserInternalRequestChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="viewChannelUserInternalValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="viewChannelUserInternalRestTemplateInputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="viewChannelUserInternalInValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="viewChannelUserInternalResponseChainInputChannel">
+        <integration:queue/>
+    </integration:channel>
+
+    <integration:channel id="viewChannelUserInternalTransformerResponseChannel"/>
+    <integration:channel id="viewChannelUserInternalPollerServiceActivatorResponseChannel"/>
+    <integration:channel id="viewChannelUserInternalServiceActivatorResponseChannel"/>
+    <integration:channel id="viewChannelUserInternalOperationHeaderEnricherOutputChannel"/>
+    <integration:channel id="viewChannelUserInternalValidatorOutputChannel"/>
+    <integration:channel id="viewChannelUserInternalValidationChainOutputChannel"/>
+
+
+    <!--  Validator Chain  -->
+    <integration:chain input-channel="viewChannelUserInternalRequestChannel"
+                       output-channel="viewChannelUserInternalValidationChainOutputChannel">
+        <integration:poller task-executor="viewChannelUserInternalExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                            max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:header-enricher>
+            <integration:header name="OPERATION" value="VIEWCHANNELUSERINTERNAL"/>
+        </integration:header-enricher>
+        <integration:service-activator ref="standardRequestValidator"/>
+    </integration:chain>
+
+    <integration:header-value-router input-channel="viewChannelUserInternalValidationChainOutputChannel" header-name="IS_VALID_REQUEST">
+        <integration:mapping value="TRUE" channel="viewChannelUserInternalValidRequestOutputChannel"/>
+        <integration:mapping value="FALSE" channel="viewChannelUserInternalResponseChainInputChannel"/>
+    </integration:header-value-router>
+
+    <!--  Successful Validation Chains  -->
+    <integration:chain input-channel="viewChannelUserInternalValidRequestOutputChannel" send-timeout="1000000"
+                       output-channel="viewChannelUserInternalRestTemplateInputChannel">
+        <integration:poller task-executor="viewChannelUserInternalValidExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                            max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="viewChannelUserInternalRequestTransformer"
+                                 ref="viewChannelUserInternalTransformer"
+                                 method="transformInboundRequest">
+        </integration:transformer>
+        <integration:object-to-json-transformer content-type="application/json"/>
+    </integration:chain>
+
+    <!--  Outbound Call Chain  -->
+    <integration:chain input-channel="viewChannelUserInternalRestTemplateInputChannel" send-timeout="1000000"
+                       output-channel="viewChannelUserInternalResponseChainInputChannel">
+        <integration:poller task-executor="viewChannelUserInternalRestTemplateExecutor" time-unit="MILLISECONDS" fixed-delay="1200"
+                            max-messages-per-poll="-1"/>
+        <integration:service-activator ref="standardRestTemplateServiceActivator" async="true"/>
+    </integration:chain>
+
+    <!--  Response Chain  -->
+    <integration:chain input-channel="viewChannelUserInternalResponseChainInputChannel" send-timeout="1000000"
+                       output-channel="inboundRequestMarshallerOutputChannel">
+        <integration:poller task-executor="viewChannelUserInternalResponseExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                            max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="viewChannelUserInternalResponseTransformer"
+                                 ref="viewChannelUserInternalTransformer"
+                                 method="transformOutboundResponse"/>
+        <!--        <integration:transformer ref="standardMarshalingTransformer"/>-->
+    </integration:chain>
+</beans>
+

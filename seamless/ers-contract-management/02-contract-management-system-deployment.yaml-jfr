@@ -1,0 +1,124 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ers-contract-management-system-jfr
+  namespace: ers-prod
+  labels:
+    app: ers-contract-management-system
+    version: v1
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+       maxSurge:  40%
+       maxUnavailable: 20%
+  selector:
+    matchLabels:
+      app: ers-contract-management-system
+      version: v1
+  template:
+    metadata:
+#      annotations:
+#        sidecar.istio.io/proxyCPULimit: 100m
+#        sidecar.istio.io/proxyMemoryLimit: 200Mi
+#        sidecar.istio.io/proxyCPU: 50m
+#        sidecar.istio.io/proxyMemory: 128Mi
+#        status.sidecar.istio.io/port: "0"
+#        traffic.sidecar.istio.io/includeOutboundIPRanges: 10.18.68.82/32 
+#        traffic.sidecar.istio.io/excludeInboundPorts: "0"
+#        sidecar.istio.io/inject: "true"
+      labels:
+        app: ers-contract-management-system
+        version: v1
+    spec:
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "4"
+      initContainers:
+        - name: copy-configs
+          image: image-registry.openshift-image-registry.svc:5000/openshift/ubuntu:v1
+          env:
+          - name: POD_NAME 
+            valueFrom:
+              fieldRef: {fieldPath: metadata.name}
+          resources:
+            limits:
+              cpu: '200m'
+              memory: 200Mi
+            requests:
+              cpu: '100m'
+              memory: 100Mi
+          command: ['bash','/scripts/copy-contract-management-configs']
+          volumeMounts:
+            - mountPath: /opt/seamless/conf
+              name: ers-config-path
+            - mountPath: /ers-common-config
+              name: vol-common-conf
+            - mountPath: /contract-config
+              name: vol-conf
+            - mountPath: /scripts
+              name: copy-contractmanagement-configs      
+      containers:
+      - name: ers-contract-management-system
+        image: image-registry.openshift-image-registry.svc:5000/openshift/ers-contract-management-system:feature-GPB-946-4
+        #image: image-registry.openshift-image-registry.svc:5000/openshift/ers-contract-management-system:2.17.0
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: JAVA_TOOL_OPTIONS
+          value: " -Xms12000M -Xmx12000M -XX:PermSize=512m -XX:+UseG1GC  -XX:InitiatingHeapOccupancyPercent=70 -XX:+UseContainerSupport -XX:MaxRAMPercentage=90.0 -XX:ActiveProcessorCount=7 -XX:+UnlockCommercialFeatures -XX:+FlightRecorder -XX:StartFlightRecording=duration=500s,filename=/tmp/cmsflight.jfr"
+        - name: DEFAULT_TIME_ZONE
+          value: "Asia/Dhaka" 
+        - name: TZ
+          value: "Asia/Dhaka"
+        resources:
+          limits:
+            cpu: '7000m'
+            memory: 12Gi
+          requests:
+            cpu: '6000m'
+            memory: 12Gi
+        readinessProbe:
+          tcpSocket:
+            port: 38082
+          initialDelaySeconds: 30
+          periodSeconds: 5
+        livenessProbe:
+          tcpSocket:
+            port: 38082
+          initialDelaySeconds: 30
+          periodSeconds: 20
+        ports:
+          - containerPort: 38082
+          - containerPort: 48077
+        #dnsPolicy: Default  
+        volumeMounts:
+          - mountPath: /var/seamless/log/contract-management-system
+            name: vol-log
+          - mountPath: /opt/seamless/conf
+            name: ers-config-path 
+          - mountPath: /usr/share/zoneinfo/Asia/Dhaka
+            name: tz-dhaka
+            subPath: Dhaka          
+      volumes:
+        - name: tz-dhaka
+          configMap:
+            name: asia-dhaka-tz-config
+            items:
+            - key: Dhaka
+              path: Dhaka              
+        - name: vol-common-conf
+          configMap:
+            name: ers-common-config
+        - name: vol-conf
+          configMap:
+            name: contract-management-config
+        - name: vol-log
+          persistentVolumeClaim:
+            claimName: contract-management-system-log
+        - name: copy-contractmanagement-configs 
+          configMap:
+            name: copy-contractmanagement-configs 
+        - name: ers-config-path
+          emptyDir: {}                        

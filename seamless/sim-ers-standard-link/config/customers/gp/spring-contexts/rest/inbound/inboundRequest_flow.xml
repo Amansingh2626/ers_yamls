@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration https://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/integration/http https://www.springframework.org/schema/integration/http/spring-integration-http.xsd
+        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd"
+       xmlns:integration="http://www.springframework.org/schema/integration"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:integration-http="http://www.springframework.org/schema/integration/http">
+
+    <task:executor id="inboundRequestsExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="inboundXMLRequestsExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="inboundTextRequestsExecutor"  keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="inboundJsonRequestsExecutor"  keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="inboundResponseMarshallingExecutor"  keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+<!--    
+    <task:executor id="inboundRoutingExecutor"  keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+-->
+<task:executor id="inboundRoutingExecutor"  keep-alive="5" pool-size="64-200" queue-capacity="200" rejection-policy="DISCARD"/>
+    <integration:channel id="inboundRequestChannel">
+        <integration:queue/>
+    </integration:channel>
+
+    <integration:channel id="inboundTextRequestChannel">
+        <integration:queue/>
+    </integration:channel>
+
+    <integration:channel id="inboundXmlRequestChannel">
+        <integration:queue/>
+    </integration:channel>
+
+    <integration:channel id="inboundJsonRequestChannel">
+        <integration:queue/>
+    </integration:channel>
+
+    <integration:channel id="inboundRequestsChainOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+
+    <integration:channel id="inboundRequestMarshallerInputChannel">
+        <integration:queue/>
+    </integration:channel>
+
+    <integration:channel id="inboundRequestMarshallerOutputChannel"/>
+    <integration:channel id="inboundRequestGatewayRequestChannel"/>
+
+    <integration-http:inbound-gateway request-channel="inboundRequestChannel"
+                                      error-channel="inboundRequestMarshallerOutputChannel"
+                                      reply-channel="inboundRequestMarshallerOutputChannel"
+                                      path="/gp/endPoint"
+                                      reply-timeout="1000000"
+                                      request-timeout="1000000"
+                                      mapped-request-headers="system-token,authorization,content-type,Content-Type,receiverid,receivermsisdn"
+                                      supported-methods="POST"
+    >
+    <integration-http:request-mapping consumes="application/xml,text/plain,application/json,text/xml" produces="application/xml,text/plain,application/json,text/xml"/>
+        <integration-http:header name="PROVIDER_ID" expression="'GP'"/>
+        <integration-http:header name="LOGIN" expression="{#requestParams.get('LOGIN')}"/>
+        <integration-http:header name="PASSWORD" expression="{#requestParams.get('PASSWORD')}"/>
+        <integration-http:header name="REQUEST_GATEWAY_CODE" expression="{#requestParams.get('REQUEST_GATEWAY_CODE')}"/>
+        <integration-http:header name="REQUEST_GATEWAY_TYPE" expression="{#requestParams.get('REQUEST_GATEWAY_TYPE')}"/>
+        <integration-http:header name="SERVICE_PORT" expression="{#requestParams.get('SERVICE_PORT')}"/>
+        <integration-http:header name="SOURCE_TYPE" expression="{#requestParams.get('SOURCE_TYPE')}"/>
+        <integration-http:header name="TYPE" expression="{#requestParams.get('TYPE')}"/>
+    </integration-http:inbound-gateway>
+
+    <integration:chain input-channel="inboundRequestChannel">
+        <integration:poller task-executor="inboundRequestsExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}" max-messages-per-poll="100"/>
+        <integration:header-value-router header-name="contentType">
+            <integration:mapping value="application/xml" channel="inboundXmlRequestChannel"/>
+	    <integration:mapping value="text/xml" channel="inboundXmlRequestChannel"/>
+	    <integration:mapping value="text/xml;charset=UTF-8" channel="inboundXmlRequestChannel"/>
+            <integration:mapping value="application/xml;charset=UTF-8" channel="inboundXmlRequestChannel"/>
+            <integration:mapping value="application/json" channel="inboundJsonRequestChannel"/>
+            <integration:mapping value="application/json;charset=UTF-8" channel="inboundJsonRequestChannel"/>
+            <integration:mapping value="text/plain" channel="inboundTextRequestChannel"/>
+            <integration:mapping value="text/plain;charset=UTF-8" channel="inboundTextRequestChannel"/>
+        </integration:header-value-router>
+    </integration:chain>
+
+    <integration:chain input-channel="inboundXmlRequestChannel" output-channel="inboundRequestsChainOutputChannel">
+        <integration:poller task-executor="inboundXMLRequestsExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:object-to-string-transformer/>
+        <integration:transformer ref="standardXmlRequestTransformer"/>
+    </integration:chain>
+
+    <integration:chain input-channel="inboundTextRequestChannel" output-channel="inboundRequestsChainOutputChannel">
+        <integration:poller task-executor="inboundTextRequestsExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer ref="standardTextRequestTransformer"/>
+    </integration:chain>
+
+    <integration:chain input-channel="inboundJsonRequestChannel" output-channel="inboundRequestsChainOutputChannel">
+        <integration:poller task-executor="inboundJsonRequestsExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer ref="standardJsonRequestTransformer"/>
+    </integration:chain>
+
+    <integration:header-value-router send-timeout="1000000" header-name="TYPE" input-channel="inboundRequestsChainOutputChannel">
+        <integration:poller task-executor="inboundRoutingExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:mapping value="USERADDREQ" channel="addResellerRequestChannel"/>
+        <integration:mapping value="EXC2CTRFREQ" channel="c2cTransferRequestChannel"/>
+        <integration:mapping value="O2CINTREQ" channel="o2cDirectTransferRequestChannel"/>
+        <integration:mapping value="EXC2CRETREQ" channel="c2cReturnTransferRequestChannel"/>
+        <integration:mapping value="O2CWDREQ" channel="o2cWithdrawRequestChannel"/>
+        <integration:mapping value="EXC2CWDREQ" channel="c2cWithdrawRequestChannel"/>
+        <integration:mapping value="EXUSRBALREQ" channel="channelUserBalanceEnquiryRequestChannel"/>
+        <integration:mapping value="EXOTHUSRBALREQ" channel="userBalanceEnquiryRequestChannel"/>
+        <integration:mapping value="EXRCTRFREQ" channel="c2sTransferRequestChannel"/>
+        <integration:mapping value="EXRCSTATREQ" channel="c2sTransferStatusRequestChannel"/>
+        <integration:mapping value="EXTPROMOPPBREQ" channel="promoBillPaymentRequestChannel"/>
+        <integration:mapping value="EXPROMORCTRFREQ" channel="c2sPromoRechargeRequestChannel"/>
+        <integration:mapping value="RCTRFREQ" channel="rp2pUssdCustomerRechargeRequestChannel"/>
+        <integration:mapping value="CCPNREQ" channel="setPinUssdRequestChannel"/>
+        <integration:mapping value="USERMOVEMENTREQ" channel="channelUserMovementRequestChannel"/>
+        <integration:mapping value="VIEWCUSER" channel="viewChannelUserRequestChannel"/>
+        <integration:mapping value="PPBTRFREQ" channel="postpaidBillPaymentRequestChannel"/>
+        <integration:mapping value="USERMODREQ" channel="updateResellerRequestChannel"/>
+        <integration:mapping value="CCTRFREQ" channel="cp2pUssdCreditTransferRequestChannel"/>
+        <integration:mapping value="BALREQ" channel="userBalanceEnquiryUSSDRequestChannel"/>
+        <integration:mapping value="USERSRREQ" channel="suspendUserRequestChannel"/>
+        <integration:mapping value="USERDELREQ" channel="deactivateResellerRequestChannel"/>
+        <integration:mapping value="EXLSTTRFREQ" channel="fetchLastTransactionRequestChannel"/>
+        <integration:mapping value="EXLASTXTRFREQ" channel="fetchLastXTransactionsRequestChannel"/>
+        <integration:mapping value="EXTCNGPWDREQ" channel="changePasswordRequestChannel"/>
+        <integration:mapping value="REGREQ" channel="registerSubscriberServiceRequestChannel"/>
+        <integration:mapping value="EXTPROMOVASTRFREQ" channel="promoVasRequestChannel"/>
+        <integration:mapping value="DREGREQ" channel="deregisterSubscriberServiceRequestChannel"/>
+        <integration:mapping value="DSRREQ" channel="dailyStatusReportRequestChannel"/>
+        <integration:mapping value="RCREVREQ" channel="promoVasReversalRequestChannel"/>
+        <integration:mapping value="RCPNREQ" channel="changePasswordUSSDRequestChannel"/>
+        <integration:mapping value="CCHISREQ" channel="subscriberLastTransferStatusUssdRequestChannel"/>
+        <integration:mapping value="LSTXTRFREQ" channel="lastXTransactionsRequestChannel"/>
+        <integration:mapping value="LTSREQ" channel="lastTransferStatusUssdRequestChannel"/>
+        <integration:mapping value="L3TSREQ" channel="lastTransferStatusUssdTextRequestChannel"/>
+        <integration:mapping value="RETREQ" channel="c2cUssdReturnTransferRequestChannel"/>
+        <integration:mapping value="VALIDATEOTPANDRESETPASSWORD" channel="validateOTPAndResetPasswordRequestChannel"/>
+        <integration:mapping value="TRFREQ" channel="c2cUssdTransferRequestChannel"/>
+        <integration:mapping value="WDTHREQ" channel="c2cUssdWithdrawRequestChannel"/>
+        <integration:mapping value="EXPPBTRFREQ" channel="postpaidBillPaymentRequestChannel"/>
+        <integration:mapping value="PLTREQ" channel="subscriberLastTransactionStatusUssdRequestChannel"/>
+        <integration:mapping value="XRCTRFREQ" channel="skittoRcUSSDRequestChannel"/>
+        <integration:mapping value="EXXRCTRFREQ" channel="skittoRcEXTGTRequestChannel"/>
+        <integration:mapping value="EXPPBTRFREQ" channel="c2sPostpaidBillPaymentRequestChannel"/>
+        <integration:mapping value="SKITTO" channel="skittoQueryRequestChannel"/>
+        <integration:mapping value="CCPS" channel="ccpsQueryRequestChannel"/>
+	<integration:mapping value="OTHERBALANCE" channel="userBalanceEnquiryRequestChannel"/>
+	<integration:mapping value="EXLSTXTRFREQ" channel="lastXTransactionsRequestChannel"/>
+	<integration:mapping value="CCPRREQ" channel="resetPinUssdRequestChannel"/>
+	</integration:header-value-router>
+
+    <integration:transformer input-channel="inboundRequestMarshallerInputChannel" output-channel="inboundRequestMarshallerOutputChannel"
+                             ref="standardMarshalingTransformer">
+        <integration:poller task-executor="inboundResponseMarshallingExecutor" time-unit="MILLISECONDS"  fixed-delay="#{pollers['fixed-delay']}"
+                            max-messages-per-poll="-1"/>
+    </integration:transformer>
+    <integration:bridge input-channel="errorChannel" output-channel="inboundRequestMarshallerOutputChannel"/>
+</beans>

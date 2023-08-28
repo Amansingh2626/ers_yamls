@@ -1,0 +1,86 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:beans="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:sec="http://cxf.apache.org/configuration/security"
+       xmlns:http="http://cxf.apache.org/transports/http/configuration"
+       xmlns:httpj="http://cxf.apache.org/transports/http-jetty/configuration"
+       xmlns:jaxws="http://java.sun.com/xml/ns/jaxws"
+       xmlns:cxf="http://cxf.apache.org/core"
+       xsi:schemaLocation="
+            http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+            http://cxf.apache.org/configuration/security
+            http://cxf.apache.org/schemas/configuration/security.xsd
+            http://cxf.apache.org/transports/http/configuration
+            http://cxf.apache.org/schemas/configuration/http-conf.xsd
+            http://cxf.apache.org/transports/http-jetty/configuration
+            http://cxf.apache.org/schemas/configuration/http-jetty.xsd
+            http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+
+    <!--
+        Uncomment the SSL-Settings code-comments when to run TXE in SSL (https), plz place keystore.jks & cacerts.jks files in /conf/txe/, see the sslMode property in txe.properties
+    -->
+
+    <!--
+    <cxf:bus> tag is required to log Web Service XML request/response
+    -->
+
+    <bean id="TXEInterceptor" class="com.seamless.ers.txe.interceptor.TXELoggingInterceptor" init-method="init">
+        <property name="keys">
+            <array value-type="java.lang.String">
+                <value>password</value> <!-- Tags to mask can be added here -->
+                <value>securityToken</value>
+            </array>
+        </property>
+    </bean>
+
+    <cxf:bus>
+        <cxf:inInterceptors>
+            <ref bean="TXEInterceptor" />
+        </cxf:inInterceptors>
+        <cxf:inFaultInterceptors>
+            <ref bean="TXEInterceptor" />
+        </cxf:inFaultInterceptors>
+        <cxf:features>
+           <cxf:logging/>
+        </cxf:features>
+    </cxf:bus>
+
+    <!--    <cxf:bus>-->
+    <!--        <cxf:features>-->
+    <!--            <cxf:logging/>-->
+    <!--        </cxf:features>-->
+    <!--    </cxf:bus>-->
+
+    <httpj:engine-factory bus="cxf" id="engine">
+
+        <!--                <httpj:identifiedTLSServerParameters id="secure">-->
+        <!--                    <httpj:tlsServerParameters secureSocketProtocol="TLSv1.3">-->
+        <!--                        <sec:keyManagers keyPassword="password">-->
+        <!--                            <sec:keyStore type="JKS" password="password" file="/opt/seamless/conf/keystore.jks"/>-->
+        <!--                        </sec:keyManagers>-->
+        <!--                        <sec:trustManagers>-->
+        <!--                            <sec:keyStore type="JKS" password="password" file="/opt/seamless/conf/cacerts.jks"/>-->
+        <!--                        </sec:trustManagers>-->
+        <!--                        <sec:clientAuthentication want="true" required="true"/>-->
+        <!--                    </httpj:tlsServerParameters>-->
+        <!--                </httpj:identifiedTLSServerParameters>-->
+
+
+        <httpj:identifiedThreadingParameters id="simplePool">
+            <!-- minThreads should be equal to max parallel requests property of flow control (flowcontrol.<servicename>.max_parallel_requests) -->
+            <!-- maxThreads should be more than minThreads -->
+            <httpj:threadingParameters minThreads="10" maxThreads="50"/>
+        </httpj:identifiedThreadingParameters>
+
+        <httpj:engine port="8777" host="0.0.0.0">
+
+            <!--                <httpj:tlsServerParametersRef id="secure" />-->
+            <!--                <httpj:threadingParametersRef id="simplePool"/>-->
+            <httpj:sessionSupport>true</httpj:sessionSupport>
+        </httpj:engine>
+
+    </httpj:engine-factory>
+
+</beans>

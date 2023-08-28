@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: ers-prod
+  labels:
+    app: batch-scheduling
+  name: ers-batch-scheduling-service
+spec:
+  ports:
+    - name: http-batch-scheduling
+      port: 8085
+      targetPort: 8085
+  selector:
+    app: batch-scheduling
+  type: ClusterIP
+

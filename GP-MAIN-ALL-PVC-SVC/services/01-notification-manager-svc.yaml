@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: ers-prod
+  labels:
+    app: ers-notification-manager
+  name: ers-notification-manager-service
+spec:
+  ports:
+    - name: http-ers-notification-manager
+      port: 8277
+      targetPort: 8277
+  selector:
+    app: ers-notification-manager
+  type: ClusterIP
+

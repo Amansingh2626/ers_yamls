@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration/http https://www.springframework.org/schema/integration/http/spring-integration-http.xsd"
+       xmlns:integration-http="http://www.springframework.org/schema/integration/http">
+
+    <integration-http:outbound-gateway id="deactivateResellerOutboundGateway"
+                                       url="#{providers['gp'].operations['deactivateReseller'].fields['server_url']}"
+                                       request-channel="txeDeactivateResellerEXTGTRequestChannel"
+                                       mapped-request-headers="Content-Type,authorization,system-token,system-date,Date,validateOnly"
+                                       http-method="POST" rest-template="gpRestTemplate"
+                                       expected-response-type="java.lang.Object">
+    </integration-http:outbound-gateway>
+</beans>

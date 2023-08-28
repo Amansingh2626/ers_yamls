@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:integration="http://www.springframework.org/schema/integration"
+       xmlns:http="http://www.springframework.org/schema/integration/http"
+       xmlns:integration-http="http://www.springframework.org/schema/integration/http"
+       xsi:schemaLocation="http://www.springframework.org/schema/integration/http http://www.springframework.org/schema/integration/http/spring-integration-http.xsd
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd">
+
+    <!-- INBOUND CALLS    -->
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/addReseller_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/channelUserBalanceEnquiry_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/c2cTransfer_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/userBalanceEnquiry_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/c2cWithdraw_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/c2cReturnTransfer_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/o2cDirectTransfer_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/o2cWithdraw_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/inboundRequest_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/c2sTransfer_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/c2sTransferStatus_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/c2cUSSDReturnTransfer_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/c2cUSSDTransfer_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/c2cUSSDWithdraw_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/c2sPromoRecharge_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/changePassword_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/resellerInfo_Internal_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/channelUserMovement_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/cp2pUssdCreditTransfer_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/deactivateReseller_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/fetchLastTransaction_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/fetchLastXTransactions_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/promoBillPayment_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/promoVasReversal_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/promoVas_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/rp2pUSSDCustomerRecharge_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/registerSubscriberService_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/deregisterSubscriberService_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/viewChannelUser_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/postpaidBillPayment_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/setPinUssd_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/suspendUser_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/updateReseller_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/dailyStatusReport_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/userBalanceEnquiryUSSD_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/changePasswordUSSD_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/subscriberLastTransferStatusUssd_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/lastXTransactions_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/withdrawBalance_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/fetchRegionInfo_internal_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/lastTransferStatusUssd_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/lastTransferStatusUssdText_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/validateOTPAndResetPassword_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/updateReseller_Internal_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/subscriberLastTransactionStatusUssd_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/skittoRcUSSD_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/skittoRcEXTGT_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/skittoQuery_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/ccpsQuery_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/c2sPostPaidBillPayment_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/searchResellerByAttribute_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/resetPinUssd_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/viewChannelUser_internal_flow.xml"/>
+</beans>

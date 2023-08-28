@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  master:
+    image: locustio/locust
+    ports:
+     - "18089:8089"
+    volumes:
+      - ./:/mnt/locust
+    command: -f /mnt/locust/locust.py --host ${SERVER_FQDN} --users ${USER_COUNT} --spawn-rate ${SPAWN_RATE} ${EXTRA_PARAMS} 
+  

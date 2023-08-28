@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} [%-5level][%t] - [%c{1}] [%X{ersReference}] - %msg%n%throwable</Pattern>
+            </PatternLayout>
+        </Console>
+
+        <Console name="RequestConsole" target="SYSTEM_OUT">
+            <PatternLayout
+                    pattern="%msg%n%throwable"/>
+        </Console>
+
+        <Console name="ResponseConsole" target="SYSTEM_OUT">
+            <PatternLayout
+                    pattern="%msg%n%throwable"/>
+        </Console>
+
+        <RollingFile name="RollingFile"
+                     fileName="/var/seamless/log/notification-manager/notification-manager.log" append="true"
+                     filePattern="/var/seamless/log/notification-manager/notification-manager.log.%i.%d{dd-MM-yyyy-HH-mm-ss}.gz">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} [%-5level][%t] - [%c{1}] [%X{ersReference}] - %msg%n%throwable</Pattern>
+            </PatternLayout>
+	    <Policies>
+                  <SizeBasedTriggeringPolicy size="200 MB" />
+                  <OnStartupTriggeringPolicy />
+            </Policies>
+        </RollingFile>
+
+    </Appenders>
+
+    <Loggers>
+        <Root level="ERROR" additivity="false">
+            <AppenderRef ref="RollingFile"/>
+            <AppenderRef ref="Console"/>
+        </Root>
+
+        <logger name="com.seamless" level="ERROR"/>
+        <logger name="se.seamless" level="ERROR"/>
+        <logger name="com.seamless.ers.txe.transaction.model.ERSTransferTransaction" level="ERROR" />
+        <logger name="com.hazelcast" level="ERROR" />
+        <logger name="org.apache.cxf.interceptor.LoggingOutInterceptor" level="ERROR"/>
+        <logger name="org.apache.cxf.interceptor.LoggingInInterceptor" level="ERROR"/>
+
+    </Loggers>
+
+</Configuration>

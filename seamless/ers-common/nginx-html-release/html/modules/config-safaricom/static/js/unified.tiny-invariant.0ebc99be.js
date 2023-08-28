@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_config_safaricom=self.webpackChunk_unified_config_safaricom||[]).push([[940],{898:(i,n,f)=>{"use strict";f.d(n,{Z:()=>a});const a=function(i,n){if(!i)throw new Error("Invariant failed")}}}]);

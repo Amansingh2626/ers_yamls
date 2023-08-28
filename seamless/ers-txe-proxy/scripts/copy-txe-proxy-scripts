@@ -1,0 +1,9 @@
+#!/bin/bash
+name=`echo ${POD_NAME} | rev |cut -d'-' -f1 | rev `
+mkdir -p /opt/seamless/conf/txe-proxy
+cp /ers-common/* /opt/seamless/conf/.
+cp /txe-proxy/* /opt/seamless/conf/txe-proxy/.
+
+#sed -i "s+/var/seamless/log/txe-proxy/+/var/seamless/log/txe-proxy/${name}/+g" /opt/seamless/conf/txe-proxy/log4j.properties 
+sed -i "s+/var/seamless/log/txe-proxy+/var/seamless/log/txe-proxy/${name}+g" /opt/seamless/conf/txe-proxy/log4j2.xml
+

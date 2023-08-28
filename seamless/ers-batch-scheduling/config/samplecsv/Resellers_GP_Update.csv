@@ -1,0 +1,4 @@
+Reseller_Id,AreaCode,AreaName,AreaPath,TerritoryCode,TerritoryName,TerritoryPath,ThanaCode,ThanaName,ThanaPath,RegionCode,RegionName,RegionPath
+C_DIST_11,,,,,,,,,,RegionCode,RegionName,RegionPath
+SE_110,AreaCode,AreaName,AreaPath,TerritoryCode,TerritoryName,TerritoryPath,,,,RegionCode,RegionName,RegionPath
+GP_POS_1111,AreaCode,AreaName,AreaPath,TerritoryCode,TerritoryName,TerritoryPath,ThanaCode,ThanaName,ThanaPath,RegionCode,RegionName,RegionPath

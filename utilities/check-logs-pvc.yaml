@@ -1,0 +1,122 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: check-logs 
+  name: check-logs 
+spec:
+  serviceAccountName: ers-prod-app-sa
+  securityContext:
+    fsGroupChangePolicy: "OnRootMismatch"
+    seLinuxOptions:
+      type: "spc_t"
+  containers:
+  - image: image-registry.openshift-image-registry.svc:5000/openshift/alpine-utilities-101:v2
+    command: ['tail','-f','/dev/null'] 
+    name: check-logs 
+    resources: 
+      limits:
+        cpu: "200m"
+        memory: 200Mi
+      requests:
+        cpu: "100m"
+        memory: 100Mi
+    volumeMounts:
+    - name: access-log
+      mountPath: /var/seamless/log/access-management-system
+    - name: account-management-log	  	  
+      mountPath: /var/seamless/log/account-management-service
+    - name: batch-scheduling-log	  
+      mountPath: /var/seamless/log/batch-scheduling
+    - name: bi-aggregator-log	  
+      mountPath: /var/seamless/log/bi-aggregator
+    - name: bi-engine-log
+      mountPath: /var/seamless/log/bi-engine
+    - name: businesslogic-log	  
+      mountPath: /var/seamless/log/businesslogic
+    - name: contract-management-log
+      mountPath: /var/seamless/log/contract-management-system
+    - name: coreproxy-log	  
+      mountPath: /var/seamless/log/coreproxy
+    - name: dealer-management-log
+      mountPath: /var/seamless/log/dealer-management-system
+    - name: identity-management-log	  
+      mountPath: /var/seamless/log/identity-management
+    - name: ims-bridge-log	  	  
+      mountPath: /var/seamless/log/ims-bridge
+    - name: nginx-log	  	  	  
+      mountPath: /var/seamless/log/nginx
+    - name: notification-log	  
+      mountPath: /var/seamless/log/notification-manager
+    - name: product-management-log	  
+      mountPath: /var/seamless/log/product-management
+    - name: standard-link-log	  	  
+      mountPath: /var/seamless/log/standard-link
+    - name: subscriber-log	  	  	  
+      mountPath: /var/seamless/log/subscribersystem
+    - name: template-log	  	  	  	  
+      mountPath: /var/seamless/log/template-management-system
+    - name: uciplink-log	  
+      mountPath: /var/seamless/log/uciplink
+    - name: txe-log	  
+      mountPath: /var/seamless/log/txe
+  volumes:
+    - name: access-log
+      persistentVolumeClaim:
+        claimName: access-management-system-log          
+    - name: account-management-log
+      persistentVolumeClaim:    
+        claimName: account-management-service-log      
+    - name: batch-scheduling-log
+      persistentVolumeClaim:
+        claimName: batch-scheduling-log          
+    - name: bi-aggregator-log
+      persistentVolumeClaim:
+        claimName: bi-aggregator-log
+    - name: bi-engine-log
+      persistentVolumeClaim: 
+        claimName: bi-engine-new-log 
+    - name: businesslogic-log
+      persistentVolumeClaim:
+        claimName: businesslogic-log          
+    - name: contract-management-log
+      persistentVolumeClaim:    
+        claimName: contract-management-system-log      
+    - name: coreproxy-log
+      persistentVolumeClaim:
+        claimName: coreproxy-log          
+    - name: dealer-management-log
+      persistentVolumeClaim:    
+        claimName: dealer-management-system-log      
+    - name: identity-management-log
+      persistentVolumeClaim:    
+        claimName: ers-identity-management-log      
+    - name: ims-bridge-log
+      persistentVolumeClaim:   
+        claimName: ims-bridge-log       
+    - name: nginx-log
+      persistentVolumeClaim: 
+        claimName: nginx-log         
+    - name: notification-log
+      persistentVolumeClaim:   
+        claimName: notification-manager-log       
+    - name: product-management-log
+      persistentVolumeClaim:    
+        claimName: product-management-log      
+    - name: standard-link-log
+      persistentVolumeClaim:    
+        claimName: ers-standard-link-log      
+    - name: subscriber-log
+      persistentVolumeClaim:  
+        claimName: subscribersystem-log        
+    - name: template-log
+      persistentVolumeClaim: 
+        claimName: template-management-system-log         
+    - name: uciplink-log
+      persistentVolumeClaim:   
+        claimName: uciplink-log   
+    - name: txe-log
+      persistentVolumeClaim:   
+        claimName: txe-log 
+

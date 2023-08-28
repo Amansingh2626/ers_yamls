@@ -1,0 +1,99 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: ers-prod-peripheral-alert 
+  namespace: ers-prod
+spec:
+  groups:
+  - name: ERS-PROD-PERIPHERAL-ALERTS
+    rules:
+    - alert: gp-filebeat-account-down
+      expr: absent(kube_deployment_status_replicas{deployment="gp-filebeat-account",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: 'gp-filebeat-account in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical 
+    - alert: gp-filebeat-auditlog-down 
+      expr: absent(kube_deployment_status_replicas{deployment="gp-filebeat-auditlog",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: 'gp-filebeat-auditlog in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical 
+    - alert: gp-filebeat-lang-pref-down 
+      expr: absent(kube_deployment_status_replicas{deployment="gp-filebeat-lang-pref",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: 'gp-filebeat-lang-pref in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: warning 
+    - alert: gp-filebeat-nginx-down 
+      expr: absent(kube_statefulset_status_replicas{statefulset="gp-filebeat-nginx",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' gp-filebeat-nginx in ers-prod  namespace is Down.'
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical        
+#   - alert: gp-filebeat-txlog-down 
+#     expr: absent(kube_deployment_status_replicas{deployment="gp-filebeat-txlog",namespace="ers-prod"})
+#     annotations:
+#       summary: Service missing  {{ .deployment }}
+#       message: 'gp-filebeat-txlog in ers-prod  namespace is Down.' 
+#     for: 2s
+#     labels:
+#       service: "{{ .deployment }}-Service"
+#       severity: critical 
+    - alert: gp-kannel-down 
+      expr: absent(kube_deployment_status_replicas{deployment="gp-kannel",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: 'gp-kannel in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical 
+    - alert: gp-logstash-others-down 
+      expr: absent(kube_deployment_status_replicas{deployment="gp-logstash-others",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: 'gp-logstash-others in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical 
+    - alert: gp-logstash-nginx-down
+      expr: absent(kube_deployment_status_replicas{deployment="gp-logstash-nginx",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: 'gp-logstash-nginx in ers-prod  namespace is Down.'
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical
+    - alert: gp-logstash-txe-down 
+      expr: absent(kube_statefulset_status_replicas{statefulset="gp-logstash-txlog",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: ' gp-logstash-txlog in ers-prod  namespace is Down.'
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical
+    - alert: gp-minio-down
+      expr: absent(kube_deployment_status_replicas{deployment="gp-minio",namespace="ers-prod"})
+      annotations:
+        summary: Service missing  {{ .deployment }}
+        message: 'gp-minio in ers-prod  namespace is Down.' 
+      for: 2s
+      labels:
+        service: "{{ .deployment }}-Service"
+        severity: critical 

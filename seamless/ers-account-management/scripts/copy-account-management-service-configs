@@ -1,0 +1,11 @@
+#!/bin/bash
+name=`echo ${POD_NAME} | rev |cut -d'-' -f1 | rev `
+mkdir -p /opt/seamless/conf/account-management-service/
+mkdir -p /opt/seamless/conf/account-management-service/templates/
+
+
+cp /ers-common-config/* /opt/seamless/conf/
+cp /accountmanagement-config/* /opt/seamless/conf/account-management-service/
+cp /accountmanagement-config-templates/* /opt/seamless/conf/account-management-service/templates/
+#sed -i "s+/var/seamless/log/account-management-service/+/var/seamless/log/account-management-service/${name}/+g" /opt/seamless/conf/account-management-service/log4j.properties
+sed -i "s+/var/seamless/log/account-management-service/+/var/seamless/log/account-management-service/${name}/+g" /opt/seamless/conf/account-management-service/log4j2.properties

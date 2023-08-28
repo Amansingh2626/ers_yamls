@@ -1,0 +1,9 @@
+
+mkdir -p /opt/seamless/conf/
+mkdir -p /opt/seamless/conf/autotransfer-manager 
+mkdir -p /opt/seamless/conf/autotransfer-manager/template 
+
+
+cp /ers-common-config/* /opt/seamless/conf/.
+cp /autotransfer_config/* /opt/seamless/conf/autotransfer-manager/.
+cp /autotransfer_template/* /opt/seamless/conf/autotransfer-manager/template/.

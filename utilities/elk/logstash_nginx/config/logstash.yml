@@ -1,0 +1,19 @@
+node.name: ers-prod-nginx-logstash
+path.config: /usr/share/logstash/custom/pipeline
+path.settings: /usr/share/logstash/log4j/pipeline
+http.host: "0.0.0.0"
+http.port: 9045
+log.level: info
+path.logs: /var/seamless/log/logstash    
+pipeline.workers: 8
+xpack:
+  monitoring:
+    enabled: true
+    elasticsearch:
+      username: 'elastic'
+      password: 'Seamless@123'
+      hosts: ["https://10.10.4.193:9200"]
+#      hosts: ["https://10.18.68.76:9200","https://10.18.68.90:9200","https://10.18.68.94:9200"]
+      ssl:
+        verification_mode: certificate
+        certificate_authority: "/usr/share/logstash/custom/certs/ca.crt"

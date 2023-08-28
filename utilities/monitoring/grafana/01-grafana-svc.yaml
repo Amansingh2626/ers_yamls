@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mon-grafana-service
+  namespace: ers-prod
+spec:
+  selector: 
+    app: mon-grafana
+  type: ClusterIP  
+  ports:
+    - port: 13000
+      targetPort: 3000 
+      name: mon-grafana-service 

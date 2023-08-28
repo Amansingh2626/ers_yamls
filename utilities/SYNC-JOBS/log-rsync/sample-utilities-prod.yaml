@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: new-utilities
+  namespace: ers-prod 
+  labels:
+    app: new-utilities
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: all-utilities
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: all-utilities
+        version: v1
+    spec:
+#     serviceAccountName: ers-prod-app-sa
+#     securityContext:
+#       runAsUser: 1000
+#       runAsGroup: 1000
+      containers:
+      - name: all-utilities
+        image: default-route-openshift-image-registry.apps.pocpbm-nexp.grameenphone.com/openshift/rsync-tdr:v3 
+        imagePullPolicy: Always
+        resources:
+          limits:
+            cpu: '200m'
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        volumeMounts:
+          - name: vol-alertapp 
+            mountPath: /data
+          - name: id-rsa
+            mountPath: /.ssh/id_rsa
+            readOnly: true
+            subPath: id_rsa
+          - name: id-rsa-pub
+            mountPath: /.ssh/id_rsa.pub
+            readOnly: true
+            subPath: id_rsa.pub
+          - name: known-host
+            mountPath: /.ssh/known_hosts
+            readOnly: true
+            subPath: known_hosts
+      volumes:
+        - name: id-rsa
+          configMap:
+            name: log-rsync-ssh-cm-id
+        - name: id-rsa-pub
+          configMap:
+            name: log-rsync-ssh-cm-idpub
+        - name: known-host
+          configMap:
+            name: log-rsync-ssh-cm-kh              
+        - name: vol-alertapp 
+          persistentVolumeClaim:
+            claimName: ers-identity-management-log 

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:integration="http://www.springframework.org/schema/integration"
+       xmlns:http="http://www.springframework.org/schema/integration/http"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/integration/http http://www.springframework.org/schema/integration/http/spring-integration-http.xsd
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+
+    <task:executor id="esbTopupExecutor"  keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+    <task:executor id="esbTopupValidExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+    <task:executor id="esbTopupResponseExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+    <task:executor id="esbTopupRestTemplateExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+
+    <integration:channel id="esbTopupRequestChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="esbTopupValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="esbTopupRestTemplateInputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="esbTopupInValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="esbTopupResponseChainInputChannel">
+        <integration:queue/>
+    </integration:channel>
+
+    <integration:channel id="esbTopupTransformerResponseChannel"/>
+    <integration:channel id="esbTopupPollerServiceActivatorResponseChannel"/>
+    <integration:channel id="esbTopupServiceActivatorResponseChannel"/>
+    <integration:channel id="esbTopupOperationHeaderEnricherOutputChannel"/>
+    <integration:channel id="esbTopupValidatorOutputChannel"/>
+    <integration:channel id="esbTopupValidationChainOutputChannel"/>
+
+    <!--  Validator Chain  -->
+    <integration:chain input-channel="esbTopupRequestChannel" output-channel="esbTopupValidationChainOutputChannel" send-timeout="1000000" >
+        <integration:poller task-executor="esbTopupExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:object-to-map-transformer flatten="false"/>
+        <integration:header-enricher>
+            <integration:header name="OPERATION" value="ESBTOPUP"/>
+        </integration:header-enricher>
+        <integration:service-activator ref="standardRequestValidator"/>
+    </integration:chain>
+
+    <integration:header-value-router input-channel="esbTopupValidationChainOutputChannel" header-name="IS_VALID_REQUEST">
+        <integration:mapping value="TRUE" channel="esbTopupValidRequestOutputChannel"/>
+        <integration:mapping value="FALSE" channel="esbTopupResponseChainInputChannel"/>
+    </integration:header-value-router>
+
+
+    <!--  Successful Validation Chains  -->
+    <integration:chain input-channel="esbTopupValidRequestOutputChannel" send-timeout="1000000"
+                       output-channel="esbTopupRestTemplateInputChannel">
+        <integration:poller task-executor="esbTopupValidExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="esbTopupRequestTransformer"
+                                 ref="esbTopupTransformer"
+                                 method="transformOutboundRestRequest">
+        </integration:transformer>
+        <integration:object-to-json-transformer content-type="application/json"/>
+    </integration:chain>
+
+    <!--  Outbound Call Chain  -->
+    <integration:chain input-channel="esbTopupRestTemplateInputChannel" output-channel="esbTopupResponseChainInputChannel" send-timeout="1000000">
+        <integration:poller task-executor="esbTopupRestTemplateExecutor" time-unit="MILLISECONDS" fixed-delay="1200"
+                            max-messages-per-poll="-1"/>
+        <integration:service-activator ref="standardRestTemplateServiceActivator" async="true"/>
+    </integration:chain>
+
+    <!--  Response Chain  -->
+    <integration:chain input-channel="esbTopupResponseChainInputChannel" send-timeout="1000000">
+        <integration:poller task-executor="esbTopupResponseExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="esbTopupResponseTransformer"
+                                 ref="esbTopupTransformer"
+                                 method="transformInboundRestResponse"/>
+    </integration:chain>
+</beans>

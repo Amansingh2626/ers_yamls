@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: ers-prod
+  labels:
+    app: ers-commission-aggregator
+  name: ers-commission-aggregator-svc
+spec:
+  ports:
+    - name: http-commission-aggregator-svc
+      port: 8375
+      targetPort: 8375
+  selector:
+    app: ers-commission-aggregator 
+  type: ClusterIP
+

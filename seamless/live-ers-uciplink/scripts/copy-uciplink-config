@@ -1,0 +1,13 @@
+
+#!/bin/bash
+name=`echo ${POD_NAME} | rev |cut -d'-' -f1 | rev `
+
+mkdir -p /opt/seamless/conf/uciplink
+
+
+cp /ers-common-config/* /opt/seamless/conf/
+cp /ucip-config/* /opt/seamless/conf/uciplink 
+
+sed -i "s+/var/seamless/log/uciplink+/var/seamless/log/uciplink/${name}+g" /opt/seamless/conf/uciplink/log4j2.xml
+#sed -i "s+/var/seamless/log/uciplink/uciplink.log+/var/seamless/log/uciplink/${name}/uciplink.log+g" /opt/seamless/conf/uciplink/log4j.properties
+

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration https://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd"
+       xmlns:integration="http://www.springframework.org/schema/integration"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:integration-http="http://www.springframework.org/schema/integration/http">
+
+    <task:executor id="c2cReturnTransferExecutor"  keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+    <task:executor id="c2cReturnTransferValidExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+    <task:executor id="c2cReturnTransferResponseExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+    <task:executor id="c2cReturnTransferRestTemplateExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+
+    <integration:channel id="c2cReturnTransferRequestChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="c2cReturnTransferValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="c2cReturnTransferRestTemplateInputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="c2cReturnTransferInValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="c2cReturnTransferResponseChainInputChannel">
+        <integration:queue/>
+    </integration:channel>
+
+    <integration:channel id="c2cReturnTransferTransformerResponseChannel"/>
+    <integration:channel id="c2cReturnTransferPollerServiceActivatorResponseChannel"/>
+    <integration:channel id="c2cReturnTransferServiceActivatorResponseChannel"/>
+    <integration:channel id="c2cReturnTransferOperationHeaderEnricherOutputChannel"/>
+    <integration:channel id="c2cReturnTransferValidatorOutputChannel"/>
+    <integration:channel id="c2cReturnTransferValidationChainOutputChannel"/>
+
+
+    <!--  Validator Chain  -->
+    <integration:chain input-channel="c2cReturnTransferRequestChannel" output-channel="c2cReturnTransferValidationChainOutputChannel">
+        <integration:poller task-executor="c2cReturnTransferExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:header-enricher>
+            <integration:header name="OPERATION" value="C2CRETURNTRANSFER"/>
+        </integration:header-enricher>
+        <integration:service-activator ref="standardRequestValidator"/>
+    </integration:chain>
+
+    <integration:header-value-router input-channel="c2cReturnTransferValidationChainOutputChannel" header-name="IS_VALID_REQUEST">
+        <integration:mapping value="TRUE" channel="c2cReturnTransferValidRequestOutputChannel"/>
+        <integration:mapping value="FALSE" channel="c2cReturnTransferResponseChainInputChannel"/>
+    </integration:header-value-router>
+
+    <!--  Successful Validation Chains  -->
+    <integration:chain input-channel="c2cReturnTransferValidRequestOutputChannel" send-timeout="1000000"
+                       output-channel="c2cReturnTransferRestTemplateInputChannel">
+        <integration:poller task-executor="c2cReturnTransferValidExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="c2cReturnTransferRequestTransformer"
+                                 ref="c2CReturnTransferTransformer"
+                                 method="transformInboundRequest">
+        </integration:transformer>
+        <integration:object-to-json-transformer content-type="application/json" />
+    </integration:chain>
+
+    <!--  Outbound Call Chain  -->
+    <integration:chain input-channel="c2cReturnTransferRestTemplateInputChannel" send-timeout="1000000"
+                       output-channel="c2cReturnTransferResponseChainInputChannel">
+        <integration:poller task-executor="c2cReturnTransferRestTemplateExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                            max-messages-per-poll="-1"/>
+        <integration:service-activator  ref="standardRestTemplateServiceActivator" async="true" />
+    </integration:chain>
+
+    <!--  Response Chain  -->
+    <integration:chain input-channel="c2cReturnTransferResponseChainInputChannel" send-timeout="1000000"
+                       output-channel="inboundRequestMarshallerOutputChannel">
+        <integration:poller task-executor="c2cReturnTransferResponseExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="c2cReturnTransferResponseTransformer"
+                                 ref="c2CReturnTransferTransformer"
+                                 method="transformOutboundResponse"/>
+        <integration:transformer ref="standardMarshalingTransformer"/>
+    </integration:chain>
+
+</beans>

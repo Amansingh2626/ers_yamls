@@ -1,0 +1,2142 @@
+#########################################################################################
+### GP Gateway
+#########################################################################################
+#
+###############
+## SSL
+####
+standard-link.providers.gp.gateway.ssl.enabled=false
+standard-link.providers.gp.gateway.ssl.endpoint_type=rest,soap
+standard-link.providers.gp.gateway.ssl.keystore_filename=/opt/seamless/conf/standard-link/standard-link.pkcs12
+standard-link.providers.gp.gateway.ssl.truststore_filename=/opt/seamless/conf/standard-link/standard-link.pkcs12
+standard-link.providers.gp.gateway.ssl.keystore_type=PKCS12
+standard-link.providers.gp.gateway.ssl.truststore_type=PKCS12
+standard-link.providers.gp.gateway.ssl.keystore_password=seamless
+standard-link.providers.gp.gateway.ssl.truststore_password=seamless
+standard-link.providers.gp.gateway.ssl.key_password=seamless
+standard-link.providers.gp.gateway.ssl.disable_hostname_verification=true
+###############
+## Timeout
+###
+#standard-link.providers.gp.gateway.timeout.connectionTimeout=30000
+#standard-link.providers.gp.gateway.timeout.connectionRequestTimeout=30000
+#standard-link.providers.gp.gateway.timeout.readTimeout=30000
+
+standard-link.providers.gp.gateway.timeout.connectionTimeout=1
+standard-link.providers.gp.gateway.timeout.connectionRequestTimeout=1
+standard-link.providers.gp.gateway.timeout.readTimeout=1
+
+###############
+## LOGGING
+###
+standard-link.providers.gp.gateway.logging.payload=true
+
+###########################
+# Poller & Task Executors
+###
+# keep-alive takes value in seconds
+# Please uncomment prod config in production
+#################### PROD CONFIGS ########################
+#standard-link.providers.gp.executors.keep-alive=1
+#standard-link.providers.gp.executors.pool-size=64-200
+#standard-link.providers.gp.executors.queue-capacity=200
+#standard-link.providers.gp.executors.rejection-policy=DISCARD
+
+# fixed-delay takes value in MILLISECONDS or SECONDS as per time-unit
+#
+#standard-link.providers.gp.pollers.fixed-delay=1000
+#standard-link.providers.gp.pollers.time-unit=MILLISECONDS
+#standard-link.providers.gp.pollers.max-messages-per-poll=200
+###########################################################
+
+#################### Local Env CONFIGS ####################
+standard-link.providers.gp.executors.keep-alive=1
+standard-link.providers.gp.executors.pool-size=1-5
+standard-link.providers.gp.executors.queue-capacity=10
+standard-link.providers.gp.executors.rejection-policy=DISCARD
+
+# fixed-delay takes value in MILLISECONDS or SECONDS as per time-unit
+#
+standard-link.providers.gp.pollers.fixed-delay=1000
+standard-link.providers.gp.pollers.time-unit=MILLISECONDS
+standard-link.providers.gp.pollers.max-messages-per-poll=10
+#########################################################################################
+### VFO Configurations
+#########################################################################################
+#
+########################
+## General configuration
+######
+standard-link.providers.gp.server_url=http://localhost:8098/restservice1
+standard-link.providers.gp.origin_node_type=test
+standard-link.providers.gp.username=seamless
+standard-link.providers.gp.password=se@mless
+
+#############################################
+## Inbound APIs Routing Fields configuration
+######
+#
+standard-link.routers.json=['additionalFields']['serverType']
+standard-link.routers.xml=
+standard-link.routers.text=
+
+#################################################################################################################################
+#####################################################        INBOUND APIs      ##################################################
+#################################################################################################################################
+#
+#
+#
+
+#########################
+# GP-C2CTransfer Fields
+######
+standard-link.providers.gp.operations.c2cTransfer.fields.server_url=http://ers-txe-service-8088.ers-prod.svc.cluster.local:8088/txe/v1/requestTransfer
+standard-link.providers.gp.operations.c2cTransfer.fields.system-token={"ersReference":"20210520133633282010000000642","startTime":1615900340,"rootComponent":"slc","context":{"client":{},"initiator":{"uid":"operator","typ":"RESELLERUSERNAME","rtp":"OMAN Operator","resellerPath":"OPERATOR"}}}
+standard-link.providers.gp.operations.c2cTransfer.fields.productSKU=C2C_TRANSFER
+standard-link.providers.gp.operations.c2cTransfer.fields.responseType=EXC2CTRFRESP
+standard-link.providers.gp.operations.c2cTransfer.fields.resellerAccountId=RESELLER
+standard-link.providers.gp.operations.c2cTransfer.fields.sendType=RESELLERID
+standard-link.providers.gp.operations.c2cTransfer.fields.receiverType=RESELLERID
+
+#########################
+# GP-C2CTransfer Headers
+######
+standard-link.providers.gp.operations.c2cTransfer.headers.system-token={"ersReference":"20210520133633282010000000642","startTime":1615900340,"rootComponent":"slc","context":{"client":{},"initiator":{"uid":"operator","typ":"RESELLERUSERNAME","rtp":"OMAN Operator","resellerPath":"OPERATOR"}}}
+standard-link.providers.gp.operations.c2cTransfer.headers.validateOnly=false
+
+#########################
+# GP-C2CTransfer Constants
+######
+standard-link.providers.gp.operations.c2cTransfer.constants.EXC2CTRFREQ=C2CTransfer
+standard-link.providers.gp.operations.c2cTransfer.constants.currency=BDT
+
+#########################
+# GP-C2CTransfer Validators
+######
+standard-link.providers.gp.operations.c2cTransfer.fields.validationEnabled=true
+standard-link.providers.gp.operations.c2cTransfer.validators.PRODUCTS.valueExpression=COMMAND['PRODUCTS']
+standard-link.providers.gp.operations.c2cTransfer.validators.PRODUCTS.required=true
+standard-link.providers.gp.operations.c2cTransfer.validators.PRODUCTS.validateExpression=
+
+#########################
+# GP-C2CTransfer ResultCodes
+######
+standard-link.providers.gp.operations.c2cTransfer.resultCodes.0.mapping=200
+
+
+#########################
+# Channel-User-Balance-Enquiry Fields
+######
+
+standard-link.providers.gp.operations.channelUserBalanceEnquiry.fields.server_url=http://ers-dealer-management-system-service.ers-prod.svc.cluster.local:8033/dms/v1/resellers/getResellerInfo
+standard-link.providers.gp.operations.channelUserBalanceEnquiry.fields.dealerIdType=RESELLERMSISDN
+standard-link.providers.gp.operations.channelUserBalanceEnquiry.fields.responseType=EXUSRBALRESP
+standard-link.providers.gp.operations.channelUserBalanceEnquiry.fields.product=flexiLoad
+standard-link.providers.gp.operations.channelUserBalanceEnquiry.fields.productCode=101
+standard-link.providers.gp.operations.channelUserBalanceEnquiry.fields.queryParams=false
+standard-link.providers.gp.operations.channelUserBalanceEnquiry.fields.bodyRequest=true
+
+#########################
+# Channel-User-Balance-Enquiry Headers
+######
+standard-link.providers.gp.operations.channelUserBalanceEnquiry.headers.system-token={"ersReference": "87627365768275356666","startTime": "1614254784400","rootComponent": "kyc","context":{"initiator":{"uid": "DIST_11","typ": "RESELLERID","rtp": "DISTRIBUTOR"},"client":{"channel": "web","clientId": "postman"}}}
+standard-link.providers.gp.operations.channelUserBalanceEnquiry.headers.authorization=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwYXlsb2FkIjoiMkpNUWl2TlFYM0lsUE1DdnIyTjczbTc1cHlvYUtCazVEcUp2ckJkL3JScVZ1NWJKTmlzeGZiK1lMdlhyYjdOOTg3ZUhnMzdSWVJnUDNEeHNXTGZrS010R2FCclVKUi8xOWIzOGR4UEJLcWZBUjJnTTZmQ2YybEtyWGhsWUxkMjVxVEpudGt1N2J3OD0iLCJpc3MiOiJFUlMzNjAiLCJleHAiOjE2MTg1Njc5NzgsImlhdCI6MTYxODU2NzY3OH0.cwox_PstNyuq8S8tGqReITdK3K8IPa8uE-0ZG2pG01Y
+standard-link.providers.gp.operations.channelUserBalanceEnquiry.headers.validateOnly=false
+
+
+#########################
+# Channel-User-Balance-Enquiry Constants
+######
+standard-link.providers.gp.operations.channelUserBalanceEnquiry.constants.productCode=101
+standard-link.providers.gp.operations.channelUserBalanceEnquiry.constants.productShortName=FlexiLOAD
+#standard-link.providers.gp.operations.channelUserBalanceEnquiry.constants.productCode=productCode
+#standard-link.providers.gp.operations.channelUserBalanceEnquiry.constants.productShortName=productShortName
+#########################
+# Channel-User-Balance-Enquiry Validators
+######
+standard-link.providers.gp.operations.channelUserBalanceEnquiry.fields.validationEnabled=false
+standard-link.providers.gp.operations.channelUserBalanceEnquiry.validators.MSISDN.valueExpression=standardRequestModel['MSISDNS']['RECEIVER_MSISDN']
+standard-link.providers.gp.operations.channelUserBalanceEnquiry.validators.MSISDN.required=true
+standard-link.providers.gp.operations.channelUserBalanceEnquiry.validators.MSISDN.validateExpression=
+
+#########################
+
+# Channel-User-Balance-Enquiry ResultCodes
+######
+standard-link.providers.gp.operations.channelUserBalanceEnquiry.resultCodes.0.mapping=200:Success
+
+
+#######################################################################
+# BALENQUIRYUSSD Fields
+##############
+
+standard-link.providers.gp.operations.BALENQUIRYUSSD.fields.server_url=http://ers-dealer-management-system-service.ers-prod.svc.cluster.local:8033/dms/auth/getResellerInfo
+standard-link.providers.gp.operations.BALENQUIRYUSSD.fields.dealerIdType=RESELLERMSISDN
+standard-link.providers.gp.operations.BALENQUIRYUSSD.fields.responseType=BALRESP
+standard-link.providers.gp.operations.BALENQUIRYUSSD.fields.childMessage=Child balance is %s BDT
+standard-link.providers.gp.operations.BALENQUIRYUSSD.fields.selfMessage=Your balance is %s BDT
+
+
+#########################
+# BALENQUIRYUSSD Headers
+######
+standard-link.providers.gp.operations.BALENQUIRYUSSD.headers.system-token={"ersReference": "87627365768275356666","startTime": "1614254784400","rootComponent": "kyc","context":{"initiator":{"uid": "DIST_11","typ": "RESELLERID","rtp": "DISTRIBUTOR"},"client":{"channel": "web","clientId": "postman"}}}
+standard-link.providers.gp.operations.BALENQUIRYUSSD.headers.authorization=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwYXlsb2FkIjoiMkpNUWl2TlFYM0lsUE1DdnIyTjczbTc1cHlvYUtCazVEcUp2ckJkL3JScVZ1NWJKTmlzeGZiK1lMdlhyYjdOOTg3ZUhnMzdSWVJnUDNEeHNXTGZrS010R2FCclVKUi8xOWIzOGR4UEJLcWZBUjJnTTZmQ2YybEtyWGhsWUxkMjVxVEpudGt1N2J3OD0iLCJpc3MiOiJFUlMzNjAiLCJleHAiOjE2MTg1Njc5NzgsImlhdCI6MTYxODU2NzY3OH0.cwox_PstNyuq8S8tGqReITdK3K8IPa8uE-0ZG2pG01Y
+standard-link.providers.gp.operations.BALENQUIRYUSSD.headers.validateOnly=false
+
+
+#########################
+# BALENQUIRYUSSD Constants
+######
+standard-link.providers.gp.operations.BALENQUIRYUSSD.constants.product=flexiLoad
+standard-link.providers.gp.operations.BALENQUIRYUSSD.constants.productCode=101
+#########################
+# BALENQUIRYUSSD Validators
+######
+standard-link.providers.gp.operations.BALENQUIRYUSSD.fields.validationEnabled=false
+standard-link.providers.gp.operations.BALENQUIRYUSSD.validators.DATA.valueExpression=COMMAND['DATA']
+standard-link.providers.gp.operations.BALENQUIRYUSSD.validators.DATA.required=true
+standard-link.providers.gp.operations.BALENQUIRYUSSD.validators.DATA.validateExpression=
+
+standard-link.providers.gp.operations.BALENQUIRYUSSD.resultCodes.0.mapping=200
+
+#######################################################################
+# C2C-Return-Transfer Fields
+##############
+
+standard-link.providers.gp.operations.c2cReturnTransfer.fields.server_url=http://ers-txe-service-8088.ers-prod.svc.cluster.local:8088/txe/v1/requestTransfer
+standard-link.providers.gp.operations.c2cReturnTransfer.fields.responseType=EXC2CRETRESP
+standard-link.providers.gp.operations.c2cReturnTransfer.fields.resellerAccountId=RESELLER
+standard-link.providers.gp.operations.c2cReturnTransfer.fields.101=transfer
+standard-link.providers.gp.operations.c2cReturnTransfer.fields.productSKU=C2C_RETURN_TRANSFER
+standard-link.providers.gp.operations.c2cReturnTransfer.fields.default.productSKU=transfer
+
+#########################
+# C2C-Return-Transfer Headers
+######
+standard-link.providers.gp.operations.c2cReturnTransfer.headers.system-token={"ersReference": "87627365768275356666","startTime": "1614254784400","rootComponent": "kyc","context":{"initiator":{"uid": "DIST_11","typ": "RESELLERID","rtp": "DISTRIBUTOR"},"client":{"channel": "web","clientId": "postman"}}}
+standard-link.providers.gp.operations.c2cReturnTransfer.headers.authorization=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwYXlsb2FkIjoiMkpNUWl2TlFYM0lsUE1DdnIyTjczbTc1cHlvYUtCazVEcUp2ckJkL3JScVZ1NWJKTmlzeGZiK1lMdlhyYjdOOTg3ZUhnMzdSWVJnUDNEeHNXTGZrS010R2FCclVKUi8xOWIzOGR4UEJLcWZBUjJnTTZmQ2YybEtyWGhsWUxkMjVxVEpudGt1N2J3OD0iLCJpc3MiOiJFUlMzNjAiLCJleHAiOjE2MTg1Njc5NzgsImlhdCI6MTYxODU2NzY3OH0.cwox_PstNyuq8S8tGqReITdK3K8IPa8uE-0ZG2pG01Y
+standard-link.providers.gp.operations.c2cReturnTransfer.headers.validateOnly=false
+
+
+#########################
+# C2C-Return-Transfer Constants
+######
+standard-link.providers.gp.operations.c2cReturnTransfer.constants.productCode=productCode
+standard-link.providers.gp.operations.c2cReturnTransfer.constants.productShortName=productShortName
+standard-link.providers.gp.operations.c2cReturnTransfer.constants.currency=BDT
+#########################
+# C2C-Return-Transfer Validators
+######
+standard-link.providers.gp.operations.c2cReturnTransfer.fields.validationEnabled=false
+standard-link.providers.gp.operations.c2cReturnTransfer.validators.DATA.valueExpression=COMMAND['DATA']
+standard-link.providers.gp.operations.c2cReturnTransfer.validators.DATA.required=true
+standard-link.providers.gp.operations.c2cReturnTransfer.validators.DATA.validateExpression=
+
+#########################
+
+# C2C-Return-Transfer ResultCodes
+######
+standard-link.providers.gp.operations.c2cReturnTransfer.resultCodes.0.mapping=200
+standard-link.providers.gp.operations.c2cReturnTransfer.resultCodes.604.mapping=5585:The receiver's  account number specified by you is invalid
+standard-link.providers.gp.operations.c2cReturnTransfer.resultCodes.605.mapping=5585:The sender's  account number specified by you is invalid
+standard-link.providers.gp.operations.c2cReturnTransfer.resultCodes.1104.mapping=10077:Incorrect sender credential
+standard-link.providers.gp.operations.c2cReturnTransfer.resultCodes.1010.mapping=10077:Incorrect sender credential
+
+#######################################################################
+# C2C-Withdraw Fields
+##############
+
+standard-link.providers.gp.operations.c2cWithdraw.fields.server_url=http://ers-txe-service-8088.ers-prod.svc.cluster.local:8088/txe/v1/requestTransfer
+standard-link.providers.gp.operations.c2cWithdraw.fields.resellerAccountId=RESELLER
+standard-link.providers.gp.operations.c2cWithdraw.fields.responseType=EXC2CWDRESP
+standard-link.providers.gp.operations.c2cWithdraw.fields.PULL_BACK=0
+standard-link.providers.gp.operations.c2cWithdraw.fields.101=transfer
+standard-link.providers.gp.operations.c2cWithdraw.fields.productSKU=C2C_WITHDRAW_TRANSFER
+standard-link.providers.gp.operations.c2cWithdraw.fields.default.productSKU=transfer
+
+
+#########################
+# C2C-Withdraw Headers
+######
+standard-link.providers.gp.operations.c2cWithdraw.headers.system-token={"ersReference":"20210520133633282010000000642","startTime":1615900340,"rootComponent":"slc","context":{"client":{},"initiator":{"uid":"operator","typ":"RESELLERUSERNAME","rtp":"OMAN Operator","resellerPath":"OPERATOR"}}}
+standard-link.providers.gp.operations.c2cWithdraw.headers.validateOnly=false
+
+
+#########################
+# C2C-Withdraw Constants
+######
+standard-link.providers.gp.operations.c2cWithdraw.constants.currency=BDT
+#standard-link.providers.gp.operations.c2cWithdraw.constants.currency=${locale.default_currency}
+#########################
+# C2C-Withdraw Validators
+######
+standard-link.providers.gp.operations.c2cWithdraw.fields.validationEnabled=true
+standard-link.providers.gp.operations.c2cWithdraw.validators.PRODUCTS.valueExpression=COMMAND['PRODUCTS']
+standard-link.providers.gp.operations.c2cWithdraw.validators.PRODUCTS.required=true
+standard-link.providers.gp.operations.c2cWithdraw.validators.PRODUCTS.validateExpression=
+standard-link.providers.gp.operations.c2cWithdraw.validators.PRODUCTCODE.valueExpression=COMMAND['PRODUCTS']['PRODUCTCODE']
+standard-link.providers.gp.operations.c2cWithdraw.validators.PRODUCTCODE.required=true
+standard-link.providers.gp.operations.c2cWithdraw.validators.PRODUCTCODE.validateExpression=
+standard-link.providers.gp.operations.c2cWithdraw.validators.QTY.valueExpression=COMMAND['PRODUCTS']['QTY']
+standard-link.providers.gp.operations.c2cWithdraw.validators.QTY.required=true
+standard-link.providers.gp.operations.c2cWithdraw.validators.QTY.validateExpression=
+
+#########################
+
+# C2C-Withdraw ResultCodes
+######
+standard-link.providers.gp.operations.c2cWithdraw.resultCodes.0.mapping=200
+standard-link.providers.gp.operations.c2cWithdraw.resultCodes.402.mapping=6669:Amount should be greater than zero
+standard-link.providers.gp.operations.c2cWithdraw.resultCodes.202.mapping=10077:Incorrect sender credential
+
+
+#######################################################################
+# O2C-Withdraw Fields
+##############
+
+standard-link.providers.gp.operations.o2cWithdraw.fields.server_url=http://ers-txe-service-8088.ers-prod.svc.cluster.local:8088/txe/v1/requestTransfer
+standard-link.providers.gp.operations.o2cWithdraw.fields.resellerAccountId=RESELLER
+standard-link.providers.gp.operations.o2cWithdraw.fields.resellerReceiverId=Operator
+standard-link.providers.gp.operations.o2cWithdraw.fields.responseType=O2CWDRESP
+standard-link.providers.gp.operations.o2cWithdraw.fields.PULL_BACK=0
+standard-link.providers.gp.operations.o2cWithdraw.fields.ProductSKU=O2C_WITHDRAW
+standard-link.providers.gp.operations.o2cWithdraw.fields.101.productSKU=O2C_WITHDRAW
+standard-link.providers.gp.operations.o2cWithdraw.fields.default.productSKU=transfer
+#########################
+# O2C-Withdraw Headers
+######
+standard-link.providers.gp.operations.o2cWithdraw.headers.system-token={"ersReference": "87627365768275356666","startTime": "1614254784400","rootComponent": "kyc","context":{"initiator":{"uid": "DIST_11","typ": "RESELLERID","rtp": "DISTRIBUTOR"},"client":{"channel": "web","clientId": "postman"}}}
+standard-link.providers.gp.operations.o2cWithdraw.headers.authorization=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwYXlsb2FkIjoiMkpNUWl2TlFYM0lsUE1DdnIyTjczbTc1cHlvYUtCazVEcUp2ckJkL3JScVZ1NWJKTmlzeGZiK1lMdlhyYjdOOTg3ZUhnMzdSWVJnUDNEeHNXTGZrS010R2FCclVKUi8xOWIzOGR4UEJLcWZBUjJnTTZmQ2YybEtyWGhsWUxkMjVxVEpudGt1N2J3OD0iLCJpc3MiOiJFUlMzNjAiLCJleHAiOjE2MTg1Njc5NzgsImlhdCI6MTYxODU2NzY3OH0.cwox_PstNyuq8S8tGqReITdK3K8IPa8uE-0ZG2pG01Y
+standard-link.providers.gp.operations.o2cWithdraw.headers.validateOnly=false
+
+
+#########################
+# O2C-Withdraw Constants
+######
+standard-link.providers.gp.operations.o2cWithdraw.constants.currency=BDT
+standard-link.providers.gp.operations.o2cWithdraw.constants.productShortName=productShortName
+#########################
+# O2C-Withdraw Validators
+######
+standard-link.providers.gp.operations.o2cWithdraw.fields.validationEnabled=true
+standard-link.providers.gp.operations.o2cWithdraw.validators.PRODUCTS.valueExpression=COMMAND['PRODUCTS']
+standard-link.providers.gp.operations.o2cWithdraw.validators.PRODUCTS.required=true
+standard-link.providers.gp.operations.o2cWithdraw.validators.PRODUCTS.validateExpression=
+standard-link.providers.gp.operations.o2cWithdraw.validators.PRODUCTCODE.valueExpression=COMMAND['PRODUCTS']['PRODUCTCODE']
+standard-link.providers.gp.operations.o2cWithdraw.validators.PRODUCTCODE.required=true
+standard-link.providers.gp.operations.o2cWithdraw.validators.PRODUCTCODE.validateExpression=
+standard-link.providers.gp.operations.o2cWithdraw.validators.QTY.valueExpression=COMMAND['PRODUCTS']['QTY']
+standard-link.providers.gp.operations.o2cWithdraw.validators.QTY.required=true
+standard-link.providers.gp.operations.o2cWithdraw.validators.QTY.validateExpression=
+
+
+standard-link.providers.gp.operations.o2cWithdraw.validators.USERORIGINID.valueExpression=COMMAND['USERORIGINID']
+standard-link.providers.gp.operations.o2cWithdraw.validators.USERORIGINID.required=true
+standard-link.providers.gp.operations.o2cWithdraw.validators.USERORIGINID.validateExpression=
+#########################
+
+# O2C-Withdraw ResultCodes
+######
+standard-link.providers.gp.operations.o2cWithdraw.resultCodes.0.mapping=200
+standard-link.providers.gp.operations.o2cWithdraw.resultCodes.402.mapping=6669:Amount should be greater than zero
+standard-link.providers.gp.operations.o2cWithdraw.resultCodes.202.mapping=10077:Incorrect sender credential
+
+#######################################################################
+# O2C-Direct-Transfer Fields
+##############
+
+standard-link.providers.gp.operations.o2cDirectTransfer.fields.server_url=http://ers-txe-service-8088.ers-prod.svc.cluster.local:8088/txe/v1/requestTransfer
+standard-link.providers.gp.operations.o2cDirectTransfer.fields.responseType=O2CINTRESP
+standard-link.providers.gp.operations.o2cDirectTransfer.fields.resellerAccountId=RESELLER
+standard-link.providers.gp.operations.o2cDirectTransfer.fields.resellerSenderId=Operator
+standard-link.providers.gp.operations.o2cDirectTransfer.fields.defaultProductSKU=transfer
+standard-link.providers.gp.operations.O2CDirectTransfer.fields.101_FOC=O2C_FOC_TRANSFER
+standard-link.providers.gp.operations.O2CDirectTransfer.fields.101_SALE=O2C_transfer
+standard-link.providers.gp.operations.O2CDirectTransfer.fields.default.productSKU=transfer
+standard-link.providers.gp.operations.o2cDirectTransfer.fields.resellerAccountId_SALE=RESELLER
+standard-link.providers.gp.operations.o2cDirectTransfer.fields.resellerAccountId_FOC=RESELLER
+
+#########################
+# O2C-Direct-Transfer Headers
+######
+standard-link.providers.gp.operations.o2cDirectTransfer.headers.system-token={"ersReference":"20210520133633282010000000642","startTime":1615900340,"rootComponent":"slc","context":{"client":{},"initiator":{"uid":"operator","typ":"RESELLERUSERNAME","rtp":"OMAN Operator","resellerPath":"OPERATOR"}}}
+standard-link.providers.gp.operations.o2cDirectTransfer.headers.validateOnly=false
+
+
+#########################
+# O2C-Direct-Transfer Constants
+######
+standard-link.providers.gp.operations.o2cDirectTransfer.constants.productCode=productCode
+standard-link.providers.gp.operations.o2cDirectTransfer.constants.productShortName=productShortName
+standard-link.providers.gp.operations.o2cDirectTransfer.constants.currency=BDT
+#########################
+# O2C-Direct-Transfer Validators
+######
+standard-link.providers.gp.operations.o2cDirectTransfer.fields.validationEnabled=false
+standard-link.providers.gp.operations.o2cDirectTransfer.validators.PAYMENTDETAILS.valueExpression=COMMAND['PAYMENTDETAILS']
+standard-link.providers.gp.operations.o2cDirectTransfer.validators.PAYMENTDETAILS.required=true
+standard-link.providers.gp.operations.o2cDirectTransfer.validators.PAYMENTDETAILS.validateExpression=
+standard-link.providers.gp.operations.o2cDirectTransfer.validators.PRODUCTS.valueExpression=COMMAND['PRODUCTS']
+standard-link.providers.gp.operations.o2cDirectTransfer.validators.PRODUCTS.required=true
+standard-link.providers.gp.operations.o2cDirectTransfer.validators.PRODUCTS.validateExpression=
+standard-link.providers.gp.operations.o2cDirectTransfer.validators.PRODUCTCODE.valueExpression=COMMAND['PRODUCTS']['PRODUCTCODE']
+standard-link.providers.gp.operations.o2cDirectTransfer.validators.PRODUCTCODE.required=true
+standard-link.providers.gp.operations.o2cDirectTransfer.validators.PRODUCTCODE.validateExpression=
+standard-link.providers.gp.operations.o2cDirectTransfer.validators.QTY.valueExpression=COMMAND['PRODUCTS']['QTY']
+standard-link.providers.gp.operations.o2cDirectTransfer.validators.QTY.required=true
+standard-link.providers.gp.operations.o2cDirectTransfer.validators.QTY.validateExpression=
+standard-link.providers.gp.operations.o2cDirectTransfer.validators.MSISDN.valueExpression=COMMAND['MSISDN']
+standard-link.providers.gp.operations.o2cDirectTransfer.validators.MSISDN.required=true
+standard-link.providers.gp.operations.o2cDirectTransfer.validators.MSISDN.validateExpression=
+#########################
+# O2C-Direct-Transfer ResultCodes
+######
+standard-link.providers.gp.operations.o2cDirectTransfer.resultCodes.0.mapping=200
+standard-link.providers.gp.operations.o2cDirectTransfer.resultCodes.703.mapping=1:INTERNAL_TXE_ERROR
+standard-link.providers.gp.operations.o2cDirectTransfer.resultCodes.521.mapping=2:INTERNAL_TXE_ERROR
+standard-link.providers.gp.operations.o2cDirectTransfer.resultCodes.605.mapping=3:Sender account not found
+
+
+########################################################################################################################
+##
+#### SOAP API CONFIGURATIONS
+##
+########################################################################################################################
+
+#########################
+# GP-validateTopup Fields
+######
+standard-link.providers.gp.operations.skittoValidateTopup.fields.server_url=https://10.12.121.57:8246/services/TopupService/validateTopup
+#standard-link.providers.gp.operations.skittoValidateTopup.fields.server_url=https://10.21.7.153:8246/services/TopupService/validateTopup
+standard-link.providers.gp.operations.skittoValidateTopup.fields.request_dto_package=com.seamless.ers.standardlink.model.customer.gp.validateTopup.request
+standard-link.providers.gp.operations.skittoValidateTopup.fields.response_dto_package=com.seamless.ers.standardlink.model.customer.gp.validateTopup.response
+standard-link.providers.gp.operations.skittoValidateTopup.fields.transaction_type=VALIDATETOPUP
+standard-link.providers.gp.operations.skittoValidateTopup.fields.amountUnitRelation=100
+standard-link.providers.gp.operations.skittoValidateTopup.fields.skipValidation=false
+standard-link.providers.gp.operations.skittoValidateTopup.fields.distributorId=Pretups
+standard-link.providers.gp.operations.skittoValidateTopup.fields.requestChannelId=skittoValidateTopupRequestChannel
+standard-link.providers.gp.operations.skittoValidateTopup.fields.fetchChargingSystemIp=true
+
+#########################
+# GP-validateTopup Headers
+######
+standard-link.providers.gp.operations.skittoValidateTopup.header.header1Key=header1Value
+standard-link.providers.gp.operations.skittoValidateTopup.header.header2Key=header2Value
+
+#########################
+# GP-validateTopup Constants
+######
+standard-link.providers.gp.operations.skittoValidateTopup.constants.constant1Key=constant1Value
+standard-link.providers.gp.operations.skittoValidateTopup.constants.constant2Key=constant2Value
+
+#########################
+# GP-validateTopup ResultCodes
+######
+#standard-link.providers.gp.operations.skittoValidateTopup.resultCodes.0.mapping=
+standard-link.providers.gp.operations.skittoValidateTopup.resultCodes.2.mapping=2:Top-up amount too low
+standard-link.providers.gp.operations.skittoValidateTopup.resultCodes.3.mapping=3:Top-up amount too high
+standard-link.providers.gp.operations.skittoValidateTopup.resultCodes.4.mapping=4:Unknown subscriber
+standard-link.providers.gp.operations.skittoValidateTopup.resultCodes.11.mapping=11:Source not allowed
+standard-link.providers.gp.operations.skittoValidateTopup.resultCodes.1.mapping=1:VALIDATETOPUP_FAILED
+standard-link.providers.gp.operations.skittoValidateTopup.resultCodes.104.mapping=104:Temporary blocked
+standard-link.providers.gp.operations.skittoValidateTopup.resultCodes.102.mapping=102:Subscriber not found
+standard-link.providers.gp.operations.skittoValidateTopup.fields.linkType=SLC
+standard-link.providers.gp.operations.skittoValidateTopup.fields.linkNodeId=skitto_validateTopup
+
+#########################
+# GP-validateTopup Fields. THIS IS A DUMMY CALL.
+######
+standard-link.providers.gp.operations.ccpsValidateTopup.fields.server_url=http://ers-linksimulator-service.ers-prod.svc.cluster.local:9080/services/ws/ValidateTopup
+#standard-link.providers.gp.operations.ccpsValidateTopup.fields.server_url=https://10.12.121.57:8246/services/ws/ValidateTopup
+standard-link.providers.gp.operations.ccpsValidateTopup.fields.request_dto_package=com.seamless.ers.standardlink.model.customer.gp.validateTopup.request
+standard-link.providers.gp.operations.ccpsValidateTopup.fields.response_dto_package=com.seamless.ers.standardlink.model.customer.gp.validateTopup.response
+standard-link.providers.gp.operations.ccpsValidateTopup.fields.transaction_type=VALIDATETOPUP
+standard-link.providers.gp.operations.ccpsValidateTopup.fields.amountUnitRelation=100
+standard-link.providers.gp.operations.ccpsValidateTopup.fields.skipValidation=true
+standard-link.providers.gp.operations.ccpsValidateTopup.fields.requestChannelId=ccpsValidateTopupRequestChannel
+
+#########################
+# GP-validateTopup Headers
+######
+standard-link.providers.gp.operations.ccpsValidateTopup.header.header1Key=header1Value
+standard-link.providers.gp.operations.ccpsValidateTopup.header.header2Key=header2Value
+
+#########################
+# GP-validateTopup Constants
+######
+standard-link.providers.gp.operations.ccpsValidateTopup.constants.constant1Key=constant1Value
+standard-link.providers.gp.operations.ccpsValidateTopup.constants.constant2Key=constant2Value
+
+#########################
+# GP-validateTopup ResultCodes
+######
+#standard-link.providers.gp.operations.ccpsValidateTopup.resultCodes.0.mapping=
+standard-link.providers.gp.operations.ccpsValidateTopup.resultCodes.2.mapping=2:Top-up amount too low
+standard-link.providers.gp.operations.ccpsValidateTopup.resultCodes.3.mapping=3:Top-up amount too high
+standard-link.providers.gp.operations.ccpsValidateTopup.resultCodes.4.mapping=4:Unknown subscriber
+standard-link.providers.gp.operations.ccpsValidateTopup.resultCodes.11.mapping=11:Source not allowed
+standard-link.providers.gp.operations.ccpsValidateTopup.resultCodes.1.mapping=1:VALIDATETOPUP_FAILED
+
+#########################
+# GP-topup Fields
+######
+#standard-link.providers.gp.operations.skittoTopup.fields.server_url=http://ers-linksimulator-service.ers-prod.svc.cluster.local:9080/services/ws/Topup
+standard-link.providers.gp.operations.skittoTopup.fields.server_url=https://10.12.121.57:8246/services/TopupService/topup
+standard-link.providers.gp.operations.skittoTopup.fields.request_dto_package=com.seamless.ers.standardlink.model.customer.gp.topup.request
+standard-link.providers.gp.operations.skittoTopup.fields.response_dto_package=com.seamless.ers.standardlink.model.customer.gp.topup.response
+standard-link.providers.gp.operations.skittoTopup.fields.transaction_type=TOPUP
+standard-link.providers.gp.operations.skittoTopup.fields.amountUnitRelation=100
+standard-link.providers.gp.operations.skittoTopup.fields.requestChannelId=skittoTopupRequestChannel
+standard-link.providers.gp.operations.skittoTopup.fields.distributorId=Pretups
+standard-link.providers.gp.operations.skittoTopup.fields.linkType=SLC
+standard-link.providers.gp.operations.skittoTopup.fields.linkNodeId=SKITTO
+standard-link.providers.gp.operations.skittoTopup.fields.resultCode=9001
+standard-link.providers.gp.operations.skittoTopup.fields.resultDescription=LINK_TIMEOUT
+standard-link.providers.gp.operations.skittoTopup.fields.fetchChargingSystemIp=true
+
+#########################
+# GP-topup Headers
+######
+standard-link.providers.gp.operations.skittoTopup.header.header1Key=header1Value
+standard-link.providers.gp.operations.skittoTopup.header.header2Key=header2Value
+
+#########################
+# GP-topup Constants
+######
+standard-link.providers.gp.operations.skittoTopup.constants.constant1Key=constant1Value
+standard-link.providers.gp.operations.skittoTopup.constants.constant2Key=constant2Value
+
+#########################
+# GP-topup ResultCodes
+######
+standard-link.providers.gp.operations.skittoTopup.resultCodes.0.mapping=0:ok
+standard-link.providers.gp.operations.skittoTopup.resultCodes.3016.mapping=0:ok
+standard-link.providers.gp.operations.skittoTopup.resultCodes.106.mapping=106:Subscriber information is missing
+standard-link.providers.gp.operations.skittoTopup.resultCodes.2.mapping=2:Top-up amount too low
+standard-link.providers.gp.operations.skittoTopup.resultCodes.4.mapping=4:Unknown subscriber
+standard-link.providers.gp.operations.skittoTopup.resultCodes.11.mapping=11:Source not allowed
+standard-link.providers.gp.operations.skittoTopup.resultCodes.13.mapping=13:Internal system error
+standard-link.providers.gp.operations.skittoTopup.resultCodes.1.mapping=1:TOPUP_FAILED
+standard-link.providers.gp.operations.skittoTopup.resultCodes.3011.mapping=6002
+
+#########################
+# GP-topup Validators
+######
+standard-link.providers.gp.operations.skittoTopup.fields.validationEnabled=true
+standard-link.providers.gp.operations.skittoTopup.validators.AMOUNT.valueExpression=['amount']['value']
+standard-link.providers.gp.operations.skittoTopup.validators.AMOUNT.required=true
+standard-link.providers.gp.operations.skittoTopup.validators.AMOUNT.validateExpression=\\d+.?\\d+
+
+#########################
+# GP-skittoQueryTopup Fields
+######
+###Changing for Query Topup Testing
+standard-link.providers.gp.operations.skittoQueryTopup.fields.server_url=https://10.12.121.57:8246/services/ws/QueryTopup
+standard-link.providers.gp.operations.skittoQueryTopup.fields.request_dto_package=com.seamless.ers.standardlink.model.customer.gp.queryTopup.request
+standard-link.providers.gp.operations.skittoQueryTopup.fields.response_dto_package=com.seamless.ers.standardlink.model.customer.gp.queryTopup.response
+standard-link.providers.gp.operations.skittoQueryTopup.fields.transaction_type=QUERYTOPUP
+standard-link.providers.gp.operations.skittoQueryTopup.fields.requestChannelId=skittoQueryTopupRequestChannel
+
+#########################
+# GP-queryTopup Headers
+######
+standard-link.providers.gp.operations.skittoQueryTopup.header.header1Key=header1Value
+standard-link.providers.gp.operations.skittoQueryTopup.header.header2Key=header2Value
+
+#########################
+# GP-queryTopup Constants
+######
+standard-link.providers.gp.operations.skittoQueryTopup.constants.constant1Key=constant1Value
+standard-link.providers.gp.operations.skittoQueryTopup.constants.constant2Key=constant2Value
+
+#########################
+# GP-queryTopup ResultCodes
+######
+standard-link.providers.gp.operations.skittoQueryTopup.resultCodes.0.mapping=200:Success
+standard-link.providers.gp.operations.skittoQueryTopup.resultCodes.1.mapping=1:Request is being processed
+standard-link.providers.gp.operations.skittoQueryTopup.resultCodes.8.mapping=8:Unknown reference
+standard-link.providers.gp.operations.skittoQueryTopup.resultCodes.2.mapping=2:SKITTOQUERYTOPUP_FAILED
+
+
+
+#########################
+# GP-topup Fields
+######
+standard-link.providers.gp.operations.ccpsTopup.fields.server_url=http://ers-linksimulator-service.ers-prod.svc.cluster.local:9080/restservice/CcpsTopup
+#standard-link.providers.gp.operations.ccpsTopup.fields.server_url=https://prod-ccps.grameenphone.com:443/ccps-app/payments/IndPaymentDepositPosting
+standard-link.providers.gp.operations.ccpsTopup.fields.transaction_type=TOPUP
+standard-link.providers.gp.operations.ccpsTopup.fields.amountUnitRelation=100
+standard-link.providers.gp.operations.ccpsTopup.fields.requestChannelId=ccpsTopupRequestChannel
+standard-link.providers.gp.operations.ccpsTopup.fields.linkType=SLC
+standard-link.providers.gp.operations.ccpsTopup.fields.linkNodeId=CCPS
+standard-link.providers.gp.operations.ccpsTopup.fields.resultCode=9001
+standard-link.providers.gp.operations.ccpsTopup.fields.resultDescription=LINK_TIMEOUT
+standard-link.providers.gp.operations.ccpsTopup.fields.fetchChargingSystemIp=true
+standard-link.providers.gp.operations.ccpsTopup.fields.validationEnabled=true
+standard-link.providers.gp.operations.ccpsTopup.fields.sourceSystem=ERS_Channel
+standard-link.providers.gp.operations.ccpsTopup.fields.remarks=Airtime transfer
+standard-link.providers.gp.operations.ccpsTopup.fields.paymentType=Local_Payment
+standard-link.providers.gp.operations.ccpsTopup.fields.ccpsTopupDateFormat=yyyy-MM-dd
+standard-link.providers.gp.operations.ccpsTopup.fields.username=ccpsprod
+standard-link.providers.gp.operations.ccpsTopup.fields.password=CCPSPROD#!456
+standard-link.providers.gp.operations.ccpsTopup.fields.channel=ERS
+standard-link.providers.gp.operations.ccpsTopup.fields.bankName=ERS
+standard-link.providers.gp.operations.ccpsTopup.validators.AMOUNT.valueExpression=['amount']['value']
+standard-link.providers.gp.operations.ccpsTopup.validators.AMOUNT.required=true
+standard-link.providers.gp.operations.ccpsTopup.validators.AMOUNT.validateExpression=\\d+.?\\d+
+#########################
+# GP-topup Headers
+######
+standard-link.providers.gp.operations.ccpsTopup.header.header1Key=header1Value
+standard-link.providers.gp.operations.ccpsTopup.header.header2Key=header2Value
+
+#########################
+# GP-topup Constants
+######
+standard-link.providers.gp.operations.ccpsTopup.constants.constant1Key=constant1Value
+standard-link.providers.gp.operations.ccpsTopup.constants.constant2Key=constant2Value
+
+#########################
+# GP-topup ResultCodes
+######
+standard-link.providers.gp.operations.ccpsTopup.resultCodes.3001.mapping=0:ok
+standard-link.providers.gp.operations.ccpsTopup.resultCodes.0.mapping=0:OK
+standard-link.providers.gp.operations.ccpsTopup.resultCodes.106.mapping=106:Subscriber information is missing
+standard-link.providers.gp.operations.ccpsTopup.resultCodes.2.mapping=2:Top-up amount too low
+standard-link.providers.gp.operations.ccpsTopup.resultCodes.4.mapping=4:Unknown subscriber
+standard-link.providers.gp.operations.ccpsTopup.resultCodes.11.mapping=11:Source not allowed
+standard-link.providers.gp.operations.ccpsTopup.resultCodes.13.mapping=13:Internal system error
+standard-link.providers.gp.operations.ccpsTopup.resultCodes.1.mapping=1:TOPUP_FAILED
+standard-link.providers.gp.operations.ccpsTopup.resultCodes.3011.mapping=6002
+standard-link.providers.gp.operations.ccpsTopup.resultCodes.3015.mapping=0
+
+#########################
+# GP-topup Validators
+######
+#standard-link.providers.gp.operations.ccpsTopup.fields.validationEnabled=true
+#standard-link.providers.gp.operations.ccpsTopup.fields.sourceSystem=ERS_Channel
+#standard-link.providers.gp.operations.ccpsTopup.fields.remarks=Airtime transfer
+#standard-link.providers.gp.operations.ccpsTopup.fields.paymentType=CASH
+#standard-link.providers.gp.operations.ccpsTopup.fields.bankName=ERS
+#standard-link.providers.gp.operations.ccpsTopup.validators.AMOUNT.valueExpression=['amount']['value']
+#standard-link.providers.gp.operations.ccpsTopup.validators.AMOUNT.required=true
+#standard-link.providers.gp.operations.ccpsTopup.validators.AMOUNT.validateExpression=\\d+.?\\d+
+
+#########################
+# GP-validateTopup Fields. THIS IS A DUMMY CALL
+######
+#standard-link.providers.gp.operations.esbValidateTopup.fields.server_url=http://ers-linksimulator-service.ers-prod.svc.cluster.local:9080
+standard-link.providers.gp.operations.esbValidateTopup.fields.server_url=https://snd.apps.prodesbocp311.grameenphone.com:443/services/ws/ValidateTopup
+standard-link.providers.gp.operations.esbValidateTopup.fields.request_dto_package=com.seamless.ers.standardlink.model.customer.gp.validateTopup.request
+standard-link.providers.gp.operations.esbValidateTopup.fields.response_dto_package=com.seamless.ers.standardlink.model.customer.gp.validateTopup.response
+standard-link.providers.gp.operations.esbValidateTopup.fields.transaction_type=VALIDATETOPUP
+standard-link.providers.gp.operations.esbValidateTopup.fields.amountUnitRelation=100
+standard-link.providers.gp.operations.esbValidateTopup.fields.skipValidation=false
+standard-link.providers.gp.operations.esbValidateTopup.fields.requestChannelId=esbValidateTopupRequestChannel
+
+#########################
+# GP-validateTopup Headers
+######
+standard-link.providers.gp.operations.esbValidateTopup.header.header1Key=header1Value
+standard-link.providers.gp.operations.esbValidateTopup.header.header2Key=header2Value
+
+#########################
+# GP-validateTopup Constants
+######
+standard-link.providers.gp.operations.esbValidateTopup.constants.constant1Key=constant1Value
+standard-link.providers.gp.operations.esbValidateTopup.constants.constant2Key=constant2Value
+
+#########################
+# GP-validateTopup ResultCodes
+######
+standard-link.providers.gp.operations.esbValidateTopup.resultCodes.0.mapping=0:OK
+standard-link.providers.gp.operations.esbValidateTopup.resultCodes.2.mapping=2:Top-up amount too low
+standard-link.providers.gp.operations.esbValidateTopup.resultCodes.3.mapping=3:Top-up amount too high
+standard-link.providers.gp.operations.esbValidateTopup.resultCodes.4.mapping=4:Unknown subscriber
+standard-link.providers.gp.operations.esbValidateTopup.resultCodes.11.mapping=11:Source not allowed
+standard-link.providers.gp.operations.esbValidateTopup.resultCodes.1.mapping=1:VALIDATETOPUP_FAILED
+
+
+#########################
+# GP-esbTopup Fields
+######
+#standard-link.providers.gp.operations.esbTopup.fields.server_url=http://ers-linksimulator-service.ers-prod.svc.cluster.local:9080
+standard-link.providers.gp.operations.esbTopup.fields.server_url=https://snd.apps.prodesbocp311.grameenphone.com:443/cxf/api/v1/productOrdering/offerBundleErs
+standard-link.providers.gp.operations.esbTopup.fields.transaction_type=ESBTOPUP
+standard-link.providers.gp.operations.esbTopup.fields.amountUnitRelation=100
+standard-link.providers.gp.operations.esbTopup.fields.requestChannelId=esbTopupRequestChannel
+standard-link.providers.gp.operations.esbTopup.fields.actionName=SUBSCRIPTION
+standard-link.providers.gp.operations.esbTopup.fields.roleBackResellerType=RET
+standard-link.providers.gp.operations.esbTopup.fields.role=CustomerFacingChannel
+standard-link.providers.gp.operations.esbTopup.fields.sourceSystemId=ers
+standard-link.providers.gp.operations.esbTopup.fields.channelMedia=postman
+standard-link.providers.gp.operations.esbTopup.fields.businessUnit=GP
+standard-link.providers.gp.operations.esbTopup.fields.username=ers
+standard-link.providers.gp.operations.esbTopup.fields.password=ers@fuse!2019
+standard-link.providers.gp.operations.esbTopup.fields.name=ERS
+standard-link.providers.gp.operations.esbTopup.fields.fetchChargingSystemIp=true
+
+#########################
+# GP-esbTopup Headers
+######
+standard-link.providers.gp.operations.esbTopup.header.header1Key=header1Value
+
+#########################
+# GP-esbTopup Constants
+######
+standard-link.providers.gp.operations.esbTopup.constants.constant1Key=constant1Value
+
+#########################
+# GP-esbTopup ResultCodes
+######
+standard-link.providers.gp.operations.esbTopup.resultCodes.0.mapping=0:OK
+standard-link.providers.gp.operations.esbTopup.resultCodes.106.mapping=106:Subscriber information is missing
+standard-link.providers.gp.operations.esbTopup.resultCodes.2.mapping=2:Top-up amount too low
+standard-link.providers.gp.operations.esbTopup.resultCodes.4.mapping=4:Unknown subscriber
+standard-link.providers.gp.operations.esbTopup.resultCodes.11.mapping=11:Source not allowed
+standard-link.providers.gp.operations.esbTopup.resultCodes.13.mapping=13:Internal system error
+standard-link.providers.gp.operations.esbTopup.resultCodes.1.mapping=1:TOPUP_FAILED
+standard-link.providers.gp.operations.esbTopup.resultCodes.3011.mapping=6002
+standard-link.providers.gp.operations.esbTopup.resultCodes.400-00-00.mapping=400
+
+##################################
+# GP-topup External ResultCodes Mappings
+######
+standard-link.providers.gp.operations.esbTopup.externalResultCodes.0.mapping=200:Success
+standard-link.providers.gp.operations.esbTopup.externalResultCodes.1.mapping=205:UnderProcess
+standard-link.providers.gp.operations.esbTopup.externalResultCodes.9001.mapping=250:Ambiguous
+standard-link.providers.gp.operations.esbTopup.externalResultCodes.failure.mapping=206:Failure
+
+#########################
+# GP-esbTopup Validators
+######
+standard-link.providers.gp.operations.esbTopup.fields.validationEnabled=true
+standard-link.providers.gp.operations.esbTopup.validators.AMOUNT.valueExpression=['amount']['value']
+standard-link.providers.gp.operations.esbTopup.validators.AMOUNT.required=true
+standard-link.providers.gp.operations.esbTopup.validators.AMOUNT.validateExpression=\\d+.?\\d+
+
+#########################
+# GP-AddReseller Fields
+######
+standard-link.providers.gp.operations.addReseller.fields.server_url=http://ers-dealer-management-system-service.ers-prod.svc.cluster.local:8033/dms/auth/addReseller
+standard-link.providers.gp.operations.addReseller.fields.responseType=USERADDRESP
+standard-link.providers.gp.operations.addReseller.fields.resellerStatus=Active
+standard-link.providers.gp.operations.addReseller.fields.defaultPin=1234
+standard-link.providers.gp.operations.addReseller.fields.101=transfer
+standard-link.providers.gp.operations.addReseller.fields.productSKU=ADD_RESELLER
+standard-link.providers.gp.operations.addReseller.fields.default.productSKU=transfer
+standard-link.providers.gp.operations.addReseller.fields.domainCode_url=http://ers-dealer-management-system-service.ers-prod.svc.cluster.local:8033/dms/v1/template/dropdown/domainCode
+standard-link.providers.gp.operations.addReseller.fields.domainName_url=http://ers-dealer-management-system-service.ers-prod.svc.cluster.local:8033/dms/v1/template/dropdown/domainName
+standard-link.providers.gp.operations.addReseller.fields.categoryTypes=DISTRIBUTOR,DIST,CDIST,EADIST,ECDIST,ESDIST,EUDIST,ODIST,SDIST
+standard-link.providers.gp.operations.addReseller.fields.defaultParentOriginId=operator
+standard-link.providers.gp.operations.addReseller.fields.defaultParentResellerType=OPERATOR
+standard-link.providers.gp.operations.addReseller.fields.defaultParentOriginMsisdn=8801711111110
+standard-link.providers.gp.operations.addReseller.fields.domainUrl=http://ers-group-management-service.ers-prod.svc.cluster.local:8084/groupmanagementsystem/v1/group/member/findGroups?userId=
+standard-link.providers.gp.operations.addReseller.fields.roleId=Reseller
+
+#########################
+# GP-AddReseller Headers
+######
+standard-link.providers.gp.operations.addReseller.headers.system-token={"ersReference":"20210520133633282010000000642","startTime":1615900340,"rootComponent":"slc","context":{"client":{},"initiator":{"uid":"operator","typ":"RESELLERUSERNAME","rtp":"OMAN Operator","resellerPath":"OPERATOR"}}}
+standard-link.providers.gp.operations.addReseller.headers.validateOnly=false
+
+#########################
+# GP-AddReseller Constants
+######
+standard-link.providers.gp.operations.addReseller.constants.productCode=productCode
+standard-link.providers.gp.operations.addReseller.constants.productShortName=productShortName
+standard-link.providers.gp.operations.addReseller.constants.currency=BDT
+
+#########################
+# GP-AddReseller Validators
+######
+standard-link.providers.gp.operations.addReseller.fields.validationEnabled=false
+
+#########################
+# GP-AddReseller ResultCodes
+######
+standard-link.providers.gp.operations.addReseller.resultCodes.0.mapping=200
+
+#########################
+# GP-C2CUSSDReturnTransfer Fields
+######
+standard-link.providers.gp.operations.c2CUSSDReturnTransfer.fields.server_url=http://ers-txe-service-8088.ers-prod.svc.cluster.local:8088/txe/v1/requestTransfer
+standard-link.providers.gp.operations.c2CUSSDReturnTransfer.fields.defaultProductSKU=transfer
+standard-link.providers.gp.operations.c2CUSSDReturnTransfer.fields.productSKU=C2C_RETURN_TRANSFER
+standard-link.providers.gp.operations.c2CUSSDReturnTransfer.fields.responseType=RETRESP
+standard-link.providers.gp.operations.c2CUSSDReturnTransfer.fields.resellerAccountId=RESELLER
+
+
+#########################
+# GP-C2CUSSDReturnTransfer Headers
+######
+standard-link.providers.gp.operations.c2CUSSDReturnTransfer.header.header1Key=header1Value
+standard-link.providers.gp.operations.c2CUSSDReturnTransfer.header.header2Key=header2Value
+
+#########################
+# GP-C2CUSSDReturnTransfer Constants
+######
+standard-link.providers.gp.operations.c2CUSSDReturnTransfer.constants.currency=BDT
+
+#########################
+# GP-C2CUSSDReturnTransfer Validators
+######
+standard-link.providers.gp.operations.c2CUSSDReturnTransfer.fields.validationEnabled=false
+#########################
+# GP-C2CUSSDReturnTransfer ResultCodes
+######
+standard-link.providers.gp.operations.c2CUSSDReturnTransfer.resultCodes.0.mapping=200:Success
+standard-link.providers.gp.operations.c2CUSSDReturnTransfer.resultCodes.604.mapping=5585:The receiver's  account number specified by you is invalid
+standard-link.providers.gp.operations.c2CUSSDReturnTransfer.resultCodes.605.mapping=5585:The sender's  account number specified by you is invalid
+standard-link.providers.gp.operations.c2CUSSDReturnTransfer.resultCodes.1104.mapping=10077:Incorrect sender credential
+standard-link.providers.gp.operations.c2CUSSDReturnTransfer.resultCodes.1010.mapping=10077:Incorrect sender credential
+
+#########################
+# GP-C2CUssdTransfer Fields
+######
+standard-link.providers.gp.operations.c2CUssdTransfer.fields.server_url=http://ers-txe-service-8088.ers-prod.svc.cluster.local:8088/txe/v1/requestTransfer
+standard-link.providers.gp.operations.c2CUssdTransfer.fields.responseType=TRFRESP
+standard-link.providers.gp.operations.c2CUssdTransfer.fields.resellerAccountId=RESELLER
+standard-link.providers.gp.operations.c2CUssdTransfer.fields.defaultProductSKU=transfer
+standard-link.providers.gp.operations.c2CUssdTransfer.fields.productSKU=c2c_transfer
+
+#########################
+# GP-C2CUssdTransfer Headers
+######
+standard-link.providers.gp.operations.c2CUssdTransfer.header.header1Key=header1Value
+standard-link.providers.gp.operations.c2CUssdTransfer.header.header2Key=header2Value
+
+#########################
+# GP-C2CUssdTransferr Constants
+######
+standard-link.providers.gp.operations.c2CUssdTransfer.constants.currency=BDT
+standard-link.providers.gp.operations.c2CUssdTransfer.constants.constant2Key=constant2Value
+
+#########################
+# GP-C2CUssdTransferr Validators
+######
+standard-link.providers.gp.operations.c2cUssdTransfer.fields.validationEnabled=false
+standard-link.providers.gp.operations.c2cUssdTransfer.validators.MSISDN1.valueExpression=COMMAND['MSISDN1']
+standard-link.providers.gp.operations.c2cUssdTransfer.validators.MSISDN1.required=true
+standard-link.providers.gp.operations.c2cUssdTransfer.validators.MSISDN1.validateExpression=
+standard-link.providers.gp.operations.c2cUssdTransfer.validators.MSISDN2.valueExpression=COMMAND['MSISDN2']
+standard-link.providers.gp.operations.c2cUssdTransfer.validators.MSISDN2.required=true
+standard-link.providers.gp.operations.c2cUssdTransfer.validators.MSISDN2.validateExpression=
+standard-link.providers.gp.operations.c2cUssdTransfer.validators.PRODUCTS.valueExpression=COMMAND['PRODUCTS']
+standard-link.providers.gp.operations.c2cUssdTransfer.validators.PRODUCTS.required=true
+standard-link.providers.gp.operations.c2cUssdTransfer.validators.PRODUCTS.validateExpression=
+standard-link.providers.gp.operations.c2cUssdTransfer.validators.AMOUNT.valueExpression=COMMAND['AMOUNT']
+standard-link.providers.gp.operations.c2cUssdTransfer.validators.AMOUNT.required=true
+standard-link.providers.gp.operations.c2cUssdTransfer.validators.AMOUNT.validateExpression=
+
+
+#########################
+# GP-C2CUssdTransfer ResultCodes
+######
+standard-link.providers.gp.operations.c2cUssdTransfer.resultCodes.0.mapping=200
+
+#########################
+# GP-C2CUSSDWithdraw Fields
+######
+standard-link.providers.gp.operations.c2cUssdWithdraw.fields.server_url=http://ers-txe-service-8088.ers-prod.svc.cluster.local:8088/txe/v1/requestTransfer
+standard-link.providers.gp.operations.c2cUssdWithdraw.fields.resellerAccountId=RESELLER
+standard-link.providers.gp.operations.c2cUssdWithdraw.fields.responseType=WDTHRESP
+standard-link.providers.gp.operations.c2cUssdWithdraw.fields.PULL_BACK=0
+standard-link.providers.gp.operations.c2cUssdWithdraw.fields.productSKU=C2C_WITHDRAW_TRANSFER
+standard-link.providers.gp.operations.c2cUssdWithdraw.fields.defaultProductSKU=transfer
+
+#########################
+# GP-C2CUSSDWithdraw Headers
+######
+standard-link.providers.gp.operations.c2cUssdWithdraw.header.header1Key=header1Value
+standard-link.providers.gp.operations.c2cUssdWithdraw.header.header2Key=header2Value
+
+#########################
+# GP-C2CUSSDWithdraw Constants
+######
+standard-link.providers.gp.operations.c2cUssdWithdraw.constants.currency=BDT
+
+#########################
+# GP-C2CUSSDWithdraw Validators
+######
+standard-link.providers.gp.operations.c2cUssdWithdraw.fields.validationEnabled=false
+
+#########################
+# GP-C2CUSSDWithdraw ResultCodes
+######
+standard-link.providers.gp.operations.c2cUssdWithdraw.resultCodes.0.mapping=200:Success
+standard-link.providers.gp.operations.c2cUssdWithdraw.resultCodes.402.mapping=6669:Amount should be greater than zero
+standard-link.providers.gp.operations.c2cUssdWithdraw.resultCodes.202.mapping=10077:Incorrect sender credential
+
+#########################
+# GP-C2SPromoRecharge Fields
+######
+standard-link.providers.gp.operations.c2sPromoRecharge.fields.server_url=http://ers-txe-service-8088.ers-prod.svc.cluster.local:8088/txe/v1/requestTopup
+standard-link.providers.gp.operations.c2sPromoRecharge.fields.responseType=EXPROMORCTRFRESP
+standard-link.providers.gp.operations.c2sPromoRecharge.fields.senderAccountId=RESELLER
+standard-link.providers.gp.operations.c2sPromoRecharge.fields.receiverAccountId=AIRTIME
+standard-link.providers.gp.operations.c2sPromoRecharge.fields.serviceType=RC
+standard-link.providers.gp.operations.c2sPromoRecharge.fields.1=CVG
+standard-link.providers.gp.operations.c2sPromoRecharge.fields.2=C
+standard-link.providers.gp.operations.c2sPromoRecharge.fields.3=VG
+standard-link.providers.gp.operations.c2sPromoRecharge.fields.101=transfer
+standard-link.providers.gp.operations.c2sPromoRecharge.fields.productSKU=C2S_PROMO_RECHARGE
+standard-link.providers.gp.operations.c2sPromoRecharge.fields.default.productSKU=transfer
+
+#########################
+# GP-C2SPromoRecharge Headers
+######
+standard-link.providers.gp.operations.c2sPromoRecharge.headers.system-token={"ersReference":"20210520133633282010000000642","startTime":1615900340,"rootComponent":"slc","context":{"client":{},"initiator":{"uid":"operator","typ":"RESELLERUSERNAME","rtp":"OMAN Operator","resellerPath":"OPERATOR"}}}
+standard-link.providers.gp.operations.c2sPromoRecharge.headers.validateOnly=false
+
+#########################
+# GP-C2SPromoRecharge Constants
+######
+standard-link.providers.gp.operations.c2sPromoRecharge.constants.productCode=productCode
+standard-link.providers.gp.operations.c2sPromoRecharge.constants.productShortName=productShortName
+standard-link.providers.gp.operations.c2sPromoRecharge.constants.currency=BDT
+
+#########################
+# GP-C2SPromoRecharge Validators
+######
+standard-link.providers.gp.operations.c2sPromoRecharge.fields.validationEnabled=false
+
+#########################
+# GP-C2SPromoRecharge ResultCodes
+######
+standard-link.providers.gp.operations.c2sPromoRecharge.resultCodes.0.mapping=200:Success
+standard-link.providers.gp.operations.c2sPromoRecharge.resultCodes.402.mapping=6669:Amount should be greater than zero
+standard-link.providers.gp.operations.c2sPromoRecharge.resultCodes.202.mapping=10077:Incorrect sender credential
+
+#########################
+# GP-C2STransfer Fields
+######
+standard-link.providers.gp.operations.c2sTransfer.fields.server_url=http://ers-txe-service-8088.ers-prod.svc.cluster.local:8088/txe/v1/requestTopup
+standard-link.providers.gp.operations.c2sTransfer.fields.responseType=EXRCTRFRESP
+standard-link.providers.gp.operations.c2sTransfer.fields.resellerAccountId=RESELLER
+standard-link.providers.gp.operations.c2sTransfer.fields.receiverAccountId=AIRTIME
+standard-link.providers.gp.operations.c2sTransfer.fields.senderAccountId=RESELLER
+standard-link.providers.gp.operations.c2sTransfer.fields.serviceType=RC
+standard-link.providers.gp.operations.c2sTransfer.fields.1=CVG
+standard-link.providers.gp.operations.c2sTransfer.fields.2=C
+standard-link.providers.gp.operations.c2sTransfer.fields.3=VG
+standard-link.providers.gp.operations.c2sTransfer.fields.PULL_BACK=0
+standard-link.providers.gp.operations.c2sTransfer.fields.sendType=RESELLERID
+standard-link.providers.gp.operations.c2sTransfer.fields.receiverType=RESELLERID
+
+#########################
+# GP-C2STransfer Headers
+######
+standard-link.providers.gp.operations.c2sTransfer.headers.system-token={"ersReference":"20210520133633282010000000642","startTime":1615900340,"rootComponent":"slc","context":{"client":{},"initiator":{"uid":"operator","typ":"RESELLERUSERNAME","rtp":"OMAN Operator","resellerPath":"OPERATOR"}}}
+standard-link.providers.gp.operations.c2sTransfer.headers.validateOnly=false
+
+#########################
+# GP-C2STransfer Constants
+######
+standard-link.providers.gp.operations.c2sTransfer.constants.currency=BDT
+
+#########################
+# GP-C2STransfer Validators
+######
+standard-link.providers.gp.operations.c2sTransfer.fields.validationEnabled=true
+standard-link.providers.gp.operations.c2sTransfer.validators.AMOUNT.valueExpression=COMMAND['AMOUNT']
+standard-link.providers.gp.operations.c2sTransfer.validators.AMOUNT.required=true
+standard-link.providers.gp.operations.c2sTransfer.validators.AMOUNT.validateExpression=
+
+#########################
+# GP-C2STransferService ResultCodes
+######
+standard-link.providers.gp.operations.c2sTransfer.resultCodes.0.mapping=200
+standard-link.providers.gp.operations.c2sTransfer.resultCodes.402.mapping=6669:Amount should be greater than zero
+standard-link.providers.gp.operations.c2sTransfer.resultCodes.202.mapping=10077:Incorrect sender credential
+
+#########################
+# GP-ChangePasswordEXTGT Fields
+######
+standard-link.providers.gp.operations.changePassword.fields.server_url=http://ers-dealer-management-system-service.ers-prod.svc.cluster.local:8033/dms/auth/updateReseller
+standard-link.providers.gp.operations.changePassword.fields.responseType=EXTCNGPWDRESP
+standard-link.providers.gp.operations.changePassword.fields.101=transfer
+standard-link.providers.gp.operations.changePassword.fields.productSKU=C2C_WITHDRAW_TRANSFER
+standard-link.providers.gp.operations.changePassword.fields.default.productSKU=transfer
+standard-link.providers.gp.operations.changePassword.fields.PULL_BACK=0
+
+#########################
+# GP-ChangePasswordEXTGT Headers
+######
+standard-link.providers.gp.operations.changePassword.headers.system-token={"ersReference":"20210520133633282010000000642","startTime":1615900340,"rootComponent":"slc","context":{"client":{},"initiator":{"uid":"operator","typ":"RESELLERUSERNAME","rtp":"OMAN Operator","resellerPath":"OPERATOR"}}}
+standard-link.providers.gp.operations.changePassword.headers.validateOnly=false
+
+#########################
+# GP-ChangePasswordEXTGT Constants
+######
+standard-link.providers.gp.operations.changePassword.constants.constant1Key=constant1Value
+standard-link.providers.gp.operations.changePassword.constants.constant2Key=constant2Value
+
+#########################
+# GP-ChangePasswordEXTGT Validators
+######
+standard-link.providers.gp.operations.changePassword.fields.validationEnabled=false
+
+#########################
+# GP-ChangePasswordEXTGT ResultCodes
+######
+standard-link.providers.gp.operations.changePassword.resultCodes.0.mapping=200
+
+#########################
+# GP-ChannelUserMovementr Fields
+######
+standard-link.providers.gp.operations.channelUserMovement.fields.server_url=http://ers-dealer-management-system-service.ers-prod.svc.cluster.local:8033/dms/auth/changeParent
+standard-link.providers.gp.operations.channelUserMovement.fields.responseType=USERMOVEMENTRESP
+standard-link.providers.gp.operations.channelUserMovement.fields.contentType=application/x-www-form-urlencoded
+standard-link.providers.gp.operations.channelUserMovement.fields.queryParams=true
+standard-link.providers.gp.operations.channelUserMovement.fields.bodyRequest=false
+standard-link.providers.gp.operations.ChannelUserMovement.fields.allowedChangeParentResellerType=RET
+
+#########################
+# GP-ChannelUserMovement Headers
+######
+standard-link.providers.gp.operations.channelUserMovement.header.header1Key=header1Value
+standard-link.providers.gp.operations.channelUserMovement.header.header2Key=header2Value
+
+#########################
+# GP-ChannelUserMovement Constants
+######
+standard-link.providers.gp.operations.channelUserMovement.constants.constant1Key=constant1Value
+standard-link.providers.gp.operations.channelUserMovement.constants.constant2Key=constant2Value
+
+#########################
+# GP-ChannelUserMovement Validators
+######
+standard-link.providers.gp.operations.channelUserMovement.fields.validationEnabled=false
+
+#########################
+# GP-ChannelUserMovement ResultCodes
+######
+standard-link.providers.gp.operations.channelUserMovement.resultCodes.0.mapping=200
+
+#########################
+# GP-CP2PCreditTransferUSSDChannel Fields
+######
+standard-link.providers.gp.operations.cp2pUSSDCreditTransfer.fields.server_url=http://ers-txe-service-8088.ers-prod.svc.cluster.local:8088/txe/v1/requestTopup
+standard-link.providers.gp.operations.cp2pUSSDCreditTransfer.fields.responseType=CCTRFRESP
+standard-link.providers.gp.operations.cp2pUSSDCreditTransfer.fields.senderAccountId=AIRTIME
+standard-link.providers.gp.operations.cp2pUSSDCreditTransfer.fields.receiverAccountId=AIRTIME
+standard-link.providers.gp.operations.cp2pUSSDCreditTransfer.fields.productSKU=P2P
+standard-link.providers.gp.operations.cp2pUSSDCreditTransfer.fields.101=transfer
+standard-link.providers.gp.operations.cp2pUSSDCreditTransfer.fields.default.productSKU=transfer
+
+#########################
+# GP-CP2PCreditTransferUSSDChannel Headers
+######
+standard-link.providers.gp.operations.cp2pUSSDCreditTransfer.headers.system-token={"ersReference":"20210520133633282010000000642","startTime":1615900340,"rootComponent":"slc","context":{"client":{},"initiator":{"uid":"operator","typ":"RESELLERUSERNAME","rtp":"OMAN Operator","resellerPath":"OPERATOR"}}}
+standard-link.providers.gp.operations.cp2pUSSDCreditTransfer.headers.validateOnly=false
+
+#########################
+# GP-CP2PCreditTransferUSSDChannel Constants
+######
+standard-link.providers.gp.operations.cp2pUSSDCreditTransfer.constants.productCode=productCode
+standard-link.providers.gp.operations.cp2pUSSDCreditTransfer.constants.productShortName=productShortName
+standard-link.providers.gp.operations.cp2pUSSDCreditTransfer.constants.currency=BDT
+
+#########################
+# GP-CP2PCreditTransferUSSDChannel Validators
+######
+standard-link.providers.gp.operations.cp2pUSSDCreditTransfer.fields.validationEnabled=false
+
+#########################
+# GP-CP2PCreditTransferUSSDChannel ResultCodes
+######
+standard-link.providers.gp.operations.cp2pUSSDCreditTransfer.resultCodes.0.mapping=200
+
+
+#########################
+# GP-CP2PCreditTransferUSSDChannel Decoder
+######
+standard-link.providers.gp.operations.cp2pUSSDCreditTransfer.decoder.enabled=true
+standard-link.providers.gp.operations.cp2pUSSDCreditTransfer.decoder.content-types=text/plain,application/xml,text/xml,application/xml;charset=UTF-8,text/plain;charset=UTF-8,text/xml;charset=UTF-8
+standard-link.providers.gp.operations.cp2pUSSDCreditTransfer.decoder.target-fields=PIN
+
+#########################
+# GP-DeactivateReseller Fields
+######
+standard-link.providers.gp.operations.deactivateReseller.fields.server_url=http://ers-dealer-management-system-service.ers-prod.svc.cluster.local:8033/dms/auth/v1/resellerChangeState
+standard-link.providers.gp.operations.deactivateReseller.fields.globalReason=Deactivated
+standard-link.providers.gp.operations.deactivateReseller.fields.targetPrincipalType=RESELLERID
+standard-link.providers.gp.operations.deactivateReseller.fields.responseType=USERDELRESP
+standard-link.providers.gp.operations.deactivateReseller.fields.DeleteUser=DEACTIVATE
+
+#########################
+# GP-DeactivateReseller Headers
+######
+standard-link.providers.gp.operations.deactivateReseller.headers.system-token={"ersReference":"20210520133633282010000000642","startTime":1615900340,"rootComponent":"slc","context":{"client":{},"initiator":{"uid":"operator","typ":"RESELLERUSERNAME","rtp":"OMAN Operator","resellerPath":"OPERATOR"}}}
+standard-link.providers.gp.operations.deactivateReseller.headers.validateOnly=false
+
+#########################
+# GP-DeactivateReseller Constants
+######
+standard-link.providers.gp.operations.deactivateReseller.constants.constant1Key=constant1Value
+standard-link.providers.gp.operations.deactivateReseller.constants.constant2Key=constant2Value
+
+#########################
+# GP-DeactivateReseller Validators
+######
+standard-link.providers.gp.operations.deactivateReseller.fields.validationEnabled=false
+
+#########################
+# GP-DeactivateReseller ResultCodes
+######
+standard-link.providers.gp.operations.deactivateReseller.resultCodes.0.mapping=200:User deactivated successfully
+#standard-link.providers.gp.operations.deactivateReseller.resultCodes.901.mapping=901:Reseller not found
+
+#########################
+# GP-FetchLastTransaction Fields
+######
+standard-link.providers.gp.operations.fetchLastTransaction.fields.server_url=http://ers-bi-engine-service.ers-prod.svc.cluster.local:8917/bi-engine/fetch/
+standard-link.providers.gp.operations.fetchLastTransaction.fields.responseType=EXLSTTRFRESP
+standard-link.providers.gp.operations.fetchLastTransaction.fields.NUMBER_OF_DAYS=3
+standard-link.providers.gp.operations.fetchLastTransaction.fields.reportName=search_transaction
+
+#########################
+# GP-FetchLastTransaction Headers
+######
+standard-link.providers.gp.operations.fetchLastTransaction.headers.system-token={"ersReference":"20210520133633282010000000642","startTime":1615900340,"rootComponent":"slc","context":{"client":{},"initiator":{"uid":"operator","typ":"RESELLERUSERNAME","rtp":"OMAN Operator","resellerPath":"OPERATOR"}}}
+standard-link.providers.gp.operations.fetchLastTransaction.headers.validateOnly=false
+
+#########################
+# GP-FetchLastTransaction Constants
+######
+standard-link.providers.gp.operations.fetchLastTransaction.constants.constant1Key=constant1Value
+standard-link.providers.gp.operations.fetchLastTransaction.constants.constant2Key=constant2Value
+
+#########################
+# GP-FetchLastTransaction Validators
+######
+standard-link.providers.gp.operations.fetchLastTransaction.fields.validationEnabled=false
+
+#########################
+# GP-FetchLastTransaction ResultCodes
+######
+standard-link.providers.gp.operations.fetchLastTransaction.resultCodes.0.mapping=200
+
+#########################
+# GP-FetchLastXTransactions Fields
+######
+standard-link.providers.gp.operations.fetchLastXTransactions.fields.server_url=http://ers-bi-engine-service.ers-prod.svc.cluster.local:8917/bi-engine/fetch/
+standard-link.providers.gp.operations.fetchLastXTransactions.fields.responseType=EXLASTXTRFRESP
+standard-link.providers.gp.operations.fetchLastXTransactions.fields.responseTypeUssdText=LSTXTRFRESP
+standard-link.providers.gp.operations.fetchLastXTransactions.fields.bidateformat=yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
+standard-link.providers.gp.operations.fetchLastXTransactions.fields.gpdateformat=dd/MM/yyyy HH:mm:ss
+standard-link.providers.gp.operations.fetchLastXTransactions.fields.defaultSize=5
+standard-link.providers.gp.operations.fetchLastXTransactions.fields.defaultDays=10
+standard-link.providers.gp.operations.fetchLastXTransactions.fields.defaultMSISDN=*
+standard-link.providers.gp.operations.fetchLastXTransactions.fields.defaultServiceType=*
+standard-link.providers.gp.operations.fetchLastXTransactions.fields.C2SServiceType=C2S*
+standard-link.providers.gp.operations.fetchLastXTransactions.fields.C2CServiceType=TRANSFER C2C_WITHDRAW RETURN
+standard-link.providers.gp.operations.fetchLastXTransactions.fields.O2CServiceType=FOC O2C_WITHDRAW SALE
+standard-link.providers.gp.operations.fetchLastXTransactions.fields.reportName=last_X_transaction_by_size_type_day_targetMsisdn
+standard-link.providers.gp.operations.fetchLastXTransactions.fields.NUMBER_OF_LAST_X_TXN=10
+standard-link.providers.gp.operations.fetchLastXTransactions.fields.NUMBER_OF_DAYS=1
+
+#########################
+# GP-FetchLastXTransactions Headers
+######
+standard-link.providers.gp.operations.fetchLastXTransactions.headers.system-token={"ersReference":"20210520133633282010000000642","startTime":1615900340,"rootComponent":"slc","context":{"client":{},"initiator":{"uid":"operator","typ":"RESELLERUSERNAME","rtp":"OMAN Operator","resellerPath":"OPERATOR"}}}
+standard-link.providers.gp.operations.fetchLastXTransactions.headers.validateOnly=false
+
+#########################
+# GP-FetchLastXTransactions Constants
+######
+standard-link.providers.gp.operations.fetchLastXTransactions.constants.constant1Key=constant1Value
+standard-link.providers.gp.operations.fetchLastXTransactions.constants.constant2Key=constant2Value
+
+#########################
+# GP-FetchLastXTransactions Validators
+######
+standard-link.providers.gp.operations.fetchLastXTransactions.fields.validationEnabled=false
+
+#########################
+# GP-FetchLastXTransactions ResultCodes
+######
+standard-link.providers.gp.operations.fetchLastXTransactions.resultCodes.0.mapping=200:Success
+
+#########################
+# GP-PromoBillPayment Fields
+######
+standard-link.providers.gp.operations.promoBillPayment.fields.server_url=http://ers-txe-service-8088.ers-prod.svc.cluster.local:8088/txe/v1/requestTopup
+standard-link.providers.gp.operations.promoBillPayment.fields.responseType=EXTPROMOPPBRESP
+standard-link.providers.gp.operations.promoBillPayment.fields.resellerAccountId=RESELLER
+standard-link.providers.gp.operations.promoBillPayment.fields.receiverTypeMsisdn=SUBSCRIBERMSISDN
+standard-link.providers.gp.operations.promoBillPayment.fields.receiverAccountId=AIRTIME
+standard-link.providers.gp.operations.promoBillPayment.fields.SERVICETYPE=PROMOPPB
+
+#########################
+# GP-PromoBillPayment Headers
+######
+standard-link.providers.gp.operations.promoBillPayment.header.header1Key=header1Value
+standard-link.providers.gp.operations.promoBillPayment.header.header2Key=header2Value
+
+#########################
+# GP-PromoBillPayment Constants
+######
+standard-link.providers.gp.operations.promoBillPayment.constants.currency=BDT
+
+#########################
+# GP-PromoBillPayment Validators
+######
+standard-link.providers.gp.operations.promoBillPayment.fields.validationEnabled=false
+
+#########################
+# GP-PromoBillPayment ResultCodes
+######
+standard-link.providers.gp.operations.promoBillPayment.resultCodes.0.mapping=200
+standard-link.providers.gp.operations.promoBillPayment.resultCodes.402.mapping=6669:Amount should be greater than zero
+standard-link.providers.gp.operations.promoBillPayment.resultCodes.202.mapping=10077:Incorrect sender credential
+
+#########################
+# GP-PromoVasReversal Fields
+######
+standard-link.providers.gp.operations.promoVasReversal.fields.server_url=http://ers-txe-service-8088.ers-prod.svc.cluster.local:8088/txe/v1/requestTransactionReversal
+standard-link.providers.gp.operations.promoVasReversal.fields.responseType=RCREVRESP
+standard-link.providers.gp.operations.promoVasReversal.fields.serviceType=RCREV
+
+#########################
+# GP-PromoVasReversal Headers
+######
+standard-link.providers.gp.operations.promoVasReversal.header.header1Key=header1Value
+standard-link.providers.gp.operations.promoVasReversal.header.header2Key=header2Value
+
+#########################
+# GP-PromoVasReversal Constants
+######
+standard-link.providers.gp.operations.promoVasReversal.constants.constant1Key=constant1Value
+standard-link.providers.gp.operations.promoVasReversal.constants.constant2Key=constant2Value
+
+#########################
+# GP-PromoVasReversal Validators
+######
+standard-link.providers.gp.operations.promoVasReversal.fields.validationEnabled=false
+
+#########################
+# GP-PromoVasReversal ResultCodes
+######
+standard-link.providers.gp.operations.promoVasReversal.resultCodes.0.mapping=200
+
+#########################
+# GP-PromoVas Fields
+######
+standard-link.providers.gp.operations.promoVas.fields.server_url=http://ers-txe-service-8088.ers-prod.svc.cluster.local:8088/txe/v1/requestTopup
+standard-link.providers.gp.operations.promoVas.fields.responseType=EXPROMOVASTRFRESP
+standard-link.providers.gp.operations.promoVas.fields.senderAccountId=RESELLER
+standard-link.providers.gp.operations.promoVas.fields.receiverAccountId=PROMOVAS
+standard-link.providers.gp.operations.promoVas.fields.serviceType=PVAS
+standard-link.providers.gp.operations.promoVas.fields.1=CVG
+standard-link.providers.gp.operations.promoVas.fields.2=C
+standard-link.providers.gp.operations.promoVas.fields.3=VG
+
+#########################
+# GP-PromoVas Headers
+######
+standard-link.providers.gp.operations.promoVas.header.header1Key=header1Value
+standard-link.providers.gp.operations.promoVas.header.header2Key=header2Value
+
+#########################
+# GP-PromoVas Constants
+######
+standard-link.providers.gp.operations.promoVas.constants.currency=BDT
+standard-link.providers.gp.operations.promoVas.constants.constant2Key=constant2Value
+
+#########################
+# GP-PromoVas Validators
+######
+standard-link.providers.gp.operations.promoVas.fields.validationEnabled=false
+
+#########################
+# GP-PromoVas ResultCodes
+######
+standard-link.providers.gp.operations.promoVas.resultCodes.0.mapping=200
+
+#########################
+# GP-RP2PUSSDCustomerRecharge Fields
+######
+standard-link.providers.gp.operations.rp2pUSSDCustomerRecharge.fields.server_url=http://ers-txe-service-8088.ers-prod.svc.cluster.local:8088/txe/v1/requestTopup
+standard-link.providers.gp.operations.rp2pUSSDCustomerRecharge.fields.responseType=RCTRFRESP
+standard-link.providers.gp.operations.rp2pUSSDCustomerRecharge.fields.senderAccountId=RESELLER
+standard-link.providers.gp.operations.rp2pUSSDCustomerRecharge.fields.receiverAccountId=AIRTIME
+standard-link.providers.gp.operations.rp2pUSSDCustomerRecharge.fields.1=CVG
+standard-link.providers.gp.operations.rp2pUSSDCustomerRecharge.fields.2=C
+standard-link.providers.gp.operations.rp2pUSSDCustomerRecharge.fields.3=VG
+
+#########################
+# GP-RP2PUSSDCustomerRecharge Headers
+######
+standard-link.providers.gp.operations.rp2pUSSDCustomerRecharge.header.header1Key=header1Value
+standard-link.providers.gp.operations.rp2pUSSDCustomerRecharge.header.header2Key=header2Value
+
+#########################
+# GP-RP2PUSSDCustomerRecharge Constants
+######
+standard-link.providers.gp.operations.rp2pUSSDCustomerRecharge.constants.currency=BDT
+
+#########################
+# GP-RP2PUSSDCustomerRecharge Validators
+######
+standard-link.providers.gp.operations.rp2pUSSDCustomerRecharge.fields.validationEnabled=false
+
+#########################
+# GP-RP2PUSSDCustomerRecharge ResultCodes
+######
+standard-link.providers.gp.operations.rp2pUSSDCustomerRecharge.resultCodes.0.mapping=200
+
+
+
+#########################
+# GP-dailyStatus Fields
+######
+standard-link.providers.gp.operations.dailyStatus.fields.server_url=http://ers-bi-engine-service.ers-prod.svc.cluster.local:8917/bi-engine/fetch
+standard-link.providers.gp.operations.dailyStatus.fields.responseType=DSRRESP
+standard-link.providers.gp.operations.dailyStatus.fields.defaultSize=50
+standard-link.providers.gp.operations.dailyStatus.fields.page=0
+standard-link.providers.gp.operations.dailyStatus.fields.reportName=daily_status_report
+standard-link.providers.gp.operations.dailyStatus.fields.defaultMessage=Failed to generatebDaily status report of the reseller with msisdn
+standard-link.providers.gp.operations.dailyStatus.fields.transactionCount=2
+standard-link.providers.gp.operations.dailyStatus.fields.numberOfDays=2
+
+#########################
+# GP-dailyStatus Headers
+######
+standard-link.providers.gp.operations.dailyStatus.headers.system-token={"ersReference":"20210520133633282010000000642","startTime":1615900340,"rootComponent":"slc","context":{"client":{},"initiator":{"uid":"operator","typ":"RESELLERUSERNAME","rtp":"OMAN Operator","resellerPath":"OPERATOR"}}}
+standard-link.providers.gp.operations.dailyStatus.headers.validateOnly=false
+
+#########################
+# GP-dailyStatus Constants
+######
+standard-link.providers.gp.operations.dailyStatus.constants.constant1Key=constant1Value
+standard-link.providers.gp.operations.dailyStatus.constants.constant2Key=constant2Value
+
+#########################
+# GP-dailyStatus Validators
+######
+standard-link.providers.gp.operations.dailyStatus.fields.validationEnabled=false
+
+#########################
+# GP-dailyStatus ResultCodes
+######
+standard-link.providers.gp.operations.dailyStatus.resultCodes.0.mapping=200
+
+#########################
+# GP-suspendUser Fields
+######
+standard-link.providers.gp.operations.suspendUser.fields.server_url=http://ers-dealer-management-system-service.ers-prod.svc.cluster.local:8033/dms/auth/v1/resellerChangeState
+standard-link.providers.gp.operations.suspendUser.fields.S=BLOCK
+standard-link.providers.gp.operations.suspendUser.fields.R=UNBLOCK
+standard-link.providers.gp.operations.suspendUser.fields.globalReason=BLOCKED
+standard-link.providers.gp.operations.suspendUser.fields.targetPrincipalType=RESELLERID
+standard-link.providers.gp.operations.suspendUser.fields.targetPrincipalMSISDNType=RESELLERMSISDN
+standard-link.providers.gp.operations.suspendUser.fields.blockedMessage=User Suspended successfully
+standard-link.providers.gp.operations.suspendUser.fields.unblockedMessage=User Resumed successfully
+standard-link.providers.gp.operations.suspendUser.fields.deletedMessage=User Deleted successfully
+standard-link.providers.gp.operations.suspendUser.fields.responseType=USERSRRESP
+
+#########################
+# GP-suspendUser Headers
+######
+standard-link.providers.gp.operations.suspendUser.header.header1Key=header1Value
+standard-link.providers.gp.operations.suspendUser.header.header2Key=header2Value
+
+#########################
+# GP-suspendUser Constants
+######
+standard-link.providers.gp.operations.suspendUser.constants.constant1Key=constant1Value
+standard-link.providers.gp.operations.suspendUser.constants.constant2Key=constant2Value
+
+#########################
+# GP-suspendUser Validators
+######
+standard-link.providers.gp.operations.suspendUser.fields.validationEnabled=false
+
+#########################
+# GP-suspendUser ResultCodes
+######
+standard-link.providers.gp.operations.suspendUser.resultCodes.0.mapping=200:SUCCESS
+#standard-link.providers.gp.operations.suspendUser.resultCodes.901.mapping=901:Reseller not found
+
+
+
+#########################
+# GP-deregisterSubscriberService Fields
+######
+standard-link.providers.gp.operations.deregisterSubscriberService.fields.server_url=http://ers-txe-service.ers-prod.svc.cluster.local:8777/txe/subscriber
+standard-link.providers.gp.operations.deregisterSubscriberService.fields.request_dto_package=com.seamless.ers.standardlink.model.customer.gp.deregisterSubscriberService.request
+standard-link.providers.gp.operations.deregisterSubscriberService.fields.response_dto_package=com.seamless.ers.standardlink.model.customer.gp.deregisterSubscriberService.response
+standard-link.providers.gp.operations.deregisterSubscriberService.fields.transaction_type=DREGREQ
+standard-link.providers.gp.operations.deregisterSubscriberService.fields.responseType=DREGRESP
+
+#########################
+# GP-deregisterSubscriberService Headers
+######
+standard-link.providers.gp.operations.deregisterSubscriberService.headers.system-token={"ersReference":"20210520133633282010000000642","startTime":1615900340,"rootComponent":"slc","context":{"client":{},"initiator":{"uid":"operator","typ":"RESELLERUSERNAME","rtp":"OMAN Operator","resellerPath":"OPERATOR"}}}
+standard-link.providers.gp.operations.deregisterSubscriberService.headers.validateOnly=false
+
+#########################
+# GP-deregisterSubscriberService Constants
+######
+standard-link.providers.gp.operations.deregisterSubscriberService.constants.serviceType=P2P_SERVICE
+standard-link.providers.gp.operations.deregisterSubscriberService.constants.deactivateStatus=Deactivated
+standard-link.providers.gp.operations.deregisterSubscriberService.constants.subscriberPrincipal=SUBSCRIBERMSISDN
+
+#########################
+# GP-deregisterSubscriberService Validators
+######
+standard-link.providers.gp.operations.deregisterSubscriberService.fields.validationEnabled=false
+
+#########################
+# GP-deregisterSubscriberService ResultCodes
+######
+standard-link.providers.gp.operations.deregisterSubscriberService.resultCodes.0.mapping=200
+standard-link.providers.gp.operations.deregisterSubscriberService.resultCodes.1502.mapping=1502:Failed
+standard-link.providers.gp.operations.deregisterSubscriberService.resultCodes.3004.mapping=3004:Failed
+standard-link.providers.gp.operations.deregisterSubscriberService.resultCodes.1009.mapping=1009:Failed
+standard-link.providers.gp.operations.deregisterSubscriberService.resultCodes.3008.mapping=3008:Failed
+
+
+#########################
+# GP-registerSubscriberService Fields
+######
+standard-link.providers.gp.operations.registerSubscriberService.fields.server_url=http://ers-txe-service.ers-prod.svc.cluster.local:8777/txe/subscriber
+standard-link.providers.gp.operations.registerSubscriberService.fields.request_dto_package=com.seamless.ers.standardlink.model.customer.gp.registerSubscriber.request
+standard-link.providers.gp.operations.registerSubscriberService.fields.response_dto_package=com.seamless.ers.standardlink.model.customer.gp.registerSubscriber.response
+standard-link.providers.gp.operations.registerSubscriberService.fields.responseType=REGRESP
+standard-link.providers.gp.operations.registerSubscriberService.fields.serviceType=P2P_SERVICE
+#standard-link.providers.gp.operations.registerSubscriberService.fields.defaultPIN=1234
+#########################
+# GP-registerSubscriberService Headers
+######
+standard-link.providers.gp.operations.registerSubscriberService.header.header1Key=header1Value
+standard-link.providers.gp.operations.registerSubscriberService.header.header2Key=header2Value
+
+#########################
+# GP-registerSubscriberService Constants
+######
+standard-link.providers.gp.operations.registerSubscriberService.constants.serviceType=P2P_SERVICE
+standard-link.providers.gp.operations.registerSubscriberService.constants.deactivateStatus=Deactivated
+standard-link.providers.gp.operations.registerSubscriberService.constants.subscriberPrincipal=SUBSCRIBERMSISDN
+
+#########################
+# GP-registerSubscriberService Validators
+######
+standard-link.providers.gp.operations.registerSubscriberService.fields.validationEnabled=false
+
+#########################
+# GP-registerSubscriberService ResultCodes
+######
+standard-link.providers.gp.operations.registerSubscriberService.resultCodes.0.mapping=200
+standard-link.providers.gp.operations.registerSubscriberService.resultCodes.1502.mapping=1502:Failed
+standard-link.providers.gp.operations.registerSubscriberService.resultCodes.3004.mapping=3004:Failed
+standard-link.providers.gp.operations.registerSubscriberService.resultCodes.1009.mapping=1009:Failed
+standard-link.providers.gp.operations.registerSubscriberService.resultCodes.3008.mapping=3008:Failed
+
+#########################
+# GP-ViewChannelUser Fields
+######
+standard-link.providers.gp.operations.viewChannelUser.fields.server_url=http://ers-dealer-management-system-service.ers-prod.svc.cluster.local:8033/dms/v1/resellers/getResellerInfo
+standard-link.providers.gp.operations.viewChannelUser.fields.responseType=VIEWCUSERRESP
+
+#########################
+# GP-ViewChannelUser Headers
+######
+standard-link.providers.gp.operations.viewChannelUser.header.header1Key=header1Value
+standard-link.providers.gp.operations.viewChannelUser.header.header2Key=header2Value
+
+#########################
+# GP-ViewChannelUser Constants
+######
+standard-link.providers.gp.operations.viewChannelUser.constants.constant1=constant1
+
+#########################
+# GP-ViewChannelUser Validators
+######
+standard-link.providers.gp.operations.viewChannelUser.fields.validationEnabled=false
+standard-link.providers.gp.operations.viewChannelUser.resultCodes.0.mapping=200
+
+#########################
+# GP-postpaidUSSDBillPayment Fields
+######
+standard-link.providers.gp.operations.postpaidUSSDBillPayment.fields.server_url=http://ers-txe-service-8088.ers-prod.svc.cluster.local:8088/txe/v1/requestTopup
+standard-link.providers.gp.operations.postpaidUSSDBillPayment.fields.responseType=PPBTRFRESP
+standard-link.providers.gp.operations.PostpaidUSSDBillPayment.fields.currency=${locale.default_currency}
+standard-link.providers.gp.operations.postpaidUSSDBillPayment.fields.resellerType=RESELLER
+standard-link.providers.gp.operations.postpaidUSSDBillPayment.fields.subscriberType=AIRTIME
+
+#########################
+# GP-postpaidUSSDBillPayment Headers
+######
+standard-link.providers.gp.operations.postpaidUSSDBillPayment.header.authorization=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwYXlsb2FkIjoiMkpNUWl2TlFYM0lhcVd3OGg0WHVEa205UWwzM2FZZEFPZkNCbkFINDc0T1I1U1hEWTR1eW95NVl4a2UxR1dnNGJLU0xJNFU2aDFRTk5VRkpSbEdZN0lUdVVLOEZvbE5nakxUT0pUY2RoenlmL1RwbzlBL1JHN1ZLV29nY1h5eFVTclNuUXBubXZpNERnZDE0WSsxVmpzNTYrVGEvMmU1L2RkV1BZd3J4YXlOeDExVlcvc1k0dDl1NFRnTXlSQUR2dlRraEkxMXRIUXV6N2FVM0NVVUluYTErdG1XZ0xwVXpJZW93MENFbmNxN3R2TkEvQ3czMmZLYytNdW5zTlRPdjFGVEtRQ3RkVEYzVFo1R3Q4L3hqZUN5Q256aUNMS2VhIiwiaXNzIjoiRVJTMzYwIiwiZXhwIjoxNjQ4NjY4OTY0LCJpYXQiOjE2NDg2Mzg5NjR9.Hho_UTAtIR23a2kaJ9Bf9m4sQBfIrtZDc9Va487hdnY
+standard-link.providers.gp.operations.postpaidUSSDBillPayment.header.validateOnly=false
+
+#########################
+# GP-postpaidUSSDBillPayment Constants
+######
+standard-link.providers.gp.operations.postpaidUSSDBillPayment.constants.currency=BDT
+
+#########################
+# GP-postpaidUSSDBillPayment Validators
+######
+standard-link.providers.gp.operations.postpaidUSSDBillPayment.fields.validationEnabled=false
+
+standard-link.providers.gp.operations.postpaidUSSDBillPayment.resultCodes.0.mapping=200
+
+#########################
+# GP-setPinUssd Fields
+######
+standard-link.providers.gp.operations.setPinUssd.fields.server_url=http://ers-txe-service.ers-prod.svc.cluster.local:8777/txe/subscriber
+standard-link.providers.gp.operations.setPinUssd.fields.request_dto_package=com.seamless.ers.standardlink.model.customer.gp.setpin.request
+standard-link.providers.gp.operations.setPinUssd.fields.response_dto_package=com.seamless.ers.standardlink.model.customer.gp.setpin.response
+standard-link.providers.gp.operations.setPinUssd.fields.transaction_type=CCPNREQ
+standard-link.providers.gp.operations.setPinUssd.fields.serviceType=P2P_SERVICE
+
+standard-link.providers.gp.operations.setPinUssd.fields.responseType=CCPNRESP
+
+#########################
+# GP-setPinUssd Headers
+######
+standard-link.providers.gp.operations.setPinUssd.header.header1=header1
+
+#########################
+# GP-setPinUssd Constants
+######
+standard-link.providers.gp.operations.setPinUssd.constants.serviceType=P2P_SERVICE
+standard-link.providers.gp.operations.setPinUssd.constants.subscriberPrincipal=SUBSCRIBERMSISDN
+
+#########################
+# GP-setPinUssd Validators
+######
+standard-link.providers.gp.operations.setPinUssd.fields.validationEnabled=false
+
+#########################
+# GP-setPinUssd ResultCodes
+######
+standard-link.providers.gp.operations.setPinUssd.resultCodes.0.mapping=200
+standard-link.providers.gp.operations.setPinUssd.resultCodes.1502.mapping=1502:Failed
+standard-link.providers.gp.operations.setPinUssd.resultCodes.3004.mapping=3004:Failed
+standard-link.providers.gp.operations.setPinUssd.resultCodes.1009.mapping=1009:Failed
+standard-link.providers.gp.operations.setPinUssd.resultCodes.3008.mapping=3008:Failed
+standard-link.providers.gp.operations.setPinUssd.resultCodes.3017.mapping=3017:Failed
+
+#########################
+# GP-balEnquiryUSSD Fields
+######
+standard-link.providers.gp.operations.balEnquiryUSSD.fields.server_url=http://ers-dealer-management-system-service.ers-prod.svc.cluster.local:8033/dms/auth/getResellerInfo
+standard-link.providers.gp.operations.balEnquiryUSSD.fields.responseType=BALRESP
+standard-link.providers.gp.operations.balEnquiryUSSD.fields.childMessage=Child balance is %s BDT
+standard-link.providers.gp.operations.balEnquiryUSSD.fields.selfMessage=Your balance is %s BDT
+
+#########################
+# GP-balEnquiryUSSD Headers
+######
+standard-link.providers.gp.operations.balEnquiryUSSD.header.header1=header1
+
+#########################
+# GP-balEnquiryUSSD Constants
+######
+standard-link.providers.gp.operations.balEnquiryUSSD.constants.constant1=constant1
+
+#########################
+# GP-balEnquiryUSSD Validators
+######
+standard-link.providers.gp.operations.balEnquiryUSSD.fields.validationEnabled=false
+
+#########################
+# GP-balEnquiryUSSD ResultCodes
+######
+standard-link.providers.gp.operations.balEnquiryUSSD.resultCodes.0.mapping=200
+
+#########################
+# GP-changePasswordUSSD Fields
+######
+
+standard-link.providers.gp.operations.changePasswordUSSD.fields.server_url=http://ers-dealer-management-system-service.ers-prod.svc.cluster.local:8033/dms/auth/changePassword
+standard-link.providers.gp.operations.changePasswordUSSD.fields.responseType=RCPNRESP
+
+#########################
+# GP-changePasswordUSSD Headers
+######
+standard-link.providers.gp.operations.changePasswordUSSD.header.header1=header1
+
+#########################
+# GP-changePasswordUSSD Constants
+######
+standard-link.providers.gp.operations.changePasswordUSSD.constants.constant1=constant1
+
+#########################
+# GP-changePasswordUSSD Validators
+######
+standard-link.providers.gp.operations.changePasswordUSSD.fields.validationEnabled=false
+
+#########################
+# GP-changePasswordUSSD ResultCodes
+######
+standard-link.providers.gp.operations.changePasswordUSSD.resultCodes.0.mapping=200:Your PIN has Changed Successfully.Your New PIN is  
+
+#########################
+# GP-subscriberLastTransferStatusUssd Fields
+######
+
+standard-link.providers.gp.operations.subscriberLastTransferStatusUssd.fields.server_url=http://ers-bi-engine-service.ers-prod.svc.cluster.local:8917/bi-engine/fetch
+standard-link.providers.gp.operations.subscriberLastTransferStatusUssd.fields.responseType=CCHISRESP
+
+#########################
+# GP-subscriberLastTransferStatusUssd Headers
+######
+standard-link.providers.gp.operations.subscriberLastTransferStatusUssd.header.header1=header1
+
+#########################
+# GP-subscriberLastTransferStatusUssd Constants
+######
+standard-link.providers.gp.operations.subscriberLastTransferStatusUssd.constants.constant1=constant1
+
+#########################
+# GP-subscriberLastTransferStatusUssd Validators
+######
+standard-link.providers.gp.operations.subscriberLastTransferStatusUssd.fields.validationEnabled=false
+
+#########################
+# GP-subscriberLastTransferStatusUssd ResultCodes
+######
+standard-link.providers.gp.operations.subscriberLastTransferStatusUssd.resultCodes.0.mapping=200
+
+#########################
+# GP-lastXTransaction Fields
+######
+standard-link.providers.gp.operations.lastXTransactions.fields.server_url=http://ers-bi-engine-service.ers-prod.svc.cluster.local:8917/bi-engine/fetch
+standard-link.providers.gp.operations.lastXTransactions.fields.responseTypeUssdXml=EXLSTXTRFRESP
+standard-link.providers.gp.operations.lastXTransactions.fields.responseTypeUssdText=LSTXTRFRESP
+standard-link.providers.gp.operations.lastXTransactions.fields.bidateformat=yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
+standard-link.providers.gp.operations.lastXTransactions.fields.gpdateformat=yyyy-MM-dd HH:mm
+standard-link.providers.gp.operations.lastXTransactions.fields.defaultSize=5
+standard-link.providers.gp.operations.lastXTransactions.fields.defaultDays=2
+standard-link.providers.gp.operations.lastXTransactions.fields.defaultMSISDN=*
+standard-link.providers.gp.operations.lastXTransactions.fields.defaultServiceType=*
+standard-link.providers.gp.operations.lastXTransactions.fields.C2SServiceType=C2S*
+standard-link.providers.gp.operations.lastXTransactions.fields.C2CServiceType=TRANSFER C2C_WITHDRAW RETURN
+standard-link.providers.gp.operations.lastXTransactions.fields.O2CServiceType=FOC O2C_WITHDRAW SALE
+standard-link.providers.gp.operations.lastXTransactions.fields.reportName=last_X_transaction_by_size_type_day_targetMsisdn
+
+#########################
+# GP-lastXTransaction Headers
+######
+standard-link.providers.gp.operations.lastXTransactions.header.header1=header1
+
+#########################
+# GP-lastXTransaction Constants
+######
+standard-link.providers.gp.operations.lastXTransactions.constants.constant1=constant1
+
+#########################
+# GP-lastXTransaction Validators
+######
+standard-link.providers.gp.operations.lastXTransactions.fields.validationEnabled=false
+
+#########################
+# GP-lastXTransaction ResultCodes
+######
+standard-link.providers.gp.operations.lastXTransactions.resultCodes.0.mapping=200
+
+#########################
+# GP-LastTransferStatusUSSD Fields
+#####
+standard-link.providers.gp.operations.LastTransferStatusUSSD.fields.server_url=http://ers-bi-engine-service.ers-prod.svc.cluster.local:8917/bi-engine/fetch
+standard-link.providers.gp.operations.LastTransferStatusUSSD.fields.responseType=LTSRESP
+
+#########################
+# GP-LastTransferStatusUSSD Headers
+######
+standard-link.providers.gp.operations.LastTransferStatusUSSD.header.authorization=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwYXlsb2FkIjoiMkpNUWl2TlFYM0lhcVd3OGg0WHVEa205UWwzM2FZZEFPZkNCbkFINDc0T1I1U1hEWTR1eW95NVl4a2UxR1dnNGJLU0xJNFU2aDFRTk5VRkpSbEdZN0lUdVVLOEZvbE5nakxUT0pUY2RoenlmL1RwbzlBL1JHN1ZLV29nY1h5eFVTclNuUXBubXZpNERnZDE0WSsxVmpzNTYrVGEvMmU1L2RkV1BZd3J4YXlOeDExVlcvc1k0dDl1NFRnTXlSQUR2dlRraEkxMXRIUXV6N2FVM0NVVUluYTErdG1XZ0xwVXpJZW93MENFbmNxN3R2TkEvQ3czMmZLYytNdW5zTlRPdjFGVEtRQ3RkVEYzVFo1R3Q4L3hqZUN5Q256aUNMS2VhIiwiaXNzIjoiRVJTMzYwIiwiZXhwIjoxNjQ4NjY4OTY0LCJpYXQiOjE2NDg2Mzg5NjR9.Hho_UTAtIR23a2kaJ9Bf9m4sQBfIrtZDc9Va487hdnY
+standard-link.providers.gp.operations.LastTransferStatusUSSD.header.validateOnly=false
+
+#########################
+# GP-LastTransferStatusUSSD Constants
+######
+standard-link.providers.gp.operations.LastTransferStatusUSSD.constants.constant1=constant1
+
+#########################
+# GP-LastTransferStatusUSSD Validators
+######
+standard-link.providers.gp.operations.LastTransferStatusUSSD.fields.validationEnabled=false
+
+#########################
+# GP-lastXTransaction ResultCodes
+######
+standard-link.providers.gp.operations.LastTransferStatusUSSD.resultCodes.0.mapping=200
+
+#########################
+# GP-LastTransferStatus Fields
+#####
+standard-link.providers.gp.operations.LastTransferStatus.fields.server_url=http://ers-bi-engine-service.ers-prod.svc.cluster.local:8917/bi-engine/fetch
+standard-link.providers.gp.operations.LastTransferStatus.fields.responseType=L3TSRESP
+standard-link.providers.gp.operations.LastTransferStatus.fields.defaultSize=5
+standard-link.providers.gp.operations.LastTransferStatus.fields.defaultDays=2
+standard-link.providers.gp.operations.LastTransferStatus.fields.defaultMSISDN=*
+standard-link.providers.gp.operations.LastTransferStatus.fields.defaultServiceType=*
+standard-link.providers.gp.operations.LastTransferStatus.fields.C2SServiceType=
+standard-link.providers.gp.operations.LastTransferStatus.fields.C2CServiceType=EXC2CTRFREQ EXC2CRETREQ EXC2CWDREQ EXC2CRETREQ
+standard-link.providers.gp.operations.LastTransferStatus.fields.O2CServiceType= O2CINTREQ
+standard-link.providers.gp.operations.LastTransferStatus.fields.reportName=last_X_transaction_by_size_type_day_targetMsisdn
+
+#########################
+# GP-LastTransferStatus Headers
+######
+standard-link.providers.gp.operations.LastTransferStatus.header.authorization=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwYXlsb2FkIjoiMkpNUWl2TlFYM0lhcVd3OGg0WHVEa205UWwzM2FZZEFPZkNCbkFINDc0T1I1U1hEWTR1eW95NVl4a2UxR1dnNGJLU0xJNFU2aDFRTk5VRkpSbEdZN0lUdVVLOEZvbE5nakxUT0pUY2RoenlmL1RwbzlBL1JHN1ZLV29nY1h5eFVTclNuUXBubXZpNERnZDE0WSsxVmpzNTYrVGEvMmU1L2RkV1BZd3J4YXlOeDExVlcvc1k0dDl1NFRnTXlSQUR2dlRraEkxMXRIUXV6N2FVM0NVVUluYTErdG1XZ0xwVXpJZW93MENFbmNxN3R2TkEvQ3czMmZLYytNdW5zTlRPdjFGVEtRQ3RkVEYzVFo1R3Q4L3hqZUN5Q256aUNMS2VhIiwiaXNzIjoiRVJTMzYwIiwiZXhwIjoxNjQ4NjY4OTY0LCJpYXQiOjE2NDg2Mzg5NjR9.Hho_UTAtIR23a2kaJ9Bf9m4sQBfIrtZDc9Va487hdnY
+standard-link.providers.gp.operations.LastTransferStatus.header.validateOnly=false
+
+#########################
+# GP-LastTransferStatus Constants
+######
+standard-link.providers.gp.operations.LastTransferStatus.constants.constant1=constant1
+
+#########################
+# GP-LastTransferStatus Validators
+######
+standard-link.providers.gp.operations.LastTransferStatus.fields.validationEnabled=false
+
+#########################
+# GP-LastTransferStatus ResultCodes
+######
+standard-link.providers.gp.operations.LastTransferStatus.resultCodes.0.mapping=200
+
+#########################
+# GP-fetchRegionInfoInternalFields
+######
+
+### Support for Path parameters in outbound request Url #######
+standard-link.providers.gp.TYPES=VIEWREGIONREQ
+### Support for Path parameters in outbound request Url #######
+standard-link.providers.gp.operations.fetchRegionInfoInternal.fields.TYPE=VIEWREGIONREQ
+standard-link.providers.gp.operations.fetchRegionInfoInternal.fields.columnNames=GEOGRAPHYCODE
+standard-link.providers.gp.operations.fetchRegionInfoInternal.fields.server_url=http://ers-region-management-service.ers-prod.svc.cluster.local:8000/rgms/v1/region/associatedregions
+standard-link.providers.gp.operations.fetchRegionInfoInternal.fields.responseType=VIEWREGIONRESP
+standard-link.providers.gp.operations.fetchRegionInfoInternal.fields.httpMethod=GET
+standard-link.providers.gp.operations.fetchRegionInfoInternal.fields.bodyRequest=false
+#standard-link.providers.gp.operations.fetchRegionInfoInternal.fields.DISTRIBUTOR=REGION
+standard-link.providers.gp.operations.fetchRegionInfoInternal.fields.SE=REGION,AREA,TERRITORY
+#standard-link.providers.gp.operations.fetchRegionInfoInternal.fields.POS=REGION,AREA,TERRITORY,THANA
+standard-link.providers.gp.operations.fetchRegionInfoInternal.fields.DIST=REGION,AREA
+standard-link.providers.gp.operations.fetchRegionInfoInternal.fields.RET=REGION,AREA,TERRITORY,THANA
+
+#########################
+# GP-fetchRegionInfoInternal Headers
+######
+standard-link.providers.gp.operations.fetchRegionInfoInternal.header.header1=header1
+
+#########################
+# GP-fetchRegionInfoInternal Constants
+######
+standard-link.providers.gp.operations.fetchRegionInfoInternal.constants.constant1=constant1
+
+#########################
+# GP-fetchRegionInfoInternal Validators
+######
+standard-link.providers.gp.operations.fetchRegionInfoInternal.fields.validationEnabled=false
+
+#########################
+# GP-fetchRegionInfoInternal ResultCodes
+######
+standard-link.providers.gp.operations.fetchRegionInfoInternal.resultCodes.0.mapping=200:Success
+
+#########################
+# GP-C2STransferStatus Fields
+######
+standard-link.providers.gp.operations.c2sTransferStatus.fields.server_url=http://ers-bi-engine-service.ers-prod.svc.cluster.local:8917/bi-engine/fetch/
+standard-link.providers.gp.operations.c2sTransferStatus.fields.responseType=EXRCSTATRESP
+standard-link.providers.gp.operations.c2sTransferStatus.fields.requestTypes=EXRCTRFREQ EXPPBTRFREQ
+standard-link.providers.gp.operations.c2sTransferStatus.fields.fetchLimit=1
+standard-link.providers.gp.operations.c2sTransferStatus.fields.reportName=c2s_transfer_status
+
+standard-link.providers.gp.operations.c2sTransferStatus.fields.RC=Customer Recharge
+standard-link.providers.gp.operations.c2sTransferStatus.fields.PPB=Postpaid Bill Payment
+
+#########################
+# GP-C2STransferStatus Headers
+######
+standard-link.providers.gp.operations.c2sTransferStatus.headers.system-token={"ersReference":"20210520133633282010000000642","startTime":1615900340,"rootComponent":"slc","context":{"client":{},"initiator":{"uid":"operator","typ":"RESELLERUSERNAME","rtp":"OMAN Operator","resellerPath":"OPERATOR"}}}
+standard-link.providers.gp.operations.c2sTransferStatus.headers.validateOnly=false
+
+#########################
+# GP-C2STransferStatus Constants
+######
+standard-link.providers.gp.operations.c2sTransferStatus.constants.currency=BDT
+
+#########################
+# GP-C2STransferStatus Validators
+######
+standard-link.providers.gp.operations.c2sTransferStatus.fields.validationEnabled=false
+
+#########################
+# GP-C2STransferStatus ResultCodes
+######
+standard-link.providers.gp.operations.c2sTransferStatus.resultCodes.0.mapping=200
+
+#########################
+# GP-ValidateOtpAndResetPassword Fields
+######
+standard-link.providers.gp.operations.validateOtpAndResetPassword.fields.server_url=http://ers-dealer-management-system-service.ers-prod.svc.cluster.local:8033/dms/auth/updateResellerUsers
+standard-link.providers.gp.operations.validateOtpAndResetPassword.fields.pinValidationCode=7070
+standard-link.providers.gp.operations.validateOtpAndResetPassword.fields.pinValidationMessage=new pin and confirm pin do not match.
+
+#########################
+# GP-ValidateOtpAndResetPassword Headers
+######
+standard-link.providers.gp.operations.validateOtpAndResetPassword.headers.system-token={"ersReference":"20210520133633282010000000642","startTime":1615900340,"rootComponent":"slc","context":{"client":{},"initiator":{"uid":"operator","typ":"RESELLERUSERNAME","rtp":"OMAN Operator","resellerPath":"OPERATOR"}}}
+standard-link.providers.gp.operations.validateOtpAndResetPassword.headers.validateOnly=false
+
+#########################
+# GP-ValidateOtpAndResetPassword Constants
+######
+standard-link.providers.gp.operations.validateOtpAndResetPassword.constants.currency=BDT
+
+#########################
+# GP-ValidateOtpAndResetPassword Validators
+######
+standard-link.providers.gp.operations.validateOtpAndResetPassword.fields.validationEnabled=false
+
+#########################
+# GP-ValidateOtpAndResetPassword ResultCodes
+######
+standard-link.providers.gp.operations.validateOtpAndResetPassword.resultCodes.0.mapping=0:OK
+
+#########################
+# GP-SubscriberLastTransactionStatusUSSD Fields
+######
+standard-link.providers.gp.operations.subscriberLastTransactionStatusUssd.fields.server_url=http://ers-bi-engine-service.ers-prod.svc.cluster.local:8917/bi-engine/fetch
+standard-link.providers.gp.operations.subscriberLastTransactionStatusUssd.fields.responseType=PLTRESP
+standard-link.providers.gp.operations.subscriberLastTransactionStatusUssd.fields.reportName=subscriber_last_transaction_status
+
+#########################
+# GP-SubscriberLastTransactionStatusUSSD Headers
+######
+standard-link.providers.gp.operations.subscriberLastTransactionStatusUssd.headers.system-token={"ersReference":"20210520133633282010000000642","startTime":1615900340,"rootComponent":"slc","context":{"client":{},"initiator":{"uid":"operator","typ":"RESELLERUSERNAME","rtp":"OMAN Operator","resellerPath":"OPERATOR"}}}
+standard-link.providers.gp.operations.subscriberLastTransactionStatusUssd.headers.validateOnly=false
+
+#########################
+# GP-SubscriberLastTransactionStatusUSSD Constants
+######
+standard-link.providers.gp.operations.subscriberLastTransactionStatusUssd.constants.currency=BDT
+
+#########################
+# GP-SubscriberLastTransactionStatusUSSD Validators
+######
+standard-link.providers.gp.operations.subscriberLastTransactionStatusUssd.fields.validationEnabled=false
+
+#########################
+# GP-SubscriberLastTransactionStatusUSSD ResultCodes
+######
+standard-link.providers.gp.operations.subscriberLastTransactionStatusUssd.resultCodes.0.mapping=200:Success
+
+#########################
+# GP-SKITTORCUSSD Fields
+######
+standard-link.providers.gp.operations.SKITTORCUSSD.fields.server_url=http://ers-txe-service-8088.ers-prod.svc.cluster.local:8088/txe/v1/requestTopup
+standard-link.providers.gp.operations.SKITTORCUSSD.fields.responseType=XRCTRFRESP
+standard-link.providers.gp.operations.SKITTORCUSSD.fields.senderAccountId=RESELLER
+standard-link.providers.gp.operations.SKITTORCUSSD.fields.receiverAccountId=SKITTO
+standard-link.providers.gp.operations.SKITTORCUSSD.fields.1=CVG
+standard-link.providers.gp.operations.SKITTORCUSSD.fields.2=C
+standard-link.providers.gp.operations.SKITTORCUSSD.fields.3=VG
+
+#########################
+# GP-SKITTORCUSSD Headers
+######
+standard-link.providers.gp.operations.SKITTORCUSSD.headers.system-token={"ersReference":"20210520133633282010000000642","startTime":1615900340,"rootComponent":"slc","context":{"client":{},"initiator":{"uid":"operator","typ":"RESELLERUSERNAME","rtp":"OMAN Operator","resellerPath":"OPERATOR"}}}
+standard-link.providers.gp.operations.SKITTORCUSSD.headers.validateOnly=false
+
+#########################
+# GP-SKITTORCUSSD Constants
+######
+standard-link.providers.gp.operations.SKITTORCUSSD.constants.currency=BDT
+
+#########################
+# GP-SKITTORCUSSD Validators
+######
+standard-link.providers.gp.operations.SKITTORCUSSD.fields.validationEnabled=false
+
+#########################
+# GP-SKITTORCUSSD ResultCodes
+######
+standard-link.providers.gp.operations.SKITTORCUSSD.resultCodes.0.mapping=200:Success
+
+#########################
+# GP-C2sPostPaidBillPayment Fields
+######
+standard-link.providers.gp.operations.C2sPostPaidBillPayment.fields.server_url=http://ers-txe-service-8088.ers-prod.svc.cluster.local:8088/txe/v1/requestTopup
+standard-link.providers.gp.operations.C2sPostPaidBillPayment.fields.responseType=EXPPBTRFRESP
+standard-link.providers.gp.operations.C2sPostPaidBillPayment.fields.senderAccountId=RESELLER
+standard-link.providers.gp.operations.C2sPostPaidBillPayment.fields.receiverAccountId=AIRTIME
+standard-link.providers.gp.operations.C2sPostPaidBillPayment.fields.serviceType=RC
+standard-link.providers.gp.operations.C2sPostPaidBillPayment.fields.1=CVG
+standard-link.providers.gp.operations.C2sPostPaidBillPayment.fields.2=C
+standard-link.providers.gp.operations.C2sPostPaidBillPayment.fields.3=VG
+
+#########################
+# GP-C2sPostPaidBillPayment Headers
+######
+standard-link.providers.gp.operations.C2sPostPaidBillPayment.headers.system-token={"ersReference":"20210520133633282010000000642","startTime":1615900340,"rootComponent":"slc","context":{"client":{},"initiator":{"uid":"operator","typ":"RESELLERUSERNAME","rtp":"OMAN Operator","resellerPath":"OPERATOR"}}}
+standard-link.providers.gp.operations.C2sPostPaidBillPayment.headers.validateOnly=false
+
+#########################
+# GP-C2sPostPaidBillPayment Constants
+######
+standard-link.providers.gp.operations.C2sPostPaidBillPayment.constants.currency=BDT
+
+#########################
+# GP-C2sPostPaidBillPayment Validators
+######
+standard-link.providers.gp.operations.C2sPostPaidBillPayment.fields.validationEnabled=false
+
+#########################
+# GP-C2sPostPaidBillPayment ResultCodes
+######
+standard-link.providers.gp.operations.C2sPostPaidBillPayment.resultCodes.0.mapping=200
+standard-link.providers.gp.operations.C2sPostPaidBillPayment.resultCodes.402.mapping=6669:Amount should be greater than zero
+standard-link.providers.gp.operations.C2sPostPaidBillPayment.resultCodes.202.mapping=10077:Incorrect sender credential
+
+#########################
+# GP-SKITTORCEXTGT Fields
+######
+standard-link.providers.gp.operations.SKITTORCEXTGT.fields.server_url=http://ers-txe-service-8088.ers-prod.svc.cluster.local:8088/txe/v1/requestTopup
+standard-link.providers.gp.operations.SKITTORCEXTGT.fields.responseType=EXXRCTRFRESP
+standard-link.providers.gp.operations.SKITTORCEXTGT.fields.senderAccountId=RESELLER
+standard-link.providers.gp.operations.SKITTORCEXTGT.fields.receiverAccountId=SKITTO
+standard-link.providers.gp.operations.SKITTORCEXTGT.fields.serviceType=RC
+
+#########################
+# GP-SKITTORCEXTGT Headers
+######
+standard-link.providers.gp.operations.SKITTORCEXTGT.headers.system-token={"ersReference":"20210520133633282010000000642","startTime":1615900340,"rootComponent":"slc","context":{"client":{},"initiator":{"uid":"operator","typ":"RESELLERUSERNAME","rtp":"OMAN Operator","resellerPath":"OPERATOR"}}}
+standard-link.providers.gp.operations.SKITTORCEXTGT.headers.validateOnly=false
+
+#########################
+# GP-SKITTORCEXTGT Constants
+######
+standard-link.providers.gp.operations.SKITTORCEXTGT.constants.currency=BDT
+
+#########################
+# GP-SKITTORCEXTGT Validators
+######
+standard-link.providers.gp.operations.SKITTORCEXTGT.fields.validationEnabled=false
+
+#########################
+# GP-SKITTORCEXTGT ResultCodes
+######
+standard-link.providers.gp.operations.SKITTORCEXTGT.resultCodes.0.mapping=200
+standard-link.providers.gp.operations.SKITTORCEXTGT.resultCodes.402.mapping=6669:Amount should be greater than zero
+standard-link.providers.gp.operations.SKITTORCEXTGT.resultCodes.202.mapping=10077:Incorrect sender credential
+
+####################################
+####  GP-USSD-SMS-NOTIFICATION  ####
+#########################
+
+standard-link.providers.gp.operations.sendNotification.fields.url=http://ers-notification-manager-service.ers-prod.svc.cluster.local:8277/register
+standard-link.providers.gp.operations.sendNotification.fields.dateFormat=yyyy-MM-dd HH:mm:ss.SSSSS
+standard-link.providers.gp.operations.sendNotification.fields.msisdnPrefix=880
+
+#########################
+# GP-SKITTOQUERY Fields
+######
+#standard-link.providers.gp.operations.skittoQuery.fields.server_url=http://ers-linksimulator-service.ers-prod.svc.cluster.local:9080/restservice/SkittoQueryTopup
+standard-link.providers.gp.operations.skittoQuery.fields.server_url=https://10.12.121.57:8246/services/TopupService?wsdl
+standard-link.providers.gp.operations.skittoQuery.fields.responseType=SKITTOQUERYRESP
+
+#########################
+# GP-SEARCH_RESELLER_BY_ATTRIBUTE Fields
+######
+standard-link.providers.gp.operations.SearchResellerByAttribute.fields.server_url=http://ers-dealer-management-system-service.ers-prod.svc.cluster.local:8033/dms/auth/searchResellersByAttribute?limit=1&offSet=0
+#standard-link.providers.gp.operations.SearchResellerByAttribute.fields.server_url=http://ers-dealer-management-system-service.ers-prod.svc.cluster.local:8033/dms/auth/searchResellersByAttribute?limit=1&offSet=0
+standard-link.providers.gp.operations.SearchResellerByAttribute.fields.responseType=SEARCHRESELLERRESP
+standard-link.providers.gp.operations.SearchResellerByAttribute.fields.httpMethod=POST
+
+standard-link.providers.gp.operations.SearchResellerByAttribute.resultCodes.0.mapping=200
+#########################
+# GP-Update Reseller Fields
+######
+standard-link.providers.gp.operations.UpdateReseller.fields.server_url=http://ers-dealer-management-system-service.ers-prod.svc.cluster.local:8033/dms/auth/updateReseller
+standard-link.providers.gp.operations.UpdateReseller.fields.responseType=USERMODRESP
+standard-link.providers.gp.operations.UpdateReseller.fields.resellerStatus=Active
+standard-link.providers.gp.operations.UpdateReseller.fields.defaultPin=1234
+
+standard-link.providers.gp.operations.UpdateReseller.fields.validationEnabled=true
+standard-link.providers.gp.operations.UpdateReseller.validators.WEBLOGINID.valueExpression=COMMAND['DATA']['WEBLOGINID']
+standard-link.providers.gp.operations.UpdateReseller.validators.WEBLOGINID.required=false
+standard-link.providers.gp.operations.UpdateReseller.validators.WEBLOGINID.tagrequired=true
+standard-link.providers.gp.operations.UpdateReseller.validators.WEBLOGINID.validateExpression=
+
+#########################
+# GP-updateReseller ResultCodes
+######
+
+standard-link.providers.gp.operations.updateReseller.resultCodes.0.mapping=200
+
+standard-link.providers.gp.operations.USERBALANCEENQUIRY.fields.dealerTypeId=RESELLERMSISDN
+standard-link.providers.gp.operations.USERBALANCEENQUIRY.fields.server_url=http://ers-dealer-management-system-service.ers-prod.svc.cluster.local:8033/dms/auth/getResellerInfo
+
+
+standard-link.providers.gp.allowBase64=text/plain,application/xml
+standard-link.providers.gp.allowBase64Fields=PIN,NEWPIN,CONFIRMPIN
+
+###Added to test Pvas issue##
+#########################
+# GP-promoVasValidateTopup Fields
+######
+#standard-link.providers.gp.operations.PROMOVASVALIDATETOPUP.fields.server_url=http://ers-linksimulator-service.ers-prod.svc.cluster.local:8096/services/ws/ValidateTopup
+standard-link.providers.gp.operations.PROMOVASVALIDATETOPUP.fields.request_dto_package=com.seamless.ers.standardlink.model.customer.gp.validateTopup.request
+standard-link.providers.gp.operations.PROMOVASVALIDATETOPUP.fields.response_dto_package=com.seamless.ers.standardlink.model.customer.gp.validateTopup.response
+standard-link.providers.gp.operations.PROMOVASVALIDATETOPUP.fields.transaction_type=VALIDATETOPUP
+standard-link.providers.gp.operations.PROMOVASVALIDATETOPUP.fields.amountUnitRelation=100
+#standard-link.providers.gp.operations.PROMOVASVALIDATETOPUP.fields.skipValidation=false
+standard-link.providers.gp.operations.PROMOVASVALIDATETOPUP.fields.requestChannelId=ccpsValidateTopupRequestChannel
+
+#standard-link.providers.gp.operations.PROMOVASTOPUP.fields.server_url=http://ers-linksimulator-service.ers-prod.svc.cluster.local:8096/services/ws/ValidateTopup
+standard-link.providers.gp.operations.PROMOVASTOPUP.fields.request_dto_package=com.seamless.ers.standardlink.model.customer.gp.validateTopup.request
+standard-link.providers.gp.operations.PROMOVASTOPUP.fields.response_dto_package=com.seamless.ers.standardlink.model.customer.gp.validateTopup.response
+standard-link.providers.gp.operations.PROMOVASTOPUP.fields.transaction_type=VALIDATETOPUP
+standard-link.providers.gp.operations.PROMOVASTOPUP.fields.amountUnitRelation=100
+#standard-link.providers.gp.operations.PROMOVASTOPUP.fields.skipValidation=false
+standard-link.providers.gp.operations.PROMOVASTOPUP.fields.requestChannelId=ccpsValidateTopupRequestChannel
+standard-link.providers.gp.operations.PROMOVASTOPUP.resultCodes.0.mapping=200:Success
+
+
+
+#########################
+# GP-setPinUssd Decoder
+######
+standard-link.providers.gp.operations.setPinUssd.decoder.enabled=true
+#standard-link.providers.gp.operations.setPinUssd.decoder.content-types=text/xml,text/plain,application/xml,application/xml;charset=UTF-8,text/plain;charset=UTF-8,text/xml;charset=UTF-8
+standard-link.providers.gp.operations.setPinUssd.decoder.content-types=text/plain,application/xml,application/xml;charset=UTF-8,text/plain;charset=UTF-8,text/xml,text/xml;charset=UTF-8
+standard-link.providers.gp.operations.setPinUssd.decoder.target-fields=PIN,NEWPIN,CONFIRMPIN
+
+##MSISDN prefix for skitto 
+standard-link.providers.gp.operations.skittoTopup.fields.msisdn_strip_prefix=
+standard-link.providers.gp.operations.skittoTopup.fields.msisdn_add_prefix=
+
+standard-link.providers.gp.operations.changePasswordUSSD.decoder.content-types=text/plain,application/xml,application/xml;charset=UTF-8,text/plain;charset=UTF-8
+standard-link.providers.gp.operations.changePasswordUSSD.decoder.enabled=true
+standard-link.providers.gp.operations.changePasswordUSSD.decoder.target-fields=PIN,NEWPIN,CONFIRMPIN
+
+
+#########################
+# GP-USERBALANCEENQUIRY Fields
+######
+
+standard-link.providers.gp.operations.USERBALANCEENQUIRY.fields.server_url=http://ers-dealer-management-system-service.ers-prod.svc.cluster.local:8033/dms/v1/resellers/getResellerInfo
+standard-link.providers.gp.operations.USERBALANCEENQUIRY.fields.responseType=OTHERBALANCERESP
+standard-link.providers.gp.operations.USERBALANCEENQUIRY.fields.product=flexiLoad
+standard-link.providers.gp.operations.USERBALANCEENQUIRY.fields.productCode=101
+standard-link.providers.gp.operations.USERBALANCEENQUIRY.fields.queryParams=false
+standard-link.providers.gp.operations.USERBALANCEENQUIRY.fields.bodyRequest=true
+
+#########################
+# GP-USERBALANCEENQUIRY Headers
+######
+standard-link.providers.gp.operations.USERBALANCEENQUIRY.headers.system-token={"ersReference": "87627365768275356666","startTime": "1614254784400","rootComponent": "kyc","context":{"initiator":{"uid": "DIST_11","typ": "RESELLERID","rtp": "DISTRIBUTOR"},"client":{"channel": "web","clientId": "postman"}}}
+standard-link.providers.gp.operations.USERBALANCEENQUIRY.headers.authorization=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwYXlsb2FkIjoiMkpNUWl2TlFYM0lsUE1DdnIyTjczbTc1cHlvYUtCazVEcUp2ckJkL3JScVZ1NWJKTmlzeGZiK1lMdlhyYjdOOTg3ZUhnMzdSWVJnUDNEeHNXTGZrS010R2FCclVKUi8xOWIzOGR4UEJLcWZBUjJnTTZmQ2YybEtyWGhsWUxkMjVxVEpudGt1N2J3OD0iLCJpc3MiOiJFUlMzNjAiLCJleHAiOjE2MTg1Njc5NzgsImlhdCI6MTYxODU2NzY3OH0.cwox_PstNyuq8S8tGqReITdK3K8IPa8uE-0ZG2pG01Y
+standard-link.providers.gp.operations.USERBALANCEENQUIRY.headers.validateOnly=false
+
+
+#########################
+# GP-USERBALANCEENQUIRY Constants
+######
+standard-link.providers.gp.operations.USERBALANCEENQUIRY.constants.productCode=FlexiLOAD
+standard-link.providers.gp.operations.USERBALANCEENQUIRY.constants.productShortName=FlexiLOAD
+#########################
+# GP-USERBALANCEENQUIRY Validators
+######
+standard-link.providers.gp.operations.USERBALANCEENQUIRY.fields.validationEnabled=false
+standard-link.providers.gp.operations.USERBALANCEENQUIRY.validators.MSISDN.valueExpression=standardRequestModel['MSISDNS']['RECEIVER_MSISDN']
+standard-link.providers.gp.operations.USERBALANCEENQUIRY.validators.MSISDN.required=true
+standard-link.providers.gp.operations.USERBALANCEENQUIRY.validators.MSISDN.validateExpression=
+
+#########################
+
+# GP-USERBALANCEENQUIRY ResultCodes
+######
+standard-link.providers.gp.operations.USERBALANCEENQUIRY.resultCodes.0.mapping=200:Success
+
+#########################
+# GP-CCPSQUERY Fields
+######
+standard-link.providers.gp.operations.ccpsQuery.fields.server_url=https://prod-ccps.grameenphone.com:443/ccps-reports/reportsRootUrl/getPaymentTxnDetails
+standard-link.providers.gp.operations.ccpsQuery.fields.responseType=CCPSQUERYRESP
+
+
+
+
+###FOR SKITTO QUERY TOPUP###
+
+standard-link.providers.gp.operations.skittoQuery.fields.request_dto_package=com.seamless.ers.standardlink.model.customer.gp.queryTopup.request
+standard-link.providers.gp.operations.skittoQuery.fields.response_dto_package=com.seamless.ers.standardlink.model.customer.gp.queryTopup.response
+standard-link.providers.gp.operations.skittoQuery.fields.isWebServiceInterceptorEnable=true
+standard-link.providers.gp.operations.skittoQuery.fields.webServiceInterceptors=com.seamless.ers.standardlink.interceptors.soap.WebServiceAddHeaderInterceptor
+standard-link.providers.gp.operations.skittoQuery.fields.soapAction=http://www.inew-cs.com/mvno/integration/TopupService/queryTopup
+
+#########################
+# GP-queryTopup ResultCodes
+# GP-SKITTOQUERY Headers
+######
+standard-link.providers.gp.operations.skittoQuery.header.header1Key=header1Value
+standard-link.providers.gp.operations.skittoQuery.header.header2Key=header2Value
+
+#########################
+# GP-SKITTOQUERY Constants
+######
+standard-link.providers.gp.operations.skittoQuery.constants.constant1Key=constant1Value
+standard-link.providers.gp.operations.skittoQuery.constants.constant2Key=constant2Value
+
+
+standard-link.providers.gp.operations.skittoQueryTopup.fields.isWebServiceInterceptorEnable=true
+standard-link.providers.gp.operations.skittoQueryTopup.fields.webServiceInterceptors=com.seamless.ers.standardlink.interceptors.soap.WebServiceAddHeaderInterceptor
+standard-link.providers.gp.operations.skittoQueryTopup.fields.soapAction=http://www.inew-cs.com/mvno/integration/TopupService/queryTopup
+
+
+
+#########################
+# GP-resetPinUssd Fields
+######
+standard-link.providers.gp.operations.resetPinUssd.fields.server_url=http://ers-txe-service.ers-prod.svc.cluster.local:8777/txe/subscriber
+standard-link.providers.gp.operations.resetPinUssd.fields.request_dto_package=com.seamless.ers.standardlink.model.customer.gp.setpin.request
+standard-link.providers.gp.operations.resetPinUssd.fields.response_dto_package=com.seamless.ers.standardlink.model.customer.gp.setpin.response
+standard-link.providers.gp.operations.resetPinUssd.fields.transaction_type=CCPRREQ
+standard-link.providers.gp.operations.resetPinUssd.fields.serviceType=P2P_SERVICE
+standard-link.providers.gp.operations.resetPinUssd.fields.responseType=CCPRRESP
+
+#########################
+# GP-resetPinUssd Decoder
+######
+standard-link.providers.gp.operations.resetPinUssd.decoder.enabled=true
+standard-link.providers.gp.operations.resetPinUssd.decoder.content-types=text/plain,application/xml,application/xml;charset=UTF-8,text/plain;charset=UTF-8
+standard-link.providers.gp.operations.resetPinUssd.decoder.target-fields=PIN,NEWPIN,CONFIRMPIN
+
+
+#########################
+# GP-resetPinUssd Headers
+######
+standard-link.providers.gp.operations.resetPinUssd.header.header1=header1
+
+#########################
+# GP-resetPinUssd Constants
+######
+standard-link.providers.gp.operations.resetPinUssd.constants.serviceType=P2P_SERVICE
+standard-link.providers.gp.operations.resetPinUssd.constants.subscriberPrincipal=SUBSCRIBERMSISDN
+
+#########################
+# GP-resetPinUssd Validators
+######
+standard-link.providers.gp.operations.resetPinUssd.fields.validationEnabled=false
+
+#########################
+# GP-resetPinUssd ResultCodes
+######
+standard-link.providers.gp.operations.resetPinUssd.resultCodes.0.mapping=200:Your have successfully reset your pin .Your new pin is:
+standard-link.providers.gp.operations.resetPinUssd.resultCodes.1502.mapping=1502:Failed
+standard-link.providers.gp.operations.resetPinUssd.resultCodes.3004.mapping=3004:Failed
+standard-link.providers.gp.operations.resetPinUssd.resultCodes.1009.mapping=1009:Failed
+standard-link.providers.gp.operations.resetPinUssd.resultCodes.3008.mapping=3008:Failed
+standard-link.providers.gp.operations.resetPinUssd.resultCodes.3017.mapping=3017:Failed

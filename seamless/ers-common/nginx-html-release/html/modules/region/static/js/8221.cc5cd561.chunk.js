@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_region=self.webpackChunk_unified_region||[]).push([[8221],{8221:(e,n,i)=>{"use strict";i.r(n),i.d(n,{default:()=>r});const r=[{name:"regions",path:"region/regions"},{name:"cellID",path:"region/cell-id"},{name:"allowedTransfers",path:"region/allowed-transfers"},{name:"regionTypes",path:"region/region-types"}]}}]);

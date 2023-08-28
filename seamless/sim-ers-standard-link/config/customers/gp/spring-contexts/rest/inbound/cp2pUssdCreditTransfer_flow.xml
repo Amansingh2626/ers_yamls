@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration https://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd"
+       xmlns:integration="http://www.springframework.org/schema/integration"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:integration-http="http://www.springframework.org/schema/integration/http">
+
+    <task:executor id="cp2pUssdCreditTransferExecutor"  keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+    <task:executor id="cp2pUssdCreditTransferValidExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+    <task:executor id="cp2pUssdCreditTransferResponseExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+    <task:executor id="cp2pUssdCreditTransferRestTemplateExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+
+    <integration:channel id="cp2pUssdCreditTransferRequestChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="cp2pUssdCreditTransferValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="cp2pUssdCreditTransferRestTemplateInputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="cp2pUssdCreditTransferInValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="cp2pUssdCreditTransferResponseChainInputChannel">
+        <integration:queue/>
+    </integration:channel>
+
+    <integration:channel id="cp2pUssdCreditTransferTransformerResponseChannel"/>
+    <integration:channel id="cp2pUssdCreditTransferPollerServiceActivatorResponseChannel"/>
+    <integration:channel id="cp2pUssdCreditTransferServiceActivatorResponseChannel"/>
+    <integration:channel id="cp2pUssdCreditTransferOperationHeaderEnricherOutputChannel"/>
+    <integration:channel id="cp2pUssdCreditTransferValidatorOutputChannel"/>
+    <integration:channel id="cp2pUssdCreditTransferValidationChainOutputChannel"/>
+
+
+    <!--  Validator Chain  -->
+    <integration:chain input-channel="cp2pUssdCreditTransferRequestChannel" output-channel="cp2pUssdCreditTransferValidationChainOutputChannel">
+        <integration:poller task-executor="cp2pUssdCreditTransferExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:header-enricher>
+            <integration:header name="OPERATION" value="CP2PUSSDCREDITTRANSFER"/>
+        </integration:header-enricher>
+        <integration:service-activator ref="standardRequestValidator"/>
+        <integration:service-activator ref="standardRequestDecoder"/>
+   </integration:chain>
+
+    <integration:header-value-router input-channel="cp2pUssdCreditTransferValidationChainOutputChannel" header-name="IS_VALID_REQUEST">
+        <integration:mapping value="TRUE" channel="cp2pUssdCreditTransferValidRequestOutputChannel"/>
+        <integration:mapping value="FALSE" channel="cp2pUssdCreditTransferResponseChainInputChannel"/>
+    </integration:header-value-router>
+
+    <!--  Successful Validation Chains  -->
+    <integration:chain input-channel="cp2pUssdCreditTransferValidRequestOutputChannel" send-timeout="1000000"
+                       output-channel="cp2pUssdCreditTransferRestTemplateInputChannel">
+        <integration:poller task-executor="cp2pUssdCreditTransferValidExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="cp2pUssdCreditTransferRequestTransformer"
+                                 ref="cP2PUssdCreditTransferTransformer"
+                                 method="transformInboundRequest">
+        </integration:transformer>
+        <integration:object-to-json-transformer content-type="application/json" />
+    </integration:chain>
+
+    <!--  Outbound Call Chain  -->
+    <integration:chain input-channel="cp2pUssdCreditTransferRestTemplateInputChannel" send-timeout="1000000"
+                       output-channel="cp2pUssdCreditTransferResponseChainInputChannel">
+        <integration:poller task-executor="cp2pUssdCreditTransferRestTemplateExecutor" time-unit="MILLISECONDS" fixed-delay="1200"
+                            max-messages-per-poll="-1"/>
+        <integration:service-activator  ref="standardRestTemplateServiceActivator" async="true" />
+    </integration:chain>
+
+    <!--  Response Chain  -->
+    <integration:chain input-channel="cp2pUssdCreditTransferResponseChainInputChannel" send-timeout="1000000"
+                       output-channel="inboundRequestMarshallerOutputChannel">
+        <integration:poller task-executor="cp2pUssdCreditTransferResponseExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="cp2pUssdCreditTransferResponseTransformer"
+                                 ref="cP2PUssdCreditTransferTransformer"
+                                 method="transformOutboundResponse"/>
+        <integration:transformer ref="standardMarshalingTransformer"/>
+    </integration:chain>
+
+</beans>

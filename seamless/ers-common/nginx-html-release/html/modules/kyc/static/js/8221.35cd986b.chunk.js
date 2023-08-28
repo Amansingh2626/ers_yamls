@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_kyc=self.webpackChunk_unified_kyc||[]).push([[8221],{98221:(e,a,c)=>{"use strict";c.r(a),c.d(a,{default:()=>p});const p=[{name:"search",path:"kyc/search"},{name:"approve",path:"kyc/approval"},{name:"register",path:"kyc/register"}]}}]);

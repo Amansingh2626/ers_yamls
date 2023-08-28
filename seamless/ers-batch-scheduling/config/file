@@ -1,0 +1,1303 @@
+#-------------------------------------------------------------------------------------
+# Batch Scheduling Application
+#-------------------------------------------------------------------------------------
+spring.application.name=batch-scheduling
+server.port=8085
+server.servlet.context-path=/bss
+
+# Swagger UI URL http://localhost:8085/bss/swagger-ui/index.html
+# http://localhost:8085/bss/v2/api-docs
+# http://localhost:8085/bss/v3/api-docs
+
+springdoc.swagger-ui.disable-swagger-default-url=true
+messages.source.files.path=/opt/seamless/conf/batch-scheduling
+logging.config=/opt/seamless/conf/batch-scheduling/log4j2.properties
+#-------------------------------------------------------------------------------------
+# Database connection properties
+#-------------------------------------------------------------------------------------
+spring.datasource.url=jdbc:mariadb://localhost:3306/batchschedulingsystem
+spring.datasource.username=refill
+spring.datasource.password=refill
+#-------------------------------------------------------------------------------------
+# JPA properties
+#-------------------------------------------------------------------------------------
+spring.jpa.database-platform=org.hibernate.dialect.MariaDBDialect
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.properties.hibernate.jdbc.time_zone=UTC
+#-------------------------------------------------------------------------------------
+# CORS config
+#-------------------------------------------------------------------------------------
+cors.enable=false
+#comma separated origin list
+cors.allowedorigins=http://localhost:9090,http://localhost:9091
+#-------------------------------------------------------------------------------------
+# Localization config
+#-------------------------------------------------------------------------------------
+bss.supported.languages=en,ar,fr
+
+#-------------------------------------------------------------------------------------
+# Batch properties
+#-------------------------------------------------------------------------------------
+### clientId will be helpfull to distinguish the client
+### for which ftl should be used and below config will
+### be used in bss.freemarker.file.path
+#bss.freemarker.clientId=tt
+bss.freemarker.file.path=/opt/seamless/conf/batch-scheduling/templates
+###/${bss.freemarker.clientId}
+
+#-------------------------------------------------------------------------------------
+# Pending Jobs DB Scanner properties
+#-------------------------------------------------------------------------------------
+# Frequency to scan db for jobs that are pending to be scheduled
+bss.pendingJobScanner.frequency.milliseconds=120000
+# Scan jobs that are older than <olderThan> seconds
+bss.pendingJobScanner.olderThan.milliseconds=60000
+# Limit number of jobs to be run
+bss.pendingJobScanner.nbjobs.limit=10
+
+#-------------------------------------------------------------------------------------
+# OSM service connection (Object Store Manager)
+#-------------------------------------------------------------------------------------
+bss.osmApi.url=http://localhost:3000/osm
+#bss.osmApi.url=http://10.91.8.31:3000/osm
+bss.osmApi.uri=/v1/resource/
+bss.osmApi.connectionTimeout=5000
+bss.osmApi.requestTimeout=60000
+#-------------------------------------------------------------------------------------
+# Inventory Management System (through nginx)
+#-------------------------------------------------------------------------------------
+bss.imsApi.url=http://localhost/api/ims
+bss.imsApi.connectionTimeout=5000
+bss.imsApi.requestTimeout=60000
+bss.imsApi.importInventoryUri=/v1/bulk-import
+bss.imsApi.updateInventoryUri=/v1/inventory/update/bulk-import
+#-------------------------------------------------------------------------------------
+# Dealer Management System (through nginx)
+#-------------------------------------------------------------------------------------
+bss.dmsApi.url=http://localhost/api/dms
+bss.dmsApiV2.url=http://localhost/api/dms
+bss.dmsApi.connectionTimeout=5000
+bss.dmsApi.requestTimeout=60000
+bss.dmsApi.socketTimeout=60000
+bss.dmsApi.importResellerUri=/v1/resellers/create
+bss.dmsApi.updateResellerUri=/v2/auth/bulkUpdate
+bss.dmsApi.bulkAddResellerUsersUri=/v1/resellers/bulkAddResellerUsers
+
+#-------------------------------------------------------------------------------------
+# Order Management System (through nginx)
+#-------------------------------------------------------------------------------------
+
+bss.omsApi.url=http://localhost/api/oms
+bss.omsApi.connectionTimeout=5000
+bss.omsApi.requestTimeout=60000
+
+bss.omsApi.formDataEnabled=false
+### if bss.omsApi.omsFormDataEnabled=true then below url should be /v1/orders
+### incase of bss.omsApi.formDataEnabled=false below url should be /v2/orders
+#bss.omsApi.importOrderUri=/v1/orders
+bss.omsApi.importOrderUri=/v2/orders
+
+#-------------------------------------------------------------------------------------
+# HTTPStatus Codes List to be used for event success or failed accordingly
+#-------------------------------------------------------------------------------------
+bss.list.httpSuccessCodes=200,202
+
+#-------------------------------------------------------------------------------------
+# RateCard Configuration (through nginx)
+#-------------------------------------------------------------------------------------
+bss.rateCardApi.url=http://localhost/api/els
+bss.rateCardApi.uri=/v1/ratecard
+bss.rateCardApi.connectionTimeout:5000
+bss.rateCardApi.resquestTimeout:60000
+
+#-------------------------------------------------------------------------------------
+# Authentication Configuration (through nginx)
+#-------------------------------------------------------------------------------------
+bss.idmsApi.baseUrl=http://localhost
+bss.idmsApi.loginUri=/login-backend
+bss.idmsApi.loginChannel=SEAMLESS-UNIFIED
+bss.idmsApi.loginUserId=operator
+bss.idmsApi.loginPassword=2021
+
+#-------------------------------------------------------------------------------------
+# TXE (through nginx)
+#-------------------------------------------------------------------------------------
+
+bss.txeApi.url=http://localhost/api/txe
+bss.txeApi.importTransferUri=/v1/bulkRequestTransfer
+bss.txeApi.connectionTimeout=5000
+bss.txeApi.requestTimeout=60000
+
+#-------------------------------------------------------------------------------------
+# Unified Client - Reference Generator
+#-------------------------------------------------------------------------------------
+bss.ersReferenceGenerator.class_name=com.seamless.common.referencegeneration.TimestampReferenceGenerator
+bss.ersReferenceGenerator.timestamp_repeat_warning_count=10
+bss.ersReferenceGenerator.reference_counter_length=10
+bss.ersReferenceGenerator.node_id=01
+
+#-------------------------------------------------------------------------------------
+# Batch Reseller specific properties
+#-------------------------------------------------------------------------------------
+
+# Map enabled field to status
+bss.reseller.mapping.enabledToStatus={'1':'Active', '0':'Deactivated', 'default':'Deactivated'}
+bss.reseller.mapping.flagToBoolean={'0':'false', '1':'true', 'default':'false'}
+bss.reseller.updateSubType=Users_Unitel_Update
+
+bss.reseller.fieldValidationRegExp={\
+    'phone':'^(00880|880|0)1[0-9]{1}\\d{8}$' ,\
+    'username':'[A-Z0-9-_]+' \
+    }
+bss.reseller.defaultAllowedFor=ALL
+
+#-------------------------------------------------------------------------------------
+# Batch Reseller Users
+#-------------------------------------------------------------------------------------
+# Map enabled field to status
+bss.reselleruser.mapping.enabledToStatus={'1':'Active', '0':'Deactivated', 'default':'Deactivated'}
+bss.reselleruser.mapping.flagToBoolean={'0':'false', '1':'true', 'default':'false'}
+bss.reselleruser.updateSubType=Users_GP_Update
+
+bss.reselleruser.fieldValidationRegExp={\
+    'phone':'(216)?[0-9]{13}' ,\
+    'name':'[A-Za-z0-9-_]+' \
+    }
+bss.reselleruser.defaultAllowedFor=ALL
+
+bss.reselleruser.id=Generic
+bss.reselleruser.allowedFor=${bss.reselleruser.defaultAllowedFor}
+# Default scheduling type (when not provided in the RESP request)
+bss.reselleruser.processor.schedType=immediate
+# Scheduling time in spring cron format (when scheduling type is 'scheduled')
+bss.reselleruser.processor.schedTime=0 0 1 * * ?
+bss.reselleruser.processor.schedTypeDelay-sec=60
+bss.reselleruser.processor.failOnError=false
+bss.reselleruser.processor.chunkSize=10
+bss.reselleruser.processor.maxRetryCount=3
+#after what number of minutes (from the first retry) another retry should be considered
+bss.reselleruser.processor.retryDelay=10
+bss.reselleruser.file.uploadDescription=Reseller ${bss.reselleruser.id} import file
+bss.reselleruser.file.supportedFormats=CSV
+bss.reselleruser.file.format=CSV
+bss.reselleruser.file.csv.freemarkerTemplate=resellerUser_import.ftl
+bss.reselleruser.file.csv.header=email,name,password,phone,record_id,reseller_id,role_id,user_id
+bss.reselleruser.file.csv.hasHeader=true
+bss.reselleruser.file.csv.defaultSeparator=;
+bss.reselleruser.file.csv.fieldMapping.email=COLUMN:email
+bss.reselleruser.file.csv.fieldMapping.name=COLUMN:name
+bss.reselleruser.file.csv.fieldMapping.password=COLUMN:password
+bss.reselleruser.file.csv.fieldMapping.phone=COLUMN:phone
+bss.reselleruser.file.csv.fieldMapping.recordId=COLUMN:record_id
+bss.reselleruser.file.csv.fieldMapping.resellerId=COLUMN:reseller_id
+bss.reselleruser.file.csv.fieldMapping.roleId=COLUMN:role_id
+bss.reselleruser.file.csv.fieldMapping.userId=COLUMN:user_id
+bss.reselleruser.file.csv.fieldValidationRegExp=${bss.reselleruser.fieldValidationRegExp}
+template.IMPORT_RESELLER_USER=batchschedulingFeed_importGeneric.ftl
+
+bss.reseller.id=Generic
+bss.reseller.allowedFor=${bss.reseller.defaultAllowedFor}
+# Default scheduling type (when not provided in the RESP request)
+bss.reseller.processor.schedType=immediate
+# Scheduling time in spring cron format (when scheduling type is 'scheduled')
+bss.reseller.processor.schedTime=0 0 1 * * ?
+bss.reseller.processor.schedTypeDelay-sec=60
+bss.reseller.processor.failOnError=false
+bss.reseller.processor.chunkSize=10
+bss.reseller.processor.maxRetryCount=3
+#after what number of minutes (from the first retry) another retry should be considered
+bss.reseller.processor.retryDelay=10
+bss.reseller.file.uploadDescription=Reseller ${bss.reseller.id} import file
+bss.reseller.file.supportedFormats=CSV,JSON
+bss.reseller.file.format=CSV
+bss.reseller.file.csv.freemarkerTemplate=reseller_import.ftl
+bss.reseller.file.csv.header=fullname,cin,phone,gouvernorat_id,delegation_id,code_postal_id,address,fax,matricule_fiscal,username,otp,password,enabled,motif_desactivation,email,groupe,parent_user,code_conventionnel,digitalised,allowreport,allow_webservice_sell,email_responsable,Localisation
+bss.reseller.file.csv.hasHeader=true
+bss.reseller.file.csv.defaultSeparator=;
+bss.reseller.file.csv.fieldMapping.resellerId=COLUMN:username
+bss.reseller.file.csv.fieldMapping.resellerName=COLUMN:fullname
+bss.reseller.file.csv.fieldMapping.resellerMSISDN=COLUMN:phone
+bss.reseller.file.csv.fieldMapping.resellerTypeId=COLUMN:groupe
+bss.reseller.file.csv.fieldMapping.parentResellerId=COLUMN:parent_user
+bss.reseller.file.csv.fieldMapping.status=MAP_COLUMN:enabledToStatus:enabled
+bss.reseller.file.csv.fieldMapping.address_email=COLUMN:email
+#bss.reseller.file.csv.fieldMapping.address_fax=COLUMN:fax
+bss.reseller.file.csv.fieldMapping.address_street=COLUMN:address
+#bss.reseller.file.csv.fieldMapping.address_zip=COLUMN:code_postal_id
+bss.reseller.file.csv.fieldMapping.extraParam_region=COLUMN:gouvernorat_id
+bss.reseller.file.csv.fieldMapping.extraParam_delegation=COLUMN:delegation_id
+bss.reseller.file.csv.fieldMapping.extraParam_matricule_fiscal=COLUMN:matricule_fiscal
+bss.reseller.file.csv.fieldMapping.extraParam_customer_national_identification_id=COLUMN:cin
+bss.reseller.file.csv.fieldMapping.extraParam_one_time_password=COLUMN:otp
+bss.reseller.file.csv.fieldMapping.extraParam_motte_de_passe=COLUMN:password
+bss.reseller.file.csv.fieldMapping.extraParam_reason_for_activation=COLUMN:motif_desactivation
+bss.reseller.file.csv.fieldMapping.extraParam_code_external_system=COLUMN:code_conventionnel
+bss.reseller.file.csv.fieldMapping.extraParam_allow_mobile_app=COLUMN:digitalised
+bss.reseller.file.csv.fieldMapping.extraParam_allow_report=COLUMN:allowreport
+bss.reseller.file.csv.fieldMapping.extraParam_allow_mobile_sell=COLUMN:allow_webservice_sell
+bss.reseller.file.csv.fieldMapping.extraParam_email_responsible=COLUMN:email_responsable
+bss.reseller.file.csv.fieldMapping.extraParam_postal_code=COLUMN:code_postal_id
+bss.reseller.file.csv.fieldMapping.extraParam_fax=COLUMN:fax
+bss.reseller.file.csv.fieldMapping.extraParam_zone_localisation=COLUMN:Localisation
+bss.reseller.file.csv.fieldValidationRegExp=${bss.reseller.fieldValidationRegExp}
+
+
+#-------------------------------------------------------------------------------------
+# Batch Reseller Type Users Distributor
+#-------------------------------------------------------------------------------------
+bss.reseller.type[0].id=Users_DISTRIBUTOR
+bss.reseller.type[0].allowedFor=${bss.reseller.defaultAllowedFor}
+bss.reseller.type[0].processor.schedType=immediate
+# Scheduling time in spring cron format (when scheduling type is 'scheduled')
+bss.reseller.type[0].processor.schedTime=0 0 1 * * ?
+bss.reseller.type[0].processor.schedTypeDelay-sec=30
+bss.reseller.type[0].processor.failOnError=true
+bss.reseller.type[0].processor.chunkSize=10
+bss.reseller.type[0].file.uploadDescription=Reseller ${bss.reseller.type[0].id} import file
+bss.reseller.type[0].file.supportedFormats=CSV
+bss.reseller.type[0].file.format=CSV
+bss.reseller.type[0].file.csv.freemarkerTemplate=reseller_import.ftl
+bss.reseller.type[0].file.csv.header=Reseller_Type,Reseller_Id,Reseller_MSISDN,Name,Status,External_Code,Password,MSISDN_2,MSISDN_3,SSN,Outlet_Type,Sub_Outlet_Type,Low_Balance_Alert,Contact_Person,Contact_Number,Address_1,Address_2,City,State,Country,Email_ID,Appointment_Date,Parent_Reseller_Id
+bss.reseller.type[0].file.csv.hasHeader=true
+bss.reseller.type[0].file.csv.defaultSeparator=,
+bss.reseller.type[0].file.csv.fieldMapping.resellerId=COLUMN:Reseller_Id
+bss.reseller.type[0].file.csv.fieldMapping.resellerName=COLUMN:Name
+bss.reseller.type[0].file.csv.fieldMapping.resellerMSISDN=COLUMN:Reseller_MSISDN
+bss.reseller.type[0].file.csv.fieldMapping.resellerTypeId=COLUMN:Reseller_Type
+bss.reseller.type[0].file.csv.fieldMapping.parentResellerId=COLUMN:Parent_Reseller_Id
+bss.reseller.type[0].file.csv.fieldMapping.status=MAP_COLUMN:enabledToStatus:Status
+bss.reseller.type[0].file.csv.fieldMapping.address_email=COLUMN:Email_ID
+bss.reseller.type[0].file.csv.fieldMapping.address_street=COLUMN:Address_1
+bss.reseller.type[0].file.csv.fieldMapping.extraParam_city=COLUMN:City
+bss.reseller.type[0].file.csv.fieldMapping.extraParam_ssn=COLUMN:SSN
+bss.reseller.type[0].file.csv.fieldMapping.user_password=COLUMN:Password
+bss.reseller.type[0].file.csv.fieldMapping.extraParam_externalCode=COLUMN:External_Code
+bss.reseller.type[0].file.csv.fieldMapping.extraParam_msisdn2=COLUMN:MSISDN_2
+bss.reseller.type[0].file.csv.fieldMapping.extraParam_msisdn3=COLUMN:MSISDN_3
+bss.reseller.type[0].file.csv.fieldMapping.extraParam_outletType=COLUMN:Outlet_Type
+bss.reseller.type[0].file.csv.fieldMapping.extraParam_subOutletType=COLUMN:Sub_Outlet_Type
+bss.reseller.type[0].file.csv.fieldMapping.extraParam_lba=MAP_COLUMN:enabledToStatus:Low_Balance_Alert
+bss.reseller.type[0].file.csv.fieldMapping.extraParam_contactPerson=COLUMN:Contact_Person
+bss.reseller.type[0].file.csv.fieldMapping.extraParam_contactNumber=COLUMN:Contact_Number
+bss.reseller.type[0].file.csv.fieldMapping.extraParam_state=COLUMN:State
+bss.reseller.type[0].file.csv.fieldMapping.extraParam_country=COLUMN:Country
+bss.reseller.type[0].file.csv.fieldMapping.extraParam_appointmentDate=COLUMN:Appointment_Date
+bss.reseller.type[0].file.csv.fieldMapping.extraParam_remarks=COLUMN:Remarks
+bss.reseller.type[0].file.csv.fieldMapping.extraParam_name=COLUMN:Name
+#bss.reseller.type[0].file.csv.fieldValidationRegExp=${bss.reseller.fieldValidationRegExp}
+
+#-------------------------------------------------------------------------------------
+# Batch Reseller Type Users SE
+#-------------------------------------------------------------------------------------
+bss.reseller.type[1].id=Users_SE
+bss.reseller.type[1].allowedFor=${bss.reseller.defaultAllowedFor}
+bss.reseller.type[1].processor.schedType=immediate
+# Scheduling time in spring cron format (when scheduling type is 'scheduled')
+bss.reseller.type[1].processor.schedTime=0 0 1 * * ?
+bss.reseller.type[1].processor.schedTypeDelay-sec=30
+bss.reseller.type[1].processor.failOnError=true
+bss.reseller.type[1].processor.chunkSize=10
+bss.reseller.type[1].file.uploadDescription=Reseller ${bss.reseller.type[1].id} import file
+bss.reseller.type[1].file.supportedFormats=CSV
+bss.reseller.type[1].file.format=CSV
+bss.reseller.type[1].file.csv.freemarkerTemplate=reseller_import.ftl
+bss.reseller.type[1].file.csv.header=Reseller_Type,Reseller_Id,Reseller_MSISDN,Name,Status,External_Code,Password,MSISDN_2,MSISDN_3,SSN,Outlet_Type,Sub_Outlet_Type,Low_Balance_Alert,Contact_Person,Contact_Number,Address_1,Address_2,City,State,Country,Email_ID,Appointment_Date,Parent_Reseller_Id
+bss.reseller.type[1].file.csv.hasHeader=true
+bss.reseller.type[1].file.csv.defaultSeparator=,
+bss.reseller.type[1].file.csv.fieldMapping.resellerId=COLUMN:Reseller_Id
+bss.reseller.type[1].file.csv.fieldMapping.resellerName=COLUMN:Name
+bss.reseller.type[1].file.csv.fieldMapping.resellerMSISDN=COLUMN:Reseller_MSISDN
+bss.reseller.type[1].file.csv.fieldMapping.resellerTypeId=COLUMN:Reseller_Type
+bss.reseller.type[1].file.csv.fieldMapping.parentResellerId=COLUMN:Parent_Reseller_Id
+bss.reseller.type[1].file.csv.fieldMapping.status=MAP_COLUMN:enabledToStatus:Status
+bss.reseller.type[1].file.csv.fieldMapping.address_email=COLUMN:Email_ID
+bss.reseller.type[1].file.csv.fieldMapping.address_street=COLUMN:Address_1
+bss.reseller.type[1].file.csv.fieldMapping.extraParam_city=COLUMN:City
+bss.reseller.type[1].file.csv.fieldMapping.extraParam_ssn=COLUMN:SSN
+bss.reseller.type[1].file.csv.fieldMapping.user_password=COLUMN:Password
+bss.reseller.type[1].file.csv.fieldMapping.extraParam_externalCode=COLUMN:External_Code
+bss.reseller.type[1].file.csv.fieldMapping.extraParam_msisdn2=COLUMN:MSISDN_2
+bss.reseller.type[1].file.csv.fieldMapping.extraParam_msisdn3=COLUMN:MSISDN_3
+bss.reseller.type[1].file.csv.fieldMapping.extraParam_outletType=COLUMN:Outlet_Type
+bss.reseller.type[1].file.csv.fieldMapping.extraParam_subOutletType=COLUMN:Sub_Outlet_Type
+bss.reseller.type[1].file.csv.fieldMapping.extraParam_lba=MAP_COLUMN:enabledToStatus:Low_Balance_Alert
+bss.reseller.type[1].file.csv.fieldMapping.extraParam_contactPerson=COLUMN:Contact_Person
+bss.reseller.type[1].file.csv.fieldMapping.extraParam_contactNumber=COLUMN:Contact_Number
+bss.reseller.type[1].file.csv.fieldMapping.extraParam_state=COLUMN:State
+bss.reseller.type[1].file.csv.fieldMapping.extraParam_country=COLUMN:Country
+bss.reseller.type[1].file.csv.fieldMapping.extraParam_appointmentDate=COLUMN:Appointment_Date
+bss.reseller.type[1].file.csv.fieldMapping.extraParam_remarks=COLUMN:Remarks
+bss.reseller.type[1].file.csv.fieldMapping.extraParam_name=COLUMN:Name
+#bss.reseller.type[1].file.csv.fieldValidationRegExp=${bss.reseller.fieldValidationRegExp}
+
+#-------------------------------------------------------------------------------------
+# Batch Reseller Type Users POS
+#-------------------------------------------------------------------------------------
+bss.reseller.type[2].id=Users_POS
+bss.reseller.type[2].allowedFor=${bss.reseller.defaultAllowedFor}
+bss.reseller.type[2].processor.schedType=immediate
+# Scheduling time in spring cron format (when scheduling type is 'scheduled')
+bss.reseller.type[2].processor.schedTime=0 0 1 * * ?
+bss.reseller.type[2].processor.schedTypeDelay-sec=30
+bss.reseller.type[2].processor.failOnError=true
+bss.reseller.type[2].processor.chunkSize=10
+bss.reseller.type[2].file.uploadDescription=Reseller ${bss.reseller.type[2].id} import file
+bss.reseller.type[2].file.supportedFormats=CSV
+bss.reseller.type[2].file.format=CSV
+bss.reseller.type[2].file.csv.freemarkerTemplate=reseller_import.ftl
+bss.reseller.type[2].file.csv.header=Reseller_Type,Reseller_Id,Reseller_MSISDN,Name,Status,External_Code,Password,MSISDN_2,MSISDN_3,SSN,Outlet_Type,Sub_Outlet_Type,Low_Balance_Alert,Contact_Person,Contact_Number,Address_1,Address_2,City,State,Country,Email_ID,Appointment_Date,Parent_Reseller_Id
+bss.reseller.type[2].file.csv.hasHeader=true
+bss.reseller.type[2].file.csv.defaultSeparator=,
+bss.reseller.type[2].file.csv.fieldMapping.resellerId=COLUMN:Reseller_Id
+bss.reseller.type[2].file.csv.fieldMapping.resellerName=COLUMN:Name
+bss.reseller.type[2].file.csv.fieldMapping.resellerMSISDN=COLUMN:Reseller_MSISDN
+bss.reseller.type[2].file.csv.fieldMapping.resellerTypeId=COLUMN:Reseller_Type
+bss.reseller.type[2].file.csv.fieldMapping.parentResellerId=COLUMN:Parent_Reseller_Id
+bss.reseller.type[2].file.csv.fieldMapping.status=MAP_COLUMN:enabledToStatus:Status
+bss.reseller.type[2].file.csv.fieldMapping.address_email=COLUMN:Email_ID
+bss.reseller.type[2].file.csv.fieldMapping.address_street=COLUMN:Address_1
+bss.reseller.type[2].file.csv.fieldMapping.extraParam_city=COLUMN:City
+bss.reseller.type[2].file.csv.fieldMapping.extraParam_ssn=COLUMN:SSN
+bss.reseller.type[2].file.csv.fieldMapping.user_password=COLUMN:Password
+bss.reseller.type[2].file.csv.fieldMapping.extraParam_externalCode=COLUMN:External_Code
+bss.reseller.type[2].file.csv.fieldMapping.extraParam_msisdn2=COLUMN:MSISDN_2
+bss.reseller.type[2].file.csv.fieldMapping.extraParam_msisdn3=COLUMN:MSISDN_3
+bss.reseller.type[2].file.csv.fieldMapping.extraParam_outletType=COLUMN:Outlet_Type
+bss.reseller.type[2].file.csv.fieldMapping.extraParam_subOutletType=COLUMN:Sub_Outlet_Type
+bss.reseller.type[2].file.csv.fieldMapping.extraParam_lba=MAP_COLUMN:enabledToStatus:Low_Balance_Alert
+bss.reseller.type[2].file.csv.fieldMapping.extraParam_contactPerson=COLUMN:Contact_Person
+bss.reseller.type[2].file.csv.fieldMapping.extraParam_contactNumber=COLUMN:Contact_Number
+bss.reseller.type[2].file.csv.fieldMapping.extraParam_state=COLUMN:State
+bss.reseller.type[2].file.csv.fieldMapping.extraParam_country=COLUMN:Country
+bss.reseller.type[2].file.csv.fieldMapping.extraParam_appointmentDate=COLUMN:Appointment_Date
+bss.reseller.type[2].file.csv.fieldMapping.extraParam_remarks=COLUMN:Remarks
+bss.reseller.type[2].file.csv.fieldMapping.extraParam_name=COLUMN:Name
+#bss.reseller.type[2].file.csv.fieldValidationRegExp=${bss.reseller.fieldValidationRegExp}
+
+#-------------------------------------------------------------------------------------
+# Batch Reseller Type Users GPCF
+#-------------------------------------------------------------------------------------
+bss.reseller.type[3].id=Users_GPCF
+bss.reseller.type[3].allowedFor=${bss.reseller.defaultAllowedFor}
+bss.reseller.type[3].processor.schedType=immediate
+# Scheduling time in spring cron format (when scheduling type is 'scheduled')
+bss.reseller.type[3].processor.schedTime=0 0 1 * * ?
+bss.reseller.type[3].processor.schedTypeDelay-sec=30
+bss.reseller.type[3].processor.failOnError=true
+bss.reseller.type[3].processor.chunkSize=10
+bss.reseller.type[3].file.uploadDescription=Reseller ${bss.reseller.type[3].id} import file
+bss.reseller.type[3].file.supportedFormats=CSV
+bss.reseller.type[3].file.format=CSV
+bss.reseller.type[3].file.csv.freemarkerTemplate=reseller_import.ftl
+bss.reseller.type[3].file.csv.header=Reseller_Type,Reseller_Id,Reseller_MSISDN,Name,Status,External_Code,Password,MSISDN_2,MSISDN_3,SSN,Outlet_Type,Sub_Outlet_Type,Low_Balance_Alert,Contact_Person,Contact_Number,Address_1,Address_2,City,State,Country,Email_ID,Appointment_Date,Parent_Reseller_Id
+bss.reseller.type[3].file.csv.hasHeader=true
+bss.reseller.type[3].file.csv.defaultSeparator=,
+bss.reseller.type[3].file.csv.fieldMapping.resellerId=COLUMN:Reseller_Id
+bss.reseller.type[3].file.csv.fieldMapping.resellerName=COLUMN:Name
+bss.reseller.type[3].file.csv.fieldMapping.resellerMSISDN=COLUMN:Reseller_MSISDN
+bss.reseller.type[3].file.csv.fieldMapping.resellerTypeId=COLUMN:Reseller_Type
+bss.reseller.type[3].file.csv.fieldMapping.parentResellerId=COLUMN:Parent_Reseller_Id
+bss.reseller.type[3].file.csv.fieldMapping.status=MAP_COLUMN:enabledToStatus:Status
+bss.reseller.type[3].file.csv.fieldMapping.address_email=COLUMN:Email_ID
+bss.reseller.type[3].file.csv.fieldMapping.address_street=COLUMN:Address_1
+bss.reseller.type[3].file.csv.fieldMapping.extraParam_city=COLUMN:City
+bss.reseller.type[3].file.csv.fieldMapping.extraParam_ssn=COLUMN:SSN
+bss.reseller.type[3].file.csv.fieldMapping.user_password=COLUMN:Password
+bss.reseller.type[3].file.csv.fieldMapping.extraParam_externalCode=COLUMN:External_Code
+bss.reseller.type[3].file.csv.fieldMapping.extraParam_msisdn2=COLUMN:MSISDN_2
+bss.reseller.type[3].file.csv.fieldMapping.extraParam_msisdn3=COLUMN:MSISDN_3
+bss.reseller.type[3].file.csv.fieldMapping.extraParam_outletType=COLUMN:Outlet_Type
+bss.reseller.type[3].file.csv.fieldMapping.extraParam_subOutletType=COLUMN:Sub_Outlet_Type
+bss.reseller.type[3].file.csv.fieldMapping.extraParam_lba=MAP_COLUMN:enabledToStatus:Low_Balance_Alert
+bss.reseller.type[3].file.csv.fieldMapping.extraParam_contactPerson=COLUMN:Contact_Person
+bss.reseller.type[3].file.csv.fieldMapping.extraParam_contactNumber=COLUMN:Contact_Number
+bss.reseller.type[3].file.csv.fieldMapping.extraParam_state=COLUMN:State
+bss.reseller.type[3].file.csv.fieldMapping.extraParam_country=COLUMN:Country
+bss.reseller.type[3].file.csv.fieldMapping.extraParam_appointmentDate=COLUMN:Appointment_Date
+bss.reseller.type[3].file.csv.fieldMapping.extraParam_remarks=COLUMN:Remarks
+bss.reseller.type[3].file.csv.fieldMapping.extraParam_name=COLUMN:Name
+#bss.reseller.type[3].file.csv.fieldValidationRegExp=${bss.reseller.fieldValidationRegExp}
+
+#-------------------------------------------------------------------------------------
+# Batch Reseller Type Users EMPFLEX
+#-------------------------------------------------------------------------------------
+bss.reseller.type[4].id=Users_EMPFLEX
+bss.reseller.type[4].allowedFor=${bss.reseller.defaultAllowedFor}
+bss.reseller.type[4].processor.schedType=immediate
+# Scheduling time in spring cron format (when scheduling type is 'scheduled')
+bss.reseller.type[4].processor.schedTime=0 0 1 * * ?
+bss.reseller.type[4].processor.schedTypeDelay-sec=30
+bss.reseller.type[4].processor.failOnError=true
+bss.reseller.type[4].processor.chunkSize=10
+bss.reseller.type[4].file.uploadDescription=Reseller ${bss.reseller.type[4].id} import file
+bss.reseller.type[4].file.supportedFormats=CSV
+bss.reseller.type[4].file.format=CSV
+bss.reseller.type[4].file.csv.freemarkerTemplate=reseller_import.ftl
+bss.reseller.type[4].file.csv.header=Reseller_Type,Reseller_Id,Reseller_MSISDN,Name,Status,External_Code,Password,MSISDN_2,MSISDN_3,SSN,Outlet_Type,Sub_Outlet_Type,Low_Balance_Alert,Contact_Person,Contact_Number,Address_1,Address_2,City,State,Country,Email_ID,Appointment_Date,Parent_Reseller_Id
+bss.reseller.type[4].file.csv.hasHeader=true
+bss.reseller.type[4].file.csv.defaultSeparator=,
+bss.reseller.type[4].file.csv.fieldMapping.resellerId=COLUMN:Reseller_Id
+bss.reseller.type[4].file.csv.fieldMapping.resellerName=COLUMN:Name
+bss.reseller.type[4].file.csv.fieldMapping.resellerMSISDN=COLUMN:Reseller_MSISDN
+bss.reseller.type[4].file.csv.fieldMapping.resellerTypeId=COLUMN:Reseller_Type
+bss.reseller.type[4].file.csv.fieldMapping.parentResellerId=COLUMN:Parent_Reseller_Id
+bss.reseller.type[4].file.csv.fieldMapping.status=MAP_COLUMN:enabledToStatus:Status
+bss.reseller.type[4].file.csv.fieldMapping.address_email=COLUMN:Email_ID
+bss.reseller.type[4].file.csv.fieldMapping.address_street=COLUMN:Address_1
+bss.reseller.type[4].file.csv.fieldMapping.extraParam_city=COLUMN:City
+bss.reseller.type[4].file.csv.fieldMapping.extraParam_ssn=COLUMN:SSN
+bss.reseller.type[4].file.csv.fieldMapping.user_password=COLUMN:Password
+bss.reseller.type[4].file.csv.fieldMapping.extraParam_externalCode=COLUMN:External_Code
+bss.reseller.type[4].file.csv.fieldMapping.extraParam_msisdn2=COLUMN:MSISDN_2
+bss.reseller.type[4].file.csv.fieldMapping.extraParam_msisdn3=COLUMN:MSISDN_3
+bss.reseller.type[4].file.csv.fieldMapping.extraParam_outletType=COLUMN:Outlet_Type
+bss.reseller.type[4].file.csv.fieldMapping.extraParam_subOutletType=COLUMN:Sub_Outlet_Type
+bss.reseller.type[4].file.csv.fieldMapping.extraParam_lba=MAP_COLUMN:enabledToStatus:Low_Balance_Alert
+bss.reseller.type[4].file.csv.fieldMapping.extraParam_contactPerson=COLUMN:Contact_Person
+bss.reseller.type[4].file.csv.fieldMapping.extraParam_contactNumber=COLUMN:Contact_Number
+bss.reseller.type[4].file.csv.fieldMapping.extraParam_state=COLUMN:State
+bss.reseller.type[4].file.csv.fieldMapping.extraParam_country=COLUMN:Country
+bss.reseller.type[4].file.csv.fieldMapping.extraParam_appointmentDate=COLUMN:Appointment_Date
+bss.reseller.type[4].file.csv.fieldMapping.extraParam_remarks=COLUMN:Remarks
+bss.reseller.type[4].file.csv.fieldMapping.extraParam_name=COLUMN:Name
+#bss.reseller.type[4].file.csv.fieldValidationRegExp=${bss.reseller.fieldValidationRegExp}
+
+#-------------------------------------------------------------------------------------
+# Batch Reseller Type Users GPC
+#-------------------------------------------------------------------------------------
+bss.reseller.type[5].id=Users_GPC
+bss.reseller.type[5].allowedFor=${bss.reseller.defaultAllowedFor}
+bss.reseller.type[5].processor.schedType=immediate
+# Scheduling time in spring cron format (when scheduling type is 'scheduled')
+bss.reseller.type[5].processor.schedTime=0 0 1 * * ?
+bss.reseller.type[5].processor.schedTypeDelay-sec=30
+bss.reseller.type[5].processor.failOnError=true
+bss.reseller.type[5].processor.chunkSize=10
+bss.reseller.type[5].file.uploadDescription=Reseller ${bss.reseller.type[5].id} import file
+bss.reseller.type[5].file.supportedFormats=CSV
+bss.reseller.type[5].file.format=CSV
+bss.reseller.type[5].file.csv.freemarkerTemplate=reseller_import.ftl
+bss.reseller.type[5].file.csv.header=Reseller_Type,Reseller_Id,Reseller_MSISDN,Name,Status,External_Code,Password,MSISDN_2,MSISDN_3,SSN,Outlet_Type,Sub_Outlet_Type,Low_Balance_Alert,Contact_Person,Contact_Number,Address_1,Address_2,City,State,Country,Email_ID,Appointment_Date,Parent_Reseller_Id
+bss.reseller.type[5].file.csv.hasHeader=true
+bss.reseller.type[5].file.csv.defaultSeparator=,
+bss.reseller.type[5].file.csv.fieldMapping.resellerId=COLUMN:Reseller_Id
+bss.reseller.type[5].file.csv.fieldMapping.resellerName=COLUMN:Name
+bss.reseller.type[5].file.csv.fieldMapping.resellerMSISDN=COLUMN:Reseller_MSISDN
+bss.reseller.type[5].file.csv.fieldMapping.resellerTypeId=COLUMN:Reseller_Type
+bss.reseller.type[5].file.csv.fieldMapping.parentResellerId=COLUMN:Parent_Reseller_Id
+bss.reseller.type[5].file.csv.fieldMapping.status=MAP_COLUMN:enabledToStatus:Status
+bss.reseller.type[5].file.csv.fieldMapping.address_email=COLUMN:Email_ID
+bss.reseller.type[5].file.csv.fieldMapping.address_street=COLUMN:Address_1
+bss.reseller.type[5].file.csv.fieldMapping.extraParam_city=COLUMN:City
+bss.reseller.type[5].file.csv.fieldMapping.extraParam_ssn=COLUMN:SSN
+bss.reseller.type[5].file.csv.fieldMapping.user_password=COLUMN:Password
+bss.reseller.type[5].file.csv.fieldMapping.extraParam_externalCode=COLUMN:External_Code
+bss.reseller.type[5].file.csv.fieldMapping.extraParam_msisdn2=COLUMN:MSISDN_2
+bss.reseller.type[5].file.csv.fieldMapping.extraParam_msisdn3=COLUMN:MSISDN_3
+bss.reseller.type[5].file.csv.fieldMapping.extraParam_outletType=COLUMN:Outlet_Type
+bss.reseller.type[5].file.csv.fieldMapping.extraParam_subOutletType=COLUMN:Sub_Outlet_Type
+bss.reseller.type[5].file.csv.fieldMapping.extraParam_lba=MAP_COLUMN:enabledToStatus:Low_Balance_Alert
+bss.reseller.type[5].file.csv.fieldMapping.extraParam_contactPerson=COLUMN:Contact_Person
+bss.reseller.type[5].file.csv.fieldMapping.extraParam_contactNumber=COLUMN:Contact_Number
+bss.reseller.type[5].file.csv.fieldMapping.extraParam_state=COLUMN:State
+bss.reseller.type[5].file.csv.fieldMapping.extraParam_country=COLUMN:Country
+bss.reseller.type[5].file.csv.fieldMapping.extraParam_appointmentDate=COLUMN:Appointment_Date
+bss.reseller.type[5].file.csv.fieldMapping.extraParam_remarks=COLUMN:Remarks
+bss.reseller.type[5].file.csv.fieldMapping.extraParam_name=COLUMN:Name
+#bss.reseller.type[5].file.csv.fieldValidationRegExp=${bss.reseller.fieldValidationRegExp}
+
+#-------------------------------------------------------------------------------------
+# Batch Reseller Type Users CORP_PARTNER
+#-------------------------------------------------------------------------------------
+bss.reseller.type[6].id=Users_CORP_PARTNER
+bss.reseller.type[6].allowedFor=${bss.reseller.defaultAllowedFor}
+bss.reseller.type[6].processor.schedType=immediate
+# Scheduling time in spring cron format (when scheduling type is 'scheduled')
+bss.reseller.type[6].processor.schedTime=0 0 1 * * ?
+bss.reseller.type[6].processor.schedTypeDelay-sec=30
+bss.reseller.type[6].processor.failOnError=true
+bss.reseller.type[6].processor.chunkSize=10
+bss.reseller.type[6].file.uploadDescription=Reseller ${bss.reseller.type[6].id} import file
+bss.reseller.type[6].file.supportedFormats=CSV
+bss.reseller.type[6].file.format=CSV
+bss.reseller.type[6].file.csv.freemarkerTemplate=reseller_import.ftl
+bss.reseller.type[6].file.csv.header=Reseller_Type,Reseller_Id,Reseller_MSISDN,Name,Status,External_Code,Password,MSISDN_2,MSISDN_3,SSN,Outlet_Type,Sub_Outlet_Type,Low_Balance_Alert,Contact_Person,Contact_Number,Address_1,Address_2,City,State,Country,Email_ID,Appointment_Date,Parent_Reseller_Id
+bss.reseller.type[6].file.csv.hasHeader=true
+bss.reseller.type[6].file.csv.defaultSeparator=,
+bss.reseller.type[6].file.csv.fieldMapping.resellerId=COLUMN:Reseller_Id
+bss.reseller.type[6].file.csv.fieldMapping.resellerName=COLUMN:Name
+bss.reseller.type[6].file.csv.fieldMapping.resellerMSISDN=COLUMN:Reseller_MSISDN
+bss.reseller.type[6].file.csv.fieldMapping.resellerTypeId=COLUMN:Reseller_Type
+bss.reseller.type[6].file.csv.fieldMapping.parentResellerId=COLUMN:Parent_Reseller_Id
+bss.reseller.type[6].file.csv.fieldMapping.status=MAP_COLUMN:enabledToStatus:Status
+bss.reseller.type[6].file.csv.fieldMapping.address_email=COLUMN:Email_ID
+bss.reseller.type[6].file.csv.fieldMapping.address_street=COLUMN:Address_1
+bss.reseller.type[6].file.csv.fieldMapping.extraParam_city=COLUMN:City
+bss.reseller.type[6].file.csv.fieldMapping.extraParam_ssn=COLUMN:SSN
+bss.reseller.type[6].file.csv.fieldMapping.user_password=COLUMN:Password
+bss.reseller.type[6].file.csv.fieldMapping.extraParam_externalCode=COLUMN:External_Code
+bss.reseller.type[6].file.csv.fieldMapping.extraParam_msisdn2=COLUMN:MSISDN_2
+bss.reseller.type[6].file.csv.fieldMapping.extraParam_msisdn3=COLUMN:MSISDN_3
+bss.reseller.type[6].file.csv.fieldMapping.extraParam_outletType=COLUMN:Outlet_Type
+bss.reseller.type[6].file.csv.fieldMapping.extraParam_subOutletType=COLUMN:Sub_Outlet_Type
+bss.reseller.type[6].file.csv.fieldMapping.extraParam_lba=MAP_COLUMN:enabledToStatus:Low_Balance_Alert
+bss.reseller.type[6].file.csv.fieldMapping.extraParam_contactPerson=COLUMN:Contact_Person
+bss.reseller.type[6].file.csv.fieldMapping.extraParam_contactNumber=COLUMN:Contact_Number
+bss.reseller.type[6].file.csv.fieldMapping.extraParam_state=COLUMN:State
+bss.reseller.type[6].file.csv.fieldMapping.extraParam_country=COLUMN:Country
+bss.reseller.type[6].file.csv.fieldMapping.extraParam_appointmentDate=COLUMN:Appointment_Date
+bss.reseller.type[6].file.csv.fieldMapping.extraParam_remarks=COLUMN:Remarks
+bss.reseller.type[6].file.csv.fieldMapping.extraParam_name=COLUMN:Name
+#bss.reseller.type[6].file.csv.fieldValidationRegExp=${bss.reseller.fieldValidationRegExp}
+
+#-------------------------------------------------------------------------------------
+# Batch Reseller Type Users MYGP_USER
+#-------------------------------------------------------------------------------------
+bss.reseller.type[7].id=Users_MYGP_USER
+bss.reseller.type[7].allowedFor=${bss.reseller.defaultAllowedFor}
+bss.reseller.type[7].processor.schedType=immediate
+# Scheduling time in spring cron format (when scheduling type is 'scheduled')
+bss.reseller.type[7].processor.schedTime=0 0 1 * * ?
+bss.reseller.type[7].processor.schedTypeDelay-sec=30
+bss.reseller.type[7].processor.failOnError=true
+bss.reseller.type[7].processor.chunkSize=10
+bss.reseller.type[7].file.uploadDescription=Reseller ${bss.reseller.type[7].id} import file
+bss.reseller.type[7].file.supportedFormats=CSV
+bss.reseller.type[7].file.format=CSV
+bss.reseller.type[7].file.csv.freemarkerTemplate=reseller_import.ftl
+bss.reseller.type[7].file.csv.header=Reseller_Type,Reseller_Id,Reseller_MSISDN,Name,Status,External_Code,Password,MSISDN_2,MSISDN_3,SSN,Outlet_Type,Sub_Outlet_Type,Low_Balance_Alert,Contact_Person,Contact_Number,Address_1,Address_2,City,State,Country,Email_ID,Appointment_Date,Parent_Reseller_Id
+bss.reseller.type[7].file.csv.hasHeader=true
+bss.reseller.type[7].file.csv.defaultSeparator=,
+bss.reseller.type[7].file.csv.fieldMapping.resellerId=COLUMN:Reseller_Id
+bss.reseller.type[7].file.csv.fieldMapping.resellerName=COLUMN:Name
+bss.reseller.type[7].file.csv.fieldMapping.resellerMSISDN=COLUMN:Reseller_MSISDN
+bss.reseller.type[7].file.csv.fieldMapping.resellerTypeId=COLUMN:Reseller_Type
+bss.reseller.type[7].file.csv.fieldMapping.parentResellerId=COLUMN:Parent_Reseller_Id
+bss.reseller.type[7].file.csv.fieldMapping.status=MAP_COLUMN:enabledToStatus:Status
+bss.reseller.type[7].file.csv.fieldMapping.address_email=COLUMN:Email_ID
+bss.reseller.type[7].file.csv.fieldMapping.address_street=COLUMN:Address_1
+bss.reseller.type[7].file.csv.fieldMapping.extraParam_city=COLUMN:City
+bss.reseller.type[7].file.csv.fieldMapping.extraParam_ssn=COLUMN:SSN
+bss.reseller.type[7].file.csv.fieldMapping.user_password=COLUMN:Password
+bss.reseller.type[7].file.csv.fieldMapping.extraParam_externalCode=COLUMN:External_Code
+bss.reseller.type[7].file.csv.fieldMapping.extraParam_msisdn2=COLUMN:MSISDN_2
+bss.reseller.type[7].file.csv.fieldMapping.extraParam_msisdn3=COLUMN:MSISDN_3
+bss.reseller.type[7].file.csv.fieldMapping.extraParam_outletType=COLUMN:Outlet_Type
+bss.reseller.type[7].file.csv.fieldMapping.extraParam_subOutletType=COLUMN:Sub_Outlet_Type
+bss.reseller.type[7].file.csv.fieldMapping.extraParam_lba=MAP_COLUMN:enabledToStatus:Low_Balance_Alert
+bss.reseller.type[7].file.csv.fieldMapping.extraParam_contactPerson=COLUMN:Contact_Person
+bss.reseller.type[7].file.csv.fieldMapping.extraParam_contactNumber=COLUMN:Contact_Number
+bss.reseller.type[7].file.csv.fieldMapping.extraParam_state=COLUMN:State
+bss.reseller.type[7].file.csv.fieldMapping.extraParam_country=COLUMN:Country
+bss.reseller.type[7].file.csv.fieldMapping.extraParam_appointmentDate=COLUMN:Appointment_Date
+bss.reseller.type[7].file.csv.fieldMapping.extraParam_remarks=COLUMN:Remarks
+bss.reseller.type[7].file.csv.fieldMapping.extraParam_name=COLUMN:Name
+#bss.reseller.type[7].file.csv.fieldValidationRegExp=${bss.reseller.fieldValidationRegExp}
+
+#-------------------------------------------------------------------------------------
+# Batch Reseller Type Users MFS_PARTNER
+#-------------------------------------------------------------------------------------
+bss.reseller.type[8].id=Users_MFS_PARTNER
+bss.reseller.type[8].allowedFor=${bss.reseller.defaultAllowedFor}
+bss.reseller.type[8].processor.schedType=immediate
+# Scheduling time in spring cron format (when scheduling type is 'scheduled')
+bss.reseller.type[8].processor.schedTime=0 0 1 * * ?
+bss.reseller.type[8].processor.schedTypeDelay-sec=30
+bss.reseller.type[8].processor.failOnError=true
+bss.reseller.type[8].processor.chunkSize=10
+bss.reseller.type[8].file.uploadDescription=Reseller ${bss.reseller.type[8].id} import file
+bss.reseller.type[8].file.supportedFormats=CSV
+bss.reseller.type[8].file.format=CSV
+bss.reseller.type[8].file.csv.freemarkerTemplate=reseller_import.ftl
+bss.reseller.type[8].file.csv.header=Reseller_Type,Reseller_Id,Reseller_MSISDN,Name,Status,External_Code,Password,MSISDN_2,MSISDN_3,SSN,Outlet_Type,Sub_Outlet_Type,Low_Balance_Alert,Contact_Person,Contact_Number,Address_1,Address_2,City,State,Country,Email_ID,Appointment_Date,Parent_Reseller_Id
+bss.reseller.type[8].file.csv.hasHeader=true
+bss.reseller.type[8].file.csv.defaultSeparator=,
+bss.reseller.type[8].file.csv.fieldMapping.resellerId=COLUMN:Reseller_Id
+bss.reseller.type[8].file.csv.fieldMapping.resellerName=COLUMN:Name
+bss.reseller.type[8].file.csv.fieldMapping.resellerMSISDN=COLUMN:Reseller_MSISDN
+bss.reseller.type[8].file.csv.fieldMapping.resellerTypeId=COLUMN:Reseller_Type
+bss.reseller.type[8].file.csv.fieldMapping.parentResellerId=COLUMN:Parent_Reseller_Id
+bss.reseller.type[8].file.csv.fieldMapping.status=MAP_COLUMN:enabledToStatus:Status
+bss.reseller.type[8].file.csv.fieldMapping.address_email=COLUMN:Email_ID
+bss.reseller.type[8].file.csv.fieldMapping.address_street=COLUMN:Address_1
+bss.reseller.type[8].file.csv.fieldMapping.extraParam_city=COLUMN:City
+bss.reseller.type[8].file.csv.fieldMapping.extraParam_ssn=COLUMN:SSN
+bss.reseller.type[8].file.csv.fieldMapping.user_password=COLUMN:Password
+bss.reseller.type[8].file.csv.fieldMapping.extraParam_externalCode=COLUMN:External_Code
+bss.reseller.type[8].file.csv.fieldMapping.extraParam_msisdn2=COLUMN:MSISDN_2
+bss.reseller.type[8].file.csv.fieldMapping.extraParam_msisdn3=COLUMN:MSISDN_3
+bss.reseller.type[8].file.csv.fieldMapping.extraParam_outletType=COLUMN:Outlet_Type
+bss.reseller.type[8].file.csv.fieldMapping.extraParam_subOutletType=COLUMN:Sub_Outlet_Type
+bss.reseller.type[8].file.csv.fieldMapping.extraParam_lba=MAP_COLUMN:enabledToStatus:Low_Balance_Alert
+bss.reseller.type[8].file.csv.fieldMapping.extraParam_contactPerson=COLUMN:Contact_Person
+bss.reseller.type[8].file.csv.fieldMapping.extraParam_contactNumber=COLUMN:Contact_Number
+bss.reseller.type[8].file.csv.fieldMapping.extraParam_state=COLUMN:State
+bss.reseller.type[8].file.csv.fieldMapping.extraParam_country=COLUMN:Country
+bss.reseller.type[8].file.csv.fieldMapping.extraParam_appointmentDate=COLUMN:Appointment_Date
+bss.reseller.type[8].file.csv.fieldMapping.extraParam_remarks=COLUMN:Remarks
+bss.reseller.type[8].file.csv.fieldMapping.extraParam_name=COLUMN:Name
+#bss.reseller.type[8].file.csv.fieldValidationRegExp=${bss.reseller.fieldValidationRegExp}
+
+#-------------------------------------------------------------------------------------
+# Batch Reseller Type Users GPCF_POS
+#-------------------------------------------------------------------------------------
+bss.reseller.type[9].id=Users_GPCF_POS
+bss.reseller.type[9].allowedFor=${bss.reseller.defaultAllowedFor}
+bss.reseller.type[9].processor.schedType=immediate
+# Scheduling time in spring cron format (when scheduling type is 'scheduled')
+bss.reseller.type[9].processor.schedTime=0 0 1 * * ?
+bss.reseller.type[9].processor.schedTypeDelay-sec=30
+bss.reseller.type[9].processor.failOnError=true
+bss.reseller.type[9].processor.chunkSize=10
+bss.reseller.type[9].file.uploadDescription=Reseller ${bss.reseller.type[9].id} import file
+bss.reseller.type[9].file.supportedFormats=CSV
+bss.reseller.type[9].file.format=CSV
+bss.reseller.type[9].file.csv.freemarkerTemplate=reseller_import.ftl
+bss.reseller.type[9].file.csv.header=Reseller_Type,Reseller_Id,Reseller_MSISDN,Name,Status,External_Code,Password,MSISDN_2,MSISDN_3,SSN,Outlet_Type,Sub_Outlet_Type,Low_Balance_Alert,Contact_Person,Contact_Number,Address_1,Address_2,City,State,Country,Email_ID,Appointment_Date,Parent_Reseller_Id
+bss.reseller.type[9].file.csv.hasHeader=true
+bss.reseller.type[9].file.csv.defaultSeparator=,
+bss.reseller.type[9].file.csv.fieldMapping.resellerId=COLUMN:Reseller_Id
+bss.reseller.type[9].file.csv.fieldMapping.resellerName=COLUMN:Name
+bss.reseller.type[9].file.csv.fieldMapping.resellerMSISDN=COLUMN:Reseller_MSISDN
+bss.reseller.type[9].file.csv.fieldMapping.resellerTypeId=COLUMN:Reseller_Type
+bss.reseller.type[9].file.csv.fieldMapping.parentResellerId=COLUMN:Parent_Reseller_Id
+bss.reseller.type[9].file.csv.fieldMapping.status=MAP_COLUMN:enabledToStatus:Status
+bss.reseller.type[9].file.csv.fieldMapping.address_email=COLUMN:Email_ID
+bss.reseller.type[9].file.csv.fieldMapping.address_street=COLUMN:Address_1
+bss.reseller.type[9].file.csv.fieldMapping.extraParam_city=COLUMN:City
+bss.reseller.type[9].file.csv.fieldMapping.extraParam_ssn=COLUMN:SSN
+bss.reseller.type[9].file.csv.fieldMapping.user_password=COLUMN:Password
+bss.reseller.type[9].file.csv.fieldMapping.extraParam_externalCode=COLUMN:External_Code
+bss.reseller.type[9].file.csv.fieldMapping.extraParam_msisdn2=COLUMN:MSISDN_2
+bss.reseller.type[9].file.csv.fieldMapping.extraParam_msisdn3=COLUMN:MSISDN_3
+bss.reseller.type[9].file.csv.fieldMapping.extraParam_outletType=COLUMN:Outlet_Type
+bss.reseller.type[9].file.csv.fieldMapping.extraParam_subOutletType=COLUMN:Sub_Outlet_Type
+bss.reseller.type[9].file.csv.fieldMapping.extraParam_lba=MAP_COLUMN:enabledToStatus:Low_Balance_Alert
+bss.reseller.type[9].file.csv.fieldMapping.extraParam_contactPerson=COLUMN:Contact_Person
+bss.reseller.type[9].file.csv.fieldMapping.extraParam_contactNumber=COLUMN:Contact_Number
+bss.reseller.type[9].file.csv.fieldMapping.extraParam_state=COLUMN:State
+bss.reseller.type[9].file.csv.fieldMapping.extraParam_country=COLUMN:Country
+bss.reseller.type[9].file.csv.fieldMapping.extraParam_appointmentDate=COLUMN:Appointment_Date
+bss.reseller.type[9].file.csv.fieldMapping.extraParam_remarks=COLUMN:Remarks
+bss.reseller.type[9].file.csv.fieldMapping.extraParam_name=COLUMN:Name
+#bss.reseller.type[9].file.csv.fieldValidationRegExp=${bss.reseller.fieldValidationRegExp}
+
+
+#-------------------------------------------------------------------------------------
+# Batch Reseller Type Users Users_GP_Update
+#-------------------------------------------------------------------------------------
+bss.reseller.type[10].id=Users_GP_Update
+bss.reseller.type[10].allowedFor=${bss.reseller.defaultAllowedFor}
+bss.reseller.type[10].processor.schedType=immediate
+# Scheduling time in spring cron format (when scheduling type is 'scheduled')
+bss.reseller.type[10].processor.schedTime=0 0 1 * * ?
+bss.reseller.type[10].processor.schedTypeDelay-sec=30
+bss.reseller.type[10].processor.failOnError=true
+bss.reseller.type[10].processor.chunkSize=10
+bss.reseller.type[10].file.uploadDescription=Reseller ${bss.reseller.type[10].id} import file
+bss.reseller.type[10].file.supportedFormats=CSV
+bss.reseller.type[10].file.format=CSV
+bss.reseller.type[10].file.csv.freemarkerTemplate=reseller_update.ftl
+bss.reseller.type[10].file.csv.header=Reseller_Id,AreaCode,AreaName,AreaPath,TerritoryCode,TerritoryName,TerritoryPath,ThanaCode,ThanaName,ThanaPath,RegionCode,RegionName,RegionPath
+bss.reseller.type[10].file.csv.hasHeader=true
+bss.reseller.type[10].file.csv.defaultSeparator=,
+bss.reseller.type[10].file.csv.fieldMapping.resellerId=COLUMN:Reseller_Id
+bss.reseller.type[10].file.csv.fieldMapping.extraParam_areaCode=COLUMN:AreaCode
+bss.reseller.type[10].file.csv.fieldMapping.extraParam_areaName=COLUMN:AreaName
+bss.reseller.type[10].file.csv.fieldMapping.extraParam_areaPath=COLUMN:AreaPath
+bss.reseller.type[10].file.csv.fieldMapping.extraParam_territoryCode=COLUMN:TerritoryCode
+bss.reseller.type[10].file.csv.fieldMapping.extraParam_territoryName=COLUMN:TerritoryName
+bss.reseller.type[10].file.csv.fieldMapping.extraParam_territoryPath=COLUMN:TerritoryPath
+bss.reseller.type[10].file.csv.fieldMapping.extraParam_thanaCode=COLUMN:ThanaCode
+bss.reseller.type[10].file.csv.fieldMapping.extraParam_thanaName=COLUMN:ThanaName
+bss.reseller.type[10].file.csv.fieldMapping.extraParam_thanaPath=COLUMN:ThanaPath
+bss.reseller.type[10].file.csv.fieldMapping.extraParam_regionCode=COLUMN:RegionCode
+bss.reseller.type[10].file.csv.fieldMapping.extraParam_regionName=COLUMN:RegionName
+bss.reseller.type[10].file.csv.fieldMapping.extraParam_regionPath=COLUMN:RegionPath
+
+
+#-------------------------------------------------------------------------------------
+# Batch Inventory specific properties
+#-------------------------------------------------------------------------------------
+# Map brand to productSKU
+bss.inventory.mapping.dsaBrandToSKU={\
+    'TT':'TT_SIM_DSA',\
+    'CSS':'CSS_SIM_DSA',\
+    'Elissa':'ESS_SIM_DSA',\
+    'Tarajji':'TARAJI_SIM_DSA',\
+    'default':'TT_SIM_DSA'\
+    }
+bss.inventory.mapping.nonDsaBrandToSKU={\
+    '0001':'TT_SIM_NON_DSA',\
+    '0004':'CSS_SIM_NON_DSA',\
+    '0003':'ESS_SIM_NON_DSA',\
+    '0002':'TARAJI_SIM_NON_DSA',\
+    'default':'TT_SIM_NON_DSA'\
+    }
+bss.inventory.fieldValidationRegExp={\
+    'MSISDN':'(216)?[0-9]{8}' \
+    }
+bss.inventory.defaultAllowedFor=ALL
+bss.inventory.id=Generic
+bss.inventory.allowedFor=${bss.inventory.defaultAllowedFor}
+bss.inventory.processor.schedType=immediate
+# Scheduling time in spring cron format (when scheduling type is 'scheduled')
+bss.inventory.processor.schedTime=0 0 1 * * ?
+bss.inventory.processor.schedTypeDelay-sec=30
+bss.inventory.processor.failOnError=true
+bss.inventory.processor.chunkSize=15
+bss.inventory.processor.maxRetryCount=3
+#after what number of minutes (from the first retry) another retry should be considered
+bss.inventory.processor.retryDelay=10
+bss.inventory.file.uploadDescription=Inventory ${bss.inventory.id} import file
+bss.inventory.file.supportedFormats=CSV,JSON
+bss.inventory.file.format=CSV
+bss.inventory.file.csv.freemarkerTemplate=inventory_import.ftl
+bss.inventory.file.csv.header=SIM,BRAND,CODE_BRAND
+bss.inventory.file.csv.hasHeader=true
+bss.inventory.file.csv.defaultSeparator=;
+bss.inventory.file.csv.fieldMapping.batchId=CONSTANT:
+bss.inventory.file.csv.fieldMapping.owner=SYSTEM:uploadedBy
+bss.inventory.file.csv.fieldMapping.startNo=CONSTANT:
+bss.inventory.file.csv.fieldMapping.endNo=CONSTANT:
+bss.inventory.file.csv.fieldMapping.state=CONSTANT:Available
+bss.inventory.file.csv.fieldMapping.idType=CONSTANT:SERIAL
+bss.inventory.file.csv.fieldMapping.serialNo=COLUMN:SIM
+bss.inventory.file.csv.fieldMapping.locationId=SYSTEM:uploadedBy
+bss.inventory.file.csv.fieldMapping.productSKU=MAP_COLUMN:dsaBrandToSKU:BRAND
+bss.inventory.file.csv.fieldMapping.data_brandCode=COLUMN:CODE_BRAND
+#-------------------------------------------------------------------------------------
+# Batch Inventory Type SIM DSA Assigned to region properties
+#-------------------------------------------------------------------------------------
+bss.inventory.type[0].id=SIM_DSA_AssignedToRegion
+bss.inventory.type[0].allowedFor=${bss.inventory.defaultAllowedFor}
+bss.inventory.type[0].processor.schedType=immediate
+# Scheduling time in spring cron format (when scheduling type is 'scheduled')
+bss.inventory.type[0].processor.schedTime=0 0 2 * * ?
+bss.inventory.type[0].processor.schedTypeDelay-sec=30
+bss.inventory.type[0].processor.failOnError=true
+bss.inventory.type[0].processor.chunkSize=15
+bss.inventory.type[0].file.uploadDescription=Inventory ${bss.inventory.type[0].id} import file
+bss.inventory.type[0].file.supportedFormats=CSV
+bss.inventory.type[0].file.format=CSV
+bss.inventory.type[0].file.csv.freemarkerTemplate=inventory_import.ftl
+bss.inventory.type[0].file.csv.header=SIM,BRAND,CODE_BRAND,USERNAME
+bss.inventory.type[0].file.csv.hasHeader=true
+bss.inventory.type[0].file.csv.defaultSeparator=;
+bss.inventory.type[0].file.csv.fieldMapping.batchId=CONSTANT:
+bss.inventory.type[0].file.csv.fieldMapping.owner=COLUMN:USERNAME
+bss.inventory.type[0].file.csv.fieldMapping.startNo=CONSTANT:
+bss.inventory.type[0].file.csv.fieldMapping.endNo=CONSTANT:
+bss.inventory.type[0].file.csv.fieldMapping.state=CONSTANT:Available
+bss.inventory.type[0].file.csv.fieldMapping.idType=CONSTANT:SERIAL
+bss.inventory.type[0].file.csv.fieldMapping.serialNo=COLUMN:SIM
+bss.inventory.type[0].file.csv.fieldMapping.locationId=COLUMN:USERNAME
+bss.inventory.type[0].file.csv.fieldMapping.productSKU=MAP_COLUMN:dsaBrandToSKU:BRAND
+bss.inventory.type[0].file.csv.fieldMapping.data_brandCode=COLUMN:CODE_BRAND
+#-------------------------------------------------------------------------------------
+# Batch Inventory Type SIM DSA Not Assigned
+#-------------------------------------------------------------------------------------
+bss.inventory.type[1].id=SIM_DSA_NotAssigned
+bss.inventory.type[1].allowedFor=${bss.inventory.defaultAllowedFor}
+bss.inventory.type[1].processor.schedType=immediate
+# Scheduling time in spring cron format (when scheduling type is 'scheduled')
+bss.inventory.type[1].processor.schedTime=0 0 2 * * ?
+bss.inventory.type[1].processor.schedTypeDelay-sec=30
+bss.inventory.type[1].processor.failOnError=true
+bss.inventory.type[1].processor.chunkSize=15
+bss.inventory.type[1].file.uploadDescription=Inventory ${bss.inventory.type[1].id} import file
+bss.inventory.type[1].file.supportedFormats=CSV
+bss.inventory.type[1].file.format=CSV
+bss.inventory.type[1].file.csv.freemarkerTemplate=inventory_import.ftl
+bss.inventory.type[1].file.csv.header=SIM,BRAND,CODE_BRAND
+bss.inventory.type[1].file.csv.hasHeader=true
+bss.inventory.type[1].file.csv.defaultSeparator=;
+bss.inventory.type[1].file.csv.fieldMapping.batchId=CONSTANT:
+bss.inventory.type[1].file.csv.fieldMapping.owner=SYSTEM:uploadedBy
+bss.inventory.type[1].file.csv.fieldMapping.startNo=CONSTANT:
+bss.inventory.type[1].file.csv.fieldMapping.endNo=CONSTANT:
+bss.inventory.type[1].file.csv.fieldMapping.state=CONSTANT:Available
+bss.inventory.type[1].file.csv.fieldMapping.idType=CONSTANT:SERIAL
+bss.inventory.type[1].file.csv.fieldMapping.serialNo=COLUMN:SIM
+bss.inventory.type[1].file.csv.fieldMapping.locationId=SYSTEM:uploadedBy
+bss.inventory.type[1].file.csv.fieldMapping.productSKU=MAP_COLUMN:dsaBrandToSKU:BRAND
+bss.inventory.type[1].file.csv.fieldMapping.data_brandCode=COLUMN:CODE_BRAND
+#-------------------------------------------------------------------------------------
+# Batch Inventory Type SIM PREDECLARE NotAssigned
+#-------------------------------------------------------------------------------------
+bss.inventory.type[2].id=SIM_PREDECLARE_NotAssigned
+bss.inventory.type[2].allowedFor=${bss.inventory.defaultAllowedFor}
+bss.inventory.type[2].processor.schedType=scheduled
+# Scheduling time in spring cron format (when scheduling type is 'scheduled')
+bss.inventory.type[2].processor.schedTime=0 0 1 * * ?
+bss.inventory.type[2].processor.schedTypeDelay-sec=30
+bss.inventory.type[2].processor.failOnError=true
+bss.inventory.type[2].processor.chunkSize=12
+bss.inventory.type[2].file.uploadDescription=Inventory ${bss.inventory.type[2].id} import file
+bss.inventory.type[2].file.supportedFormats=CSV
+bss.inventory.type[2].file.format=CSV
+bss.inventory.type[2].file.csv.freemarkerTemplate=inventory_import.ftl
+bss.inventory.type[2].file.csv.header=SIM,BRAND,CODE_BRAND,MSISDN
+bss.inventory.type[2].file.csv.hasHeader=true
+bss.inventory.type[2].file.csv.defaultSeparator=;
+bss.inventory.type[2].file.csv.fieldMapping.batchId=CONSTANT:
+bss.inventory.type[2].file.csv.fieldMapping.owner=SYSTEM:uploadedBy
+bss.inventory.type[2].file.csv.fieldMapping.startNo=CONSTANT:
+bss.inventory.type[2].file.csv.fieldMapping.endNo=CONSTANT:
+bss.inventory.type[2].file.csv.fieldMapping.state=CONSTANT:Available
+bss.inventory.type[2].file.csv.fieldMapping.idType=CONSTANT:SERIAL
+bss.inventory.type[2].file.csv.fieldMapping.serialNo=COLUMN:SIM
+bss.inventory.type[2].file.csv.fieldMapping.locationId=SYSTEM:uploadedBy
+bss.inventory.type[2].file.csv.fieldMapping.productSKU=MAP_COLUMN:nonDsaBrandToSKU:CODE_BRAND
+bss.inventory.type[2].file.csv.fieldMapping.data_brandCode=COLUMN:CODE_BRAND
+bss.inventory.type[2].file.csv.fieldMapping.data_msisdn=COLUMN:MSISDN
+bss.inventory.type[2].file.csv.fieldValidationRegExp=${bss.inventory.fieldValidationRegExp}
+#-------------------------------------------------------------------------------------
+# Batch Inventory Type SIM PREDECLARE ToRegion
+#-------------------------------------------------------------------------------------
+bss.inventory.type[3].id=SIM_PREDECLARE_ToRegion
+bss.inventory.type[3].allowedFor=${bss.inventory.defaultAllowedFor}
+bss.inventory.type[3].processor.schedType=scheduled
+# Scheduling time in spring cron format (when scheduling type is 'scheduled')
+bss.inventory.type[3].processor.schedTime=0 0 1 * * ?
+bss.inventory.type[3].processor.schedTypeDelay-sec=30
+bss.inventory.type[3].processor.failOnError=true
+bss.inventory.type[3].processor.chunkSize=11
+bss.inventory.type[3].file.uploadDescription=Inventory ${bss.inventory.type[3].id} import file
+bss.inventory.type[3].file.supportedFormats=CSV
+bss.inventory.type[3].file.format=CSV
+bss.inventory.type[3].file.csv.freemarkerTemplate=inventory_import.ftl
+bss.inventory.type[3].file.csv.header=SIM,BRAND,CODE_BRAND,MSISDN,USERNAME
+bss.inventory.type[3].file.csv.hasHeader=true
+bss.inventory.type[3].file.csv.defaultSeparator=;
+bss.inventory.type[3].file.csv.fieldMapping.batchId=CONSTANT:
+bss.inventory.type[3].file.csv.fieldMapping.owner=COLUMN:USERNAME
+bss.inventory.type[3].file.csv.fieldMapping.startNo=CONSTANT:
+bss.inventory.type[3].file.csv.fieldMapping.endNo=CONSTANT:
+bss.inventory.type[3].file.csv.fieldMapping.state=CONSTANT:Available
+bss.inventory.type[3].file.csv.fieldMapping.idType=CONSTANT:SERIAL
+bss.inventory.type[3].file.csv.fieldMapping.serialNo=COLUMN:SIM
+bss.inventory.type[3].file.csv.fieldMapping.locationId=COLUMN:USERNAME
+bss.inventory.type[3].file.csv.fieldMapping.productSKU=MAP_COLUMN:nonDsaBrandToSKU:CODE_BRAND
+bss.inventory.type[3].file.csv.fieldMapping.data_brandCode=COLUMN:CODE_BRAND
+bss.inventory.type[3].file.csv.fieldMapping.data_msisdn=COLUMN:MSISDN
+bss.inventory.type[3].file.csv.fieldValidationRegExp=${bss.inventory.fieldValidationRegExp}
+#-------------------------------------------------------------------------------------
+# Batch Inventory Type MSISDN DSA
+#-------------------------------------------------------------------------------------
+bss.inventory.type[4].id=MSISDN_DSA
+bss.inventory.type[4].allowedFor=${bss.inventory.defaultAllowedFor}
+bss.inventory.type[4].processor.schedType=scheduled
+# Scheduling time in spring cron format (when scheduling type is 'scheduled')
+bss.inventory.type[4].processor.schedTime=0 0 1 * * ?
+bss.inventory.type[4].processor.schedTypeDelay-sec=30
+bss.inventory.type[4].processor.failOnError=true
+bss.inventory.type[4].processor.chunkSize=5
+bss.inventory.type[4].file.uploadDescription=Inventory ${bss.inventory.type[4].id} import file
+bss.inventory.type[4].file.supportedFormats=CSV
+bss.inventory.type[4].file.format=CSV
+bss.inventory.type[4].file.csv.freemarkerTemplate=inventory_import.ftl
+bss.inventory.type[4].file.csv.header=MSISDN,BRAND,CODE_BRAND
+bss.inventory.type[4].file.csv.hasHeader=true
+bss.inventory.type[4].file.csv.defaultSeparator=;
+bss.inventory.type[4].file.csv.fieldMapping.batchId=CONSTANT:
+bss.inventory.type[4].file.csv.fieldMapping.owner=SYSTEM:uploadedBy
+bss.inventory.type[4].file.csv.fieldMapping.startNo=CONSTANT:
+bss.inventory.type[4].file.csv.fieldMapping.endNo=CONSTANT:
+bss.inventory.type[4].file.csv.fieldMapping.state=CONSTANT:Available
+bss.inventory.type[4].file.csv.fieldMapping.idType=CONSTANT:SERIAL
+bss.inventory.type[4].file.csv.fieldMapping.serialNo=COLUMN:MSISDN
+bss.inventory.type[4].file.csv.fieldMapping.locationId=SYSTEM:uploadedBy
+bss.inventory.type[4].file.csv.fieldMapping.productSKU=CONSTANT:MSISDN
+bss.inventory.type[4].file.csv.fieldMapping.data_brandCode=COLUMN:CODE_BRAND
+bss.inventory.type[4].file.csv.fieldMapping.data_msisdn=COLUMN:MSISDN
+bss.inventory.type[4].file.csv.fieldValidationRegExp=${bss.inventory.fieldValidationRegExp}
+#-------------------------------------------------------------------------------------
+# Batch Order specific properties
+#-------------------------------------------------------------------------------------
+bss.order.defaultAllowedFor=ALL
+bss.order.id=Generic
+bss.order.allowedFor=${bss.order.defaultAllowedFor}
+# Default scheduling type (when not provided in the RESP request)
+bss.order.processor.schedType=immediate
+# Scheduling time in spring cron format (when scheduling type is 'scheduled')
+bss.order.processor.schedTime=0 0 1 * * ?
+bss.order.processor.schedTypeDelay-sec=60
+bss.order.processor.failOnError=false
+bss.order.processor.chunkSize=1
+bss.order.processor.maxRetryCount=3
+#after what number of minutes (from the first retry) another retry should be considered
+bss.order.processor.retryDelay=10
+bss.order.file.uploadDescription=Order ${bss.order.id} import file"
+bss.order.file.supportedFormats=CSV,JSON
+bss.order.file.format=CSV
+bss.order.file.csv.freemarkerTemplate=order_import.ftl
+bss.order.file.csv.header=Order_Type,Product_SKU,Buyer,Seller,Reserve_Type,Start_Serial,End_Serial,Return_Type,Return_Reason,Description
+bss.order.file.csv.hasHeader=true
+bss.order.file.csv.defaultSeparator=,
+bss.order.file.csv.fieldMapping.buyerId=COLUMN:Buyer
+bss.order.file.csv.fieldMapping.sellerId=COLUMN:Seller
+bss.order.file.csv.fieldMapping.items_productSku=COLUMN:Product_SKU
+bss.order.file.csv.fieldMapping.items_reserveType=COLUMN:Reserve_Type
+bss.order.file.csv.fieldMapping.ranges_startSerial=COLUMN:Start_Serial
+bss.order.file.csv.fieldMapping.ranges_endSerial=COLUMN:End_Serial
+bss.order.file.csv.fieldMapping.orderType=COLUMN:Order_Type
+bss.order.file.csv.fieldMapping.returnType=COLUMN:Return_Type
+bss.order.file.csv.fieldMapping.returnReason=COLUMN:Return_Reason
+bss.order.file.csv.fieldMapping.clientComment=COLUMN:Description
+#-------------------------------------------------------------------------------------
+# Batch Order specific properties for R2R & R2S
+#-------------------------------------------------------------------------------------
+bss.order.type[0].id=r2r_r2s
+bss.order.type[0].allowedFor=${bss.order.defaultAllowedFor}
+bss.order.type[0].processor.schedType=immediate
+# Scheduling time in spring cron format (when scheduling type is 'scheduled')
+bss.order.type[0].processor.schedTime=0 0 1 * * ?
+bss.order.type[0].processor.schedTypeDelay-sec=15
+bss.order.type[0].processor.failOnError=true
+### Keep the chunkSize=1 because currently OMS support this with 1
+bss.order.type[0].processor.chunkSize=1
+bss.order.type[0].file.uploadedBy=rcvdReseller
+bss.order.type[0].file.uploadDescription=Order ${bss.order.type[0].id} import file
+bss.order.type[0].file.supportedFormats=CSV,JSON
+bss.order.type[0].file.format=CSV
+bss.order.type[0].file.csv.freemarkerTemplate=r2r_r2s.ftl
+bss.order.type[0].file.csv.header=Order Type,Product SKU,Initiator,Buyer,Seller,Amount,Description
+bss.order.type[0].file.csv.hasHeader=true
+bss.order.type[0].file.csv.defaultSeparator=;
+bss.order.type[0].file.csv.fieldMapping.orderType=COLUMN:Order Type
+bss.order.type[0].file.csv.fieldMapping.buyerId=COLUMN:Buyer
+bss.order.type[0].file.csv.fieldMapping.sellerId=COLUMN:Seller
+bss.order.type[0].file.csv.fieldMapping.initiatorId=COLUMN:Initiator
+bss.order.type[0].file.csv.fieldMapping.productSku=COLUMN:Product SKU
+bss.order.type[0].file.csv.fieldMapping.data_amount=COLUMN:Amount
+bss.order.type[0].file.csv.fieldMapping.paymentAgreement=CONSTANT:UPFRONT
+bss.order.type[0].file.csv.fieldMapping.paymentMode=CONSTANT:CASH
+bss.order.type[0].file.csv.fieldMapping.items_quantity=CONSTANT:1
+bss.order.type[0].file.csv.fieldMapping.clientComment=COLUMN:Description
+#-------------------------------------------------------------------------------------
+# Batch Reverse Order specific properties
+#-------------------------------------------------------------------------------------
+bss.reverseorder.defaultAllowedFor=ALL
+bss.reverseorder.id=Generic
+bss.reverseorder.allowedFor=${bss.reverseorder.defaultAllowedFor}
+# Default scheduling type (when not provided in the RESP request)
+bss.reverseorder.processor.schedType=immediate
+# Scheduling time in spring cron format (when scheduling type is 'scheduled')
+bss.reverseorder.processor.schedTime=0 0 1 * * ?
+bss.reverseorder.processor.schedTypeDelay-sec=60
+bss.reverseorder.processor.failOnError=false
+### Keep the chunkSize=1 because currently OMS only supports chunkSize=1
+bss.reverseorder.processor.chunkSize=1
+bss.reverseorder.processor.maxRetryCount=3
+#after what number of minutes (from the first retry) another retry should be considered
+bss.reverseorder.processor.retryDelay=10
+bss.reverseorder.file.uploadDescription=Reverse order file"
+bss.reverseorder.file.supportedFormats=CSV,JSON
+bss.reverseorder.file.format=CSV
+bss.reverseorder.file.csv.freemarkerTemplate=order_reverse.ftl
+bss.reverseorder.file.csv.header=OrderId,Description
+bss.reverseorder.file.csv.hasHeader=true
+bss.reverseorder.file.csv.defaultSeparator=,
+bss.reverseorder.file.csv.fieldMapping.orderId=COLUMN:OrderId
+bss.reverseorder.file.csv.fieldMapping.description=COLUMN:Description
+
+#-------------------------------------------------------------------------------------
+# Batch RateCard specific properties
+#-------------------------------------------------------------------------------------
+
+bss.ratecard.defaultAllowedFor=ALL
+bss.ratecard.id=RateCard
+bss.ratecard.allowedFor=${bss.ratecard.defaultAllowedFor}
+# Default scheduling type (when not provided in the RESP request)
+bss.ratecard.processor.schedType=immediate
+# Scheduling time in spring cron format (when scheduling type is 'scheduled')
+bss.ratecard.processor.schedTime=0 0 1 * * ?
+bss.ratecard.processor.schedTypeDelay-sec=10
+bss.ratecard.processor.failOnError=false
+bss.ratecard.processor.chunkSize=3
+bss.ratecard.processor.maxRetryCount=3
+#after what number of minutes (from the first retry) another retry should be considered
+bss.ratecard.processor.retryDelay=10
+bss.ratecard.file.uploadDescription=${bss.ratecard.id} import file
+bss.ratecard.file.supportedFormats=CSV,JSON
+bss.ratecard.file.format=CSV
+bss.ratecard.file.csv.freemarkerTemplate=ratecard_import.ftl
+bss.ratecard.file.csv.header=Pickup Location,Drop Location,Distance(Km),Minimum Capacity(KG),Maximum Capacity(KG),Rate,Logistic Type,SelfLoad,Flat Rate Capacity(KG),Additional Rate / KG,Status,Vendor,Priority Rate
+bss.ratecard.file.csv.hasHeader=true
+bss.ratecard.file.csv.defaultSeparator=,
+bss.ratecard.file.csv.fieldMapping.vendor=COLUMN:Vendor
+bss.ratecard.file.csv.fieldMapping.pickupLocation=COLUMN:Pickup Location
+bss.ratecard.file.csv.fieldMapping.dropLocation=COLUMN:Drop Location
+bss.ratecard.file.csv.fieldMapping.distance=COLUMN:Distance(Km)
+bss.ratecard.file.csv.fieldMapping.status=COLUMN:Status
+bss.ratecard.file.csv.fieldMapping.minKg=COLUMN:Minimum Capacity(KG)
+bss.ratecard.file.csv.fieldMapping.maxKg=COLUMN:Maximum Capacity(KG)
+bss.ratecard.file.csv.fieldMapping.charge=COLUMN:Rate
+bss.ratecard.file.csv.fieldMapping.type=COLUMN:Logistic Type
+bss.ratecard.file.csv.fieldMapping.flatUptoKg=COLUMN:Flat Rate Capacity(KG)
+bss.ratecard.file.csv.fieldMapping.extraChargeAfterMaxKg=COLUMN:Additional Rate / KG
+bss.ratecard.file.csv.fieldMapping.selfload=COLUMN:SelfLoad
+bss.ratecard.file.csv.fieldMapping.priorityRate=COLUMN:Priority Rate
+
+#-------------------------------------------------------------------------------------
+# Batch CX specific properties
+#-------------------------------------------------------------------------------------
+
+bss.cx.defaultAllowedFor=ALL
+
+bss.cx.id=Generic
+bss.cx.allowedFor=${bss.cx.defaultAllowedFor}
+bss.cx.processor.schedType=immediate
+# Scheduling time in spring cron format (when scheduling type is 'scheduled')
+bss.cx.processor.schedTime=0 0 1 * * ?
+bss.cx.processor.schedTypeDelay-sec=30
+bss.cx.processor.failOnError=false
+#for cx use case the chunkSize must always be an even number
+bss.cx.processor.chunkSize=10
+bss.cx.processor.maxRetryCount=3
+#after what number of minutes (from the first retry) another retry should be considered
+bss.cx.processor.retryDelay=10
+bss.cx.file.uploadDescription="CX import file"
+bss.cx.file.supportedFormats=CSV
+bss.cx.file.format=CSV
+bss.cx.file.csv.freemarkerTemplate=inventory_update.ftl
+bss.cx.file.csv.header=MSISDN,SIM,date,user
+bss.cx.file.csv.hasHeader=false
+bss.cx.file.csv.defaultSeparator=|
+bss.cx.file.csv.fieldMapping.status=CONSTANT:CX sold
+
+#-------------------------------------------------------------------------------------
+# Batch files by FTP
+#-------------------------------------------------------------------------------------
+# List of the FTP directory scanners (comma separated list. can be empty)
+bss.ftpFileScanners=cx,order,reverseorder
+# Tunisie Telecom CX files
+bss.ftpFileScanner.cx.enable=false
+bss.ftpFileScanner.cx.batchType=CX
+bss.ftpFileScanner.cx.uploadedBy=rcvdCX
+bss.ftpFileScanner.cx.cron.schedule=0 0 3 * * ?
+bss.ftpFileScanner.cx.host=localhost
+bss.ftpFileScanner.cx.port=21
+bss.ftpFileScanner.cx.username=cx
+bss.ftpFileScanner.cx.password=seamless
+bss.ftpFileScanner.cx.file.prefix=cx_
+bss.ftpFileScanner.cx.directory.input=cx/uploads
+bss.ftpFileScanner.cx.directory.stage=cx/uploads/stage
+bss.ftpFileScanner.cx.directory.failed=cx/uploads/validations-not-successful
+bss.ftpFileScanner.cx.directory.processed=cx/uploads/processed
+# Order files
+bss.ftpFileScanner.order.enable=false
+bss.ftpFileScanner.order.batchType=Order
+bss.ftpFileScanner.order.uploadedBy=rcvdOrder
+bss.ftpFileScanner.order.cron.schedule=0 0 3 * * ?
+bss.ftpFileScanner.order.host=localhost
+bss.ftpFileScanner.order.port=21
+bss.ftpFileScanner.order.username=order
+bss.ftpFileScanner.order.password=seamless
+bss.ftpFileScanner.order.file.prefix=order_
+bss.ftpFileScanner.order.directory.input=order/uploads
+bss.ftpFileScanner.order.directory.stage=order/uploads/stage
+bss.ftpFileScanner.order.directory.failed=order/uploads/validations-not-successful
+bss.ftpFileScanner.order.directory.processed=order/uploads/processed
+# ReverseOrder files
+bss.ftpFileScanner.reverseorder.enable=false
+bss.ftpFileScanner.reverseorder.batchType=ReverseOrder
+bss.ftpFileScanner.reverseorder.uploadedBy=rcvdReverseOrder
+bss.ftpFileScanner.reverseorder.cron.schedule=0 0 3 * * ?
+bss.ftpFileScanner.reverseorder.host=localhost
+bss.ftpFileScanner.reverseorder.port=21
+bss.ftpFileScanner.reverseorder.username=reverseorder
+bss.ftpFileScanner.reverseorder.password=seamless
+bss.ftpFileScanner.reverseorder.file.prefix=reverseorder_
+bss.ftpFileScanner.reverseorder.directory.input=reverseorder/uploads
+bss.ftpFileScanner.reverseorder.directory.stage=reverseorder/uploads/stage
+bss.ftpFileScanner.reverseorder.directory.failed=reverseorder/uploads/validations-not-successful
+bss.ftpFileScanner.reverseorder.directory.processed=reverseorder/uploads/processed
+
+#-------------------------------------------------------------------------------------
+# Batch files by Local Directory Scanning
+#-------------------------------------------------------------------------------------
+# List of the Local directory scanners (comma separated list. can be empty)
+bss.localFileScanners=cx,order,reverseorder,foc
+# Tunisie Telecom CX files
+bss.localFileScanner.cx.enable=true
+bss.localFileScanner.cx.batchType=CX
+bss.localFileScanner.cx.uploadedBy=rcvdCX
+bss.localFileScanner.cx.cron.schedule=0 0 4 * * ?
+bss.localFileScanner.cx.file.prefix=cx_
+bss.localFileScanner.cx.directory.input=/home/admin/batch-scheduling/cx/uploads
+bss.localFileScanner.cx.directory.stage=/home/admin/batch-scheduling/cx/uploads/stage
+bss.localFileScanner.cx.directory.failed=/home/admin/batch-scheduling/cx/uploads/validations-not-successful
+bss.localFileScanner.cx.directory.processed=/home/admin/batch-scheduling/cx/uploads/processed
+# Order files
+bss.localFileScanner.order.enable=true
+bss.localFileScanner.order.batchType=Order
+bss.localFileScanner.order.uploadedBy=rcvdOrder
+bss.localFileScanner.order.cron.schedule=0 0 4 * * ?
+bss.localFileScanner.order.file.prefix=order_
+bss.localFileScanner.order.directory.input=/home/admin/batch-scheduling/order/uploads
+bss.localFileScanner.order.directory.stage=/home/admin/batch-scheduling/order/uploads/stage
+bss.localFileScanner.order.directory.failed=/home/admin/batch-scheduling/order/uploads/validations-not-successful
+bss.localFileScanner.order.directory.processed=/home/admin/batch-scheduling/order/uploads/processed
+# ReverseOrder files
+bss.localFileScanner.reverseorder.enable=false
+bss.localFileScanner.reverseorder.batchType=ReverseOrder
+bss.localFileScanner.reverseorder.uploadedBy=rcvdReverseOrder
+bss.localFileScanner.reverseorder.cron.schedule=0 0 4 * * ?
+bss.localFileScanner.reverseorder.file.prefix=reverseorder_
+bss.localFileScanner.reverseorder.directory.input=/home/admin/batch-scheduling/reverseorder/uploads
+bss.localFileScanner.reverseorder.directory.stage=/home/admin/batch-scheduling/reverseorder/uploads/stage
+bss.localFileScanner.reverseorder.directory.failed=/home/admin/batch-scheduling/reverseorder/uploads/validations-not-successful
+bss.localFileScanner.reverseorder.directory.processed=/home/admin/batch-scheduling/reverseorder/uploads/processed
+
+#-------------------------------------------------------------------------------------
+# Get Scheduled Batches, Get Import Info and Get Batch Info specific properties
+#-------------------------------------------------------------------------------------
+bss.history.visibleFor=Dealer,Sub Dealer
+#bss.history.visibleFor=ALL
+
+#-------------------------------------------------------------------------------------
+# Data Feeder properties
+#-------------------------------------------------------------------------------------
+dataFeed.freemarker.file.path=/opt/seamless/conf/batch-scheduling/datafeeder/templates
+threadpoolmanager.pools.dataFeed.targetId=com.seamless.common.data.dump.dataFeed
+threadpoolmanager.pools.dataFeed.corePoolSize=25
+threadpoolmanager.pools.dataFeed.maxPoolSize=40
+threadpoolmanager.pools.dataFeed.keepAliveTime=60000
+threadpoolmanager.pools.dataFeed.keepAliveTimeUnit=MILLISECONDS
+
+dataFeed.version=1
+dataFeed.componentName=batchscheduling
+dataFeed.eventType=Report
+
+template.IMPORT_INVENTORY=batchschedulingFeed_importGeneric.ftl
+template.IMPORT_RESELLER=batchschedulingFeed_importGeneric.ftl
+template.IMPORT_ORDER=batchschedulingFeed_importGeneric.ftl
+template.IMPORT_REVERSEORDER=batchschedulingFeed_importGeneric.ftl
+template.GET_IMPORT_INFO=batchschedulingFeed_importGeneric.ftl
+template.GET_SERVICE_INFO=batchschedulingFeed_serviceInfo.ftl
+template.GET_BATCH_INFO=batchschedulingFeed_batchInfo.ftl
+template.GET_SCHEDULED_BATCHES=batchschedulingFeed_scheduledBatches.ftl
+template.IMPORT_TRANSACTION=batchschedulingFeed_importGeneric.ftl
+
+
+
+bss.transaction.defaultAllowedFor=ALL
+
+#-------------------------------------------------------------------------------------
+# Batch Transaction for Generic
+#-------------------------------------------------------------------------------------
+
+bss.transaction.id=Generic
+bss.transaction.allowedFor=${bss.transaction.defaultAllowedFor}
+# Default scheduling type (when not provided in the RESP request)
+bss.transaction.processor.schedType=immediate
+# Scheduling time in spring cron format (when scheduling type is 'scheduled')
+bss.transaction.processor.schedTime=0 0 1 * * ?
+bss.transaction.processor.schedTypeDelay-sec=60
+bss.transaction.processor.failOnError=false
+bss.transaction.processor.chunkSize=10
+bss.transaction.processor.maxRetryCount=3
+#after what number of minutes (from the first retry) another retry should be considered
+bss.transaction.processor.retryDelay=10
+bss.transaction.file.uploadDescription=transaction ${bss.transaction.id} import file
+bss.transaction.file.supportedFormats=CSV,JSON
+bss.transaction.file.format=CSV
+bss.transaction.file.csv.freemarkerTemplate=transaction_o2c_foc_import.ftl
+bss.transaction.file.csv.header=senderMsisdn,receiverMsisdn,amount,productSku
+bss.transaction.file.csv.hasHeader=true
+bss.transaction.file.csv.defaultSeparator=,
+bss.transaction.file.csv.fieldMapping.senderId=COLUMN:senderMsisdn
+bss.transaction.file.csv.fieldMapping.receiverId=COLUMN:receiverMsisdn
+bss.transaction.file.csv.fieldMapping.value=COLUMN:amount
+bss.transaction.file.csv.fieldMapping.productSKU=COLUMN:productSku
+#left side fields need to match with txe request
+
+#-------------------------------------------------------------------------------------
+# Batch Transaction for O2C FOC
+#-------------------------------------------------------------------------------------
+bss.transaction.type[0].id=O2C_FOC
+bss.transaction.type[0].allowedFor=${bss.transaction.defaultAllowedFor}
+bss.transaction.type[0].processor.schedType=immediate
+bss.transaction.type[0].preferredLanguage=en
+bss.transaction.type[0].product_sku=O2C_FOC_transfer
+# Scheduling time in spring cron format (when scheduling type is 'scheduled')
+bss.transaction.type[0].processor.schedTime=0 0 1 * * ?
+bss.transaction.type[0].processor.schedTypeDelay-sec=60
+bss.transaction.type[0].processor.failOnError=true
+bss.transaction.type[0].processor.chunkSize=1
+bss.transaction.type[0].processor.maxRetryCount=3
+bss.transaction.type[0].file.uploadDescription=Transaction ${bss.transaction.type[0].id} import file
+bss.transaction.type[0].file.supportedFormats=CSV
+bss.transaction.type[0].file.format=CSV
+bss.transaction.type[0].file.csv.freemarkerTemplate=transaction_o2c_foc_import.ftl
+bss.transaction.type[0].file.csv.header=MSISDN,EXTERNAL_TXN_NUMBER,EXTERNAL_TXN_DATE,EXTERNAL_CODE,AMOUNT,REMARK
+bss.transaction.type[0].file.csv.hasHeader=true
+bss.transaction.type[0].file.csv.defaultSeparator=,
+bss.transaction.type[0].file.csv.fieldMapping.receiver_id=COLUMN:MSISDN
+bss.transaction.type[0].file.csv.fieldMapping.map_externalTxnNumber=COLUMN:EXTERNAL_TXN_NUMBER
+bss.transaction.type[0].file.csv.fieldMapping.map_externalTxnDate=COLUMN:EXTERNAL_TXN_DATE
+bss.transaction.type[0].file.csv.fieldMapping.map_externalCode=COLUMN:EXTERNAL_CODE
+bss.transaction.type[0].file.csv.fieldMapping.amount_value=COLUMN:AMOUNT
+bss.transaction.type[0].file.csv.fieldMapping.map_remark=COLUMN:REMARK
+
+
+#-------------------------------------------------------------------------------------
+# Batch Transaction for O2C SALE
+#-------------------------------------------------------------------------------------
+bss.transaction.type[1].id=O2C_SALE
+bss.transaction.type[1].allowedFor=${bss.transaction.defaultAllowedFor}
+bss.transaction.type[1].processor.schedType=immediate
+# Scheduling time in spring cron format (when scheduling type is 'scheduled')
+bss.transaction.type[1].processor.schedTime=0 0 1 * * ?
+bss.transaction.type[1].processor.schedTypeDelay-sec=60
+bss.transaction.type[1].processor.failOnError=true
+bss.transaction.type[1].processor.chunkSize=1
+bss.transaction.type[1].processor.maxRetryCount=3
+bss.transaction.type[1].file.uploadDescription=Transaction ${bss.transaction.type[1].id} import file
+bss.transaction.type[1].file.supportedFormats=CSV
+bss.transaction.type[1].file.format=CSV
+bss.transaction.type[1].file.csv.freemarkerTemplate=transaction_o2c_sale_import.ftl
+bss.transaction.type[1].file.csv.header=MSISDN,AMOUNT
+bss.transaction.type[1].file.csv.hasHeader=true
+bss.transaction.type[1].file.csv.defaultSeparator=,
+bss.transaction.type[1].file.csv.fieldMapping.receiver_id=COLUMN:MSISDN
+bss.transaction.type[1].file.csv.fieldMapping.amount_value=COLUMN:AMOUNT
+
+
+#-------------------------------------------------------------------------------------
+# Batch Transaction for C2C
+#-------------------------------------------------------------------------------------
+bss.transaction.type[2].id=C2C
+bss.transaction.type[2].allowedFor=${bss.transaction.defaultAllowedFor}
+bss.transaction.type[2].processor.schedType=immediate
+# Scheduling time in spring cron format (when scheduling type is 'scheduled')
+bss.transaction.type[2].processor.schedTime=0 0 1 * * ?
+bss.transaction.type[2].processor.schedTypeDelay-sec=60
+bss.transaction.type[2].processor.failOnError=true
+bss.transaction.type[2].processor.chunkSize=1
+bss.transaction.type[2].processor.maxRetryCount=3
+bss.transaction.type[2].file.uploadDescription=Transaction ${bss.transaction.type[2].id} import file
+bss.transaction.type[2].file.supportedFormats=CSV
+bss.transaction.type[2].file.format=CSV
+bss.transaction.type[2].file.csv.freemarkerTemplate=transaction_c2c_import.ftl
+bss.transaction.type[2].file.csv.header=senderMsisdn,receiverMsisdn,amount,remarks
+bss.transaction.type[2].file.csv.hasHeader=true
+bss.transaction.type[2].file.csv.defaultSeparator=,
+bss.transaction.type[2].file.csv.fieldMapping.sender_id=COLUMN:senderMsisdn
+bss.transaction.type[2].file.csv.fieldMapping.receiver_id=COLUMN:receiverMsisdn
+bss.transaction.type[2].file.csv.fieldMapping.amount_value=COLUMN:amount
+bss.transaction.type[2].file.csv.fieldMapping.map_remarks=COLUMN:remarks
+
+bss.localFileScanner.foc.enable=true
+bss.localFileScanner.foc.batchType=Transaction
+bss.localFileScanner.foc.batchSubType=O2C_FOC
+bss.localFileScanner.foc.uploadedBy=Ramsai
+bss.localFileScanner.foc.cron.schedule=0 * * * * ?
+bss.localFileScanner.foc.file.prefix=foc_
+bss.localFileScanner.foc.directory.input=/home/admin/batch-scheduling/foc/uploads
+bss.localFileScanner.foc.directory.stage=/home/admin/batch-scheduling/foc/uploads/stage
+bss.localFileScanner.foc.directory.failed=/home/admin/batch-scheduling/foc/uploads/validations-not-successful
+bss.localFileScanner.foc.directory.processed=/home/admin/batch-scheduling/foc/uploads/processed

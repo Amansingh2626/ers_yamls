@@ -1,0 +1,28 @@
+PORT=3000
+HOST=localhost
+SERVER_NAME=object-store-manager
+
+MINIO_HOST='gp-minio-service'
+MINIO_PORT='9000'
+MINIO_ACCESS_KEY='refill'
+MINIO_SECRET_KEY='seamless'
+MINIO_REGION='india-east'
+
+MYSQL_HOST='10.18.65.4'
+MYSQL_PORT=3362
+MYSQL_USER='refill'
+MYSQL_PASSWORD='refill'
+MYSQL_DB='object_store_manager'
+
+NODE_ENV=development
+
+LOG_LEVEL=info
+LOG_FILE=/var/seamless/log/object-store-manager/object-store-manager.log
+TIMESTAMP_FORMAT='YYYY-MM-DD HH:mm:ss,SSS'
+CORS_ENABLE=true
+
+DB_MIGRATE=false
+PROPERTY_DIR=/opt/seamless/conf/object-store-manager
+BASE_URL=/osm/v1
+LANGUAGE_FALLBACKS={"en": "en-EN"}
+LOG_FORMAT={"timestamp": "info.timestamp","pid": "process.pid","level": "info.level.toUpperCase()","LOG_FILE": "LOG_FILE","name": "info.metadata.name","message": "info.message"}

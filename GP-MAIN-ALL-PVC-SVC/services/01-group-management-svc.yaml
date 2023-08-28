@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: ers-prod
+  labels:
+    app: ers-group-management
+  name: ers-group-management-service
+spec:
+  ports:
+    - name: http-ers-group-management
+      port: 8084
+      targetPort: 8084
+  selector:
+    app: ers-group-management
+  type: ClusterIP
+

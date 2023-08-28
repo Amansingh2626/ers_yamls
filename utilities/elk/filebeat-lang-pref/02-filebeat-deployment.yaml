@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gp-filebeat-lang-pref
+  labels:
+    app: filebeat
+  namespace: ers-prod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: filebeat
+  template:
+    metadata:
+#      annotations:
+#        sidecar.istio.io/proxyCPULimit: 100m
+#        sidecar.istio.io/proxyMemoryLimit: 200Mi
+#        sidecar.istio.io/proxyCPU: 10m
+#        sidecar.istio.io/proxyMemory: 128Mi
+#        status.sidecar.istio.io/port: "0"
+#        traffic.sidecar.istio.io/excludeInboundPorts: "0"
+#        sidecar.istio.io/inject: "true"      
+      labels:
+        app: filebeat
+    spec:
+      serviceAccountName: ers-prod-app-sa
+      securityContext:
+        fsGroupChangePolicy: "OnRootMismatch"
+        seLinuxOptions:
+          type: "spc_t"
+      containers:
+        - image: sdsdockerhub/filebeat:8.1.0
+          name: gp-filebeat
+#          resources: 
+#            limits:
+#              cpu: "1000m"
+#              memory: 3000Mi
+#            requests:
+#              cpu: "500m"
+#              memory: 2000Mi
+          env:
+          - name: TZ
+            value: "Asia/Dhaka"
+          command: ['filebeat','-c','/usr/share/filebeat/custom/filebeat.yml']
+          volumeMounts:
+          - name: lang-pref-log
+            mountPath: /var/seamless/log/notification-language-preference/source
+          - name: filebeat-config
+            mountPath: /usr/share/filebeat/custom/
+          - name: filebeat-registry
+            mountPath: /usr/share/filebeat/registry/
+          - name: filebeat-log
+            mountPath: /usr/share/filebeat/logs 
+      volumes:
+        - name: lang-pref-log
+          persistentVolumeClaim:
+            claimName: language-preference
+        - name: filebeat-registry 
+          persistentVolumeClaim:
+            claimName: filebeat-registry-lang-pref
+        - name: filebeat-config
+          configMap:
+            name: gp-filebeat-configmap-lang-pref
+        - name: filebeat-log
+          emptyDir: {}

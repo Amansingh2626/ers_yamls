@@ -1,0 +1,11 @@
+#!/bin/bash
+name=`echo ${POD_NAME} | rev |cut -d'-' -f1 | rev `
+
+mkdir -p /opt/seamless/conf/notification-manager
+
+
+cp /ers-common-config/* /opt/seamless/conf/
+cp /notification-manager-config/* /opt/seamless/conf/notification-manager
+
+#sed -i "s+/var/seamless/log/notification-manager/+/var/seamless/log/notification-manager/${name}/+g" /opt/seamless/conf/notification-manager/log4j.properties
+sed -i "s+/var/seamless/log/notification-manager/+/var/seamless/log/notification-manager/${name}/+g" /opt/seamless/conf/notification-manager/log4j2-spring.xml

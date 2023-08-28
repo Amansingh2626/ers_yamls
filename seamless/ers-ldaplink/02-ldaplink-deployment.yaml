@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ers-ldaplink
+  namespace: ers-prod
+  labels:
+    app: ers-ldaplink
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ers-ldaplink
+      version: v1
+  template:
+    metadata:
+#      annotations:
+#        sidecar.istio.io/proxyCPULimit: 100m
+#        sidecar.istio.io/proxyMemoryLimit: 200Mi
+#        sidecar.istio.io/proxyCPU: 50m
+#        sidecar.istio.io/proxyMemory: 128Mi
+#        status.sidecar.istio.io/port: "0"
+#        traffic.sidecar.istio.io/includeOutboundIPRanges: 10.18.72.46/32,10.18.72.42/32,10.18.72.45/32
+#        traffic.sidecar.istio.io/excludeInboundPorts: "0"
+#        sidecar.istio.io/inject: "true"
+      labels:
+        app: ers-ldaplink
+        version: v1
+    spec:
+      serviceAccountName: ers-prod-app-sa
+      securityContext:
+        fsGroupChangePolicy: "OnRootMismatch"
+        seLinuxOptions:
+          type: "spc_t"
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "4"
+      hostAliases:
+      - ip: "10.18.1.37"
+        hostnames:
+        - "a0420pnexpad01.grameenphone.com"
+      - ip: "10.18.1.38"
+        hostnames:
+        - "a0420pnexpad02.grameenphone.com"              
+      containers:
+        - name: ers-ldaplink
+          #image: sdsdockerhub/ers-ldaplink:feature-SE-435-3
+          image: sdsdockerhub/ers-ldaplink:feature-SE-435-4
+          imagePullPolicy: IfNotPresent
+          env:
+#          - name: JAVA_TOOL_OPTIONS
+#            value: "-Xms200M -Xmx200M -XX:+UseContainerSupport -XX:MaxRAMPercentage=90.0 -XX:ActiveProcessorCount=2"
+          - name: DEFAULT_TIME_ZONE
+            value: "Asia/Dhaka"
+          - name: TZ
+            value: "Asia/Dhaka"
+ #        resources:
+ #           limits:
+ #             cpu: "2"
+ #             memory: 200Mi
+ #           requests:
+ #             cpu: "1"
+ #             memory: 200Mi
+          readinessProbe:
+            tcpSocket:
+              port: 8824
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 8824
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          ports:
+            - containerPort: 8824
+#         #dnsPolicy: Default
+          volumeMounts:
+            - mountPath: /opt/seamless/conf
+              name: vol-common-conf 
+            - mountPath: /opt/seamless/conf/ldaplink-core/ 
+              name: vol-ldaplink-conf
+            - mountPath: /opt/seamless/conf/ldaplink-core/scripts 
+              name: vol-ldaplink-scripts
+            - mountPath: /var/seamless/log/ldaplink-core/ 
+              name: vol-log
+            - mountPath: /usr/share/zoneinfo/Asia/Dhaka
+              name: tz-dhaka
+              subPath: Dhaka             
+      volumes:
+        - name: tz-dhaka
+          configMap:
+            name: asia-dhaka-tz-config
+            items:
+            - key: Dhaka
+              path: Dhaka
+        - name: vol-common-conf
+          configMap:
+            name: ers-common-config
+        - name: vol-ldaplink-conf 
+          configMap:
+            name: ldaplink-config
+        - name: vol-ldaplink-scripts 
+          configMap:
+            name: ldaplink-scripts
+        - name: vol-log
+          persistentVolumeClaim:
+            claimName: ldaplink-log
+      imagePullSecrets:
+        - name: private-repo

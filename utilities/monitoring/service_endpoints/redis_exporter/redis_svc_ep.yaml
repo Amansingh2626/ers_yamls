@@ -1,0 +1,53 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prod-redis-gw01-monitor 
+  namespace: ers-prod
+  labels:
+    app: prod-redis-gw01-monitor 
+spec:
+  clusterIP: None
+  ports:
+  - protocol: TCP
+    port: 9121
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: prod-redis-gw01-monitor 
+  namespace: ers-prod
+  labels:
+    app: prod-redis-gw01-monitor 
+subsets:
+  - addresses:
+    - ip: 10.18.12.124 
+    ports:
+    - port: 9121
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prod-redis-gw02-monitor
+  namespace: ers-prod
+  labels:
+    app: prod-redis-gw02-monitor
+spec:
+  clusterIP: None
+  ports:
+  - protocol: TCP
+    port: 9121
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: prod-redis-gw02-monitor
+  namespace: ers-prod
+  labels:
+    app: prod-redis-gw02-monitor
+subsets:
+  - addresses:
+    - ip: 10.18.12.122
+    ports:
+    - port: 9121
+      

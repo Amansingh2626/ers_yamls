@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_inventory=self.webpackChunk_unified_inventory||[]).push([[8221],{98221:(e,n,t)=>{"use strict";t.r(n),t.d(n,{default:()=>i});const i=[{name:"inventories",path:"inventory/inventory"},{name:"detailedInventory",path:"inventory/detailed/inventory"}]}}]);

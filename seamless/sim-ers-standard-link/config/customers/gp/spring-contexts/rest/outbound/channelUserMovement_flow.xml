@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:integration="http://www.springframework.org/schema/integration"
+       xmlns:ws="http://www.springframework.org/schema/integration/ws"
+       xmlns:http="http://www.springframework.org/schema/integration/http"
+       xsi:schemaLocation="http://www.springframework.org/schema/integration/http http://www.springframework.org/schema/integration/http/spring-integration-http.xsd
+       http://www.springframework.org/schema/integration/ws http://www.springframework.org/schema/integration/ws/spring-integration-ws.xsd
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd">
+
+    <http:outbound-gateway extract-request-payload="true" id="channelUserMovementOutboundGateway"
+                                       url-expression="'#{providers['gp'].operations['channelUserMovement'].fields['server_url']}' + '{queryString}'"
+                                       request-channel="txeChannelUserMovementRequestChannel"
+                                       charset="iso-8859-1"
+                                       mapped-request-headers="Content-Type,authorization,system-token"
+                                       http-method="POST" rest-template="gpRestTemplate"
+                                       expected-response-type="java.lang.Object">
+
+        <http:uri-variable name="queryString" expression="payload"/>
+    </http:outbound-gateway>
+</beans>

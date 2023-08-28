@@ -1,0 +1,12 @@
+#!/bin/bash
+
+mkdir -p /etc/nginx
+mkdir -p /etc/nginx/conf.d
+mkdir -p /etc/nginx/conf.d/services
+mkdir -p /etc/nginx/conf.d/support
+#mkdir -p /usr/share/nginx/html
+
+cp /nginx-config/* /etc/nginx/conf.d/
+cp /nginx-config-support/* /etc/nginx/conf.d/support/
+cp /nginx-config-services/* /etc/nginx/conf.d/services/
+#cp /nginx-html-config/* /usr/share/nginx/html/

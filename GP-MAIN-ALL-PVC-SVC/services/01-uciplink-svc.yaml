@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: ers-prod
+  labels:
+    app: ers-uciplink
+  name: ers-uciplink-service
+spec:
+  ports:
+    - name: http-ers-uciplink-service
+      port: 8010
+      targetPort: 8010
+  selector:
+    app: ers-uciplink
+  type: ClusterIP
+

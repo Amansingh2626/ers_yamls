@@ -1,0 +1,459 @@
+console.log('build: 882, AppVersion: v0.3.6');
+ window.config = {
+  language: "en",
+  protocol: "http",
+  server: location.hostname,
+  port: location.port,
+  isSidebarLabelUpperCase: true,
+  httpTimeout: "20000", // in millis
+  timeoutMessage: "UI Timeout",
+  captchaRefreshTime: "15000", // in millis
+  isAllowedTokenRefresh: false,
+  service: "",
+  locale: "/locales/{{lng}}/{{ns}}.json",
+  currency: "BDT",
+  openCalendarWith: "date",
+  customer: "Vodafone",
+  helplineNumber: "0012 345 678",
+  contactValues:["viaSms","viaEmail","customerSupport"],
+  additionalContactInformation:false,
+  defaultTemplate: "",
+  defaultPerPageItems: 100,
+  timeZone: "UTC",
+  hiddenModules: [], //"reseller", "account", "group" To disable specific modules
+  channel: "web",
+  captchaRegex: "^(?=.*\\d)(?=.*[A-Z])[0-9A-Z]{6}$",
+  captchaTextStriked: false,
+  forgotPwdResellerMSISDN: true,
+  extraColumnConfigurations: {}, //Unitel specific: Show extra columns for datatable for=> {resellers: [{ status: "hide"}, {balanceStatus: "show"}, {inventoryStatus:"show" }]}
+  isBase64EncodePassword: false,
+  unAuthConfig:{
+    unauthorizedMessage: "Unauthorized Access",
+    logoutOnUnAuth: true
+  },
+  loginOptions: {
+    loginWithPassword: true,
+    loginWithPasswordOTP: true,
+    loginWithOTP: true,
+    loginWithPasswordCaptcha: true,
+    loginWith2FA: true,
+  },
+  modules: [
+    "inventory",
+    "kyc",
+    "order",
+    "admin",
+    "reseller",
+    "voucher",
+    "product",
+    "group",
+    "report",
+    "account",
+    "survey",
+    "contract",
+    "trip",
+    "commission",
+    "activity",
+    "bulk",
+    "settings",
+    "crm",
+    "region",
+    "transaction",
+    "logistics",
+    "thresholds",
+    "livemap",
+    "notification",
+    "wallet",
+    "dashboard",
+    "actor",
+    "campaign",
+    "workflows",
+    "customerCare",
+  ],
+  activity: {
+    adminType: [],
+    createActivityRTP: "DLR-0"
+  },
+   actorConfig: {
+      "Retailer": ["Retailer", "RSO", "Super_Franchise"], "TP Staff": ["Regional_Director", "Circle_VP", "Zonal_Manager", "Belt_Manager", "Ash"],
+      "Adhoc_User": ["Adhoc_User"],
+      slugs: {
+        adhocUser: "Adhoc_User",
+        retailer: "Retailer",
+        tpStaff: "TP Staff"
+      },
+      defaultPasswordPolicyKey: 1,
+      defaultGroupUntilDateInNumberOfYears: 50
+    },
+  bulk: {
+    schedulerTypes: [
+      { key: "Scheduled At", value: "scheduledAt" },
+      { key: "Immediate", value: "immediate" },
+      { key: "Scheduled", value: "scheduled" },
+      { key: "Approval Pending", value: "approval-pending" },
+      { key: "Rejected", value: "rejected" }
+    ],
+    exportSample: false,
+    bulkImportFileExtension: ["csv"],
+    failOnError: false,
+    importSubTypeOptions: {
+      Inventory: { type: "inventory", hasQueryParam: true },
+      Reseller: { type: "reseller", hasQueryParam: true },
+      Reselleruser: { type: "resellerUser", hasQueryParam: true },
+      Order: { type: "order", hasQueryParam: true },
+      RateCard: { type: "rateCard", hasQueryParam: false },
+      ReverseOrder: { type: "reverseorder", hasQueryParam: false },
+      Transaction: { type: "transaction", hasQueryParam: true },
+      campaignTargets: { type: "campaignTargets", hasQueryParam: true },
+      Product: { type: "product", hasQueryParam: true },
+      Contract: { type: "contract", hasQueryParam: true },
+    }
+  },
+  campaign: {
+    status: [
+      { key: "Created", value: "1" },
+      { key: "Active", value: "2" },
+      { key: "Hold", value: "3" },
+      { key: "Approved", value: "4" },
+      { key: "Disapproved", value: "5" },
+      { key: "Closed", value: "6" },
+      { key: "Unpaid", value: "7" },
+      { key: "Partially Paid", value: "8" },
+      { key: "Approval Pending", value: "9" },
+      { key: "Drafted", value: "10" },
+      { key: "Approval Pending For Data Madification", value: "11" },
+      { key: "Activation Failed", value: "12" },
+      { key: "Registered", value: "13" },
+      { key: "Registration Failed", value: "14" },
+      { key: "Drafted For File Upload", value: "15" },
+      { key: "Hold Awaiting", value: "16" },
+      { key: "Resume Awaiting", value: "17" }
+    ],
+    statusValue: ["DRAFTED", "CREATED", "APPROVED", "DISAPPROVED", "REGISTERED", "REGISTRATION_FAILED"],
+    additionalRetailer: "Additional Retailers"
+  },
+  commission:{
+    walletType: "RESELLER",
+    commissionStatus: ["UNAPPROVED", "ACTIVE", "PENDING_FOR_REVIEW"],
+  },
+  crm: {
+    fieldName: 'dealerId'
+  },
+  customerCare: {
+    languageOptions:[
+    { key: "English", value: "en" },
+    { key: "Bengali", value: "bn" },
+    ],
+  },
+  dashboard: {
+    resellerTypes: ['branch', 'pos', 'hq_mpesa'],
+    orderDashboardFilterResellerTypes: ['branch', 'pos', 'hq_mpesa','director'],
+    regionDataVals: ['ALL', 'Coast', 'RIFT', 'Great Western', 'Nairobi East'],
+    monthData: [{ key: 'ALL', value: 'ALL' }],
+    optionSelectLimit: 6,
+    asA: ["Seller", "DROP_LOCATION"],
+    agentType: ["DSA", "TDR", "3PL"],
+    resellertypesRegional: ["hq", "branch", "hq_mpesa", "pos"],
+    isStandardProduct : false,
+  },
+  group: {
+    domainMaximumMembers: 10,
+    showAdminTableInView: false,
+    hideKeyOnGroupUpdate: [],
+    showMsisdn:false
+  },
+  inventory: {
+    colors: ['#FFF44C', '#E91E63', '#9C27B0', '#7CDDDD', '#FF7300', '#003F5C'],
+    optionSelectLimit: 6, // Max should be 8 else donut chart UI will not look good
+    callV2BoxesListingAPI: true, // If set to false then v1 api will get called
+    fetchChildStockForBoxes: true,
+  },
+  livemap: {
+    apiKey: 'AIzaSyC50SsFI2dFtN6Bygpt2YG4yOFgYQkp7X4',
+    agentTypes: ['Agent', 'agent'],
+    center: { lat: 22.5565568, lng: 87.895755 },
+    zoom: 10,
+  },
+  order: {
+    orderListingBasedOnCondition: true, // Listing based on payment types API response (Order Category)
+    advancedSearchViaBIEngine: false,
+    raiseOrderApplicationJson: true, // if OMS build no. is 354 or above then keep it true, else false
+    mPesaCountdownTimer: 30, // in seconds and must be greater than 2
+    employeeSnicCategory: "Employee",
+    settleInvoiceDealerType: "hq",
+    pisoOrderRouteInfoAdditionalField: "routeInfo",
+    topup: {
+      enabled: true,
+      orderTypes: ["ISO", "ISO_ST", "IPO_D", "ISO_DST"],
+    },
+    serviceInfo: {
+      enabled: true,
+      serialisedTypes: ["PISO", "SO_ST", "ISO_ST", "ISO", "IPO", "IPO_ST", "ISRO_ST", "SO", "PO", "IPRO_ST"],
+      nonSerialisedTypes: ["PISO", "SO_ST", "ISO_ST", "ISO", "IPO", "IPO_ST", "ISRO_ST", "SO", "PO", "IPRO_ST"],
+      trackableNonSerialisedTypes: ["PISO", "SO_ST", "ISO_ST", "ISO", "IPO", "IPO_ST", "ISRO_ST", "SO", "PO", "IPRO_ST"],
+      digitalTypes: ["ISO_D", "ISO_DST", "IPO_D"],
+    },
+    freeSelectInventoryNoProductDropdown: [
+      "non-serialised",
+      "services-topup",
+      "serialised",
+      "services-b2b"
+    ],
+    quantityEnabledOrderType: [
+      "IPO_ST"
+    ],
+    addtionalInformation: {
+      enabled: true,
+      fields: [
+        {
+          orderType: ["ISO_DST"],
+          key: "senderPin",
+          value: "",
+          required: true,
+          kind: "text",
+          type: "password",
+        },
+        {
+          orderType: ["PO", "IPO_D"],
+          key: "POReference",
+          value: "",
+          required: true,
+          kind: "text",
+          type: "text",
+        },
+        {
+          orderType: ["PO"],
+          key: "LPO",
+          value: "",
+          required: true,
+          kind: "file",
+          type: "file",
+        },
+      ],
+    },
+    subscriberTypes: [],
+    manualAdjustmentOptions: ["RESELLERID", "RESELLERMSISDN"],
+    reversalOrderTypes: ["ISO", "ISO_DST", "ISO_D", "PISO"],
+    erpBalanceResellerTypesId: ["hq", "hq_mpesa"],
+    showERPBalance: true,
+    showERPBalancePaymentMode: ["ERP"],
+    showERPShowableOrder: ["PO", "IPO_D"]
+  },
+  notification:{
+    classifierTag:"CAMPAIGN_CLASSIFIER",
+    recipientTag:"Receiver",
+    transactionCategory:"CAMPAIGN",
+    isUnified:true,
+  },
+  product: {
+    policyTypes: ["Operation", "State", "State Transition", "Workflow"],
+    showUnits: true,
+    singleSelectProductSKUDropdown: false,
+    disableProductFormFieldsOnEdit: [],
+    disableVariantsFormFieldsOnEdit: [],
+    productTypes: ["serialised", "non-serialised", "services", "trackable-non-serialised", "services-b2b", "services-topup", "services-custom"]
+  },
+  region:{
+    hideRegionSpecificCreateFields: false
+  },
+  report: {
+    ReportPerPageItems: 150,
+    reportDownloadOptions: {
+      csv: true,
+      pdf: false,
+      xls: false,
+    },
+    reportExportOptions: {
+      csv: true,
+      pdf: true,
+      xls: true,
+    },
+    defaultRecordsPerPage: '100',
+    recordsPerPage: [
+     { key: "100", value: "100" },
+     { key: "200", value: "200" },
+     { key: "500", value: "500" },
+     { key: "1000", value: "1000" },
+     { key: "2000", value: "2000" },
+     { key: "5000", value: "5000" }
+    ],
+    exportPdfFileDimension: [24, 50], // width, height in inches for report pdf download
+    resellerTypesForDefaultDomain: ["DIST", "EADIST", "ECDIST", "ESDIST", "SDIST", "EUDIST"], // By default select domain name for this reseller types
+    scheduleOptions: ["MINUTES", "HOURLY", "DAILY", "WEEKLY", "MONTHLY",]
+  },
+  resellerAdditionalConfig: {
+    extensiveResellerDropdown: false,
+    hideActionsWhenDeactivated: true,
+    resellerSearchDomainBasedDropdowns: false,
+    isDocumentRequired: false,
+    onlyAllowedTypesForSearch: true,
+    hideDataForResellerDetail: [],
+    isExternalCodeSearch: false,
+    callIsBasicResellerInfoAPI: false,
+    BasicResellerInfoAPILimit: 50,
+    dropdownLimit: 50,
+    dropdownOffset: 50,
+    notificationMode:"SMS",
+    payLimitPopupinputRequired :false,
+    resetAdditionalFilters: true,
+    resellerOrgChartAPILimit: 10,
+    orgChartExportOptions: ["png", "pdf"]
+  },
+  settings: {
+    roleForPolicyMapping: true,
+    gatewayIpRegex: "^[0-9,.]*$",
+    passwordMaxLength: "10",
+    hideDateInPolicy: false,
+    hideClonePolicy: false,
+    contentTypeOptions: [
+      { key: "application/json", value: "application/json" },
+      { key: "multipart/form-data", value: "multipart/form-data" },
+      { key: "text/html", value: "text/html" },
+    ],
+    swaggerComponents: [
+      // sendComponentName = Send Component Name in swagger url
+      // customIP = external ip (With protocol), if it is kept as blank then server ip will be picked up automatically
+      { componentName: "access", port: "8374", customIP: "", sendComponentName: true },
+      { componentName: "idms", port: "8219", customIP: "", sendComponentName: false },
+      { componentName: "pms", port: "8012", customIP: "", sendComponentName: true },
+      { componentName: "acms", port: "38082", customIP: "", sendComponentName: true },
+      { componentName: "ams", port: "8092", customIP: "", sendComponentName: false },
+      { componentName: "txe", port: "8088", customIP: "", sendComponentName: false },
+      { componentName: "dms", port: "8033", customIP: "", sendComponentName: false },
+      { componentName: "aas", port: "11001", customIP: "", sendComponentName: true },
+      { componentName: "bss", port: "8085", customIP: "", sendComponentName: true },
+      { componentName: "groupmanagementsystem", port: "8084", customIP: "", sendComponentName: true },
+      { componentName: "ims", port: "10103", customIP: "", sendComponentName: true },
+      { componentName: "kyc", port: "8297", customIP: "", sendComponentName: true },
+      { componentName: "osm", port: "3000", customIP: "", sendComponentName: true },
+      { componentName: "oms", port: "9595", customIP: "", sendComponentName: true },
+      { componentName: "region", port: "8000", customIP: "", sendComponentName: false },
+      { componentName: "surveymanagement", port: "9596", customIP: "", sendComponentName: true },
+      { componentName: "tms", port: "12001", customIP: "", sendComponentName: true },
+    ]
+  },
+  transaction: {
+    status: [
+      { key: "Success", value: "success" },
+      { key: "Pending", value: "pending" },
+      { key: "Failed", value: "failed" },
+      { key: "Denied", value: "denied" }
+    ],
+    transactionTypes: [
+      { key: "Credit Transfer", value: "CREDIT_TRANSFER" },
+      { key: "Reverse Topup", value: "REVERSE_TOPUP" },
+      { key: "Reverse Credit Transfer", value: "REVERSE_CREDIT_TRANSFER" },
+      { key: "Gaming Box", value: "GAMINGBOX" },
+    ],
+    customerCareTransactionTypes: [
+      { key: 'C2S PROMORC', value: 'C2S_PROMORC' },
+      { key: 'C2S XRC', value: 'C2S_XRC' },
+      { key: 'C2S RC', value: 'C2S_RC' },
+      { key: 'C2S PROMOPPB', value: 'C2S_PROMOPPB' },
+      { key: 'C2S PPB', value: 'C2S_PPB' },
+      { key: 'P2P TRANSFER', value: 'P2P' },
+      { key: 'C2S PVAS', value: 'C2S_PVAS' },
+    ],
+    o2cSalePopupEligibleTags: ["COMMISSION"],
+    o2cSaleProductSku: "O2C_transfer",
+    o2cFOCValidationProductSku: "O2C_FOC_transfer",
+    c2cSaleProductSku: "C2C_transfer",
+    c2cFOCValidationProductSku: "C2C_FOC_transfer",
+    focO2CApplicableContract: "1",
+    saleO2CApplicableContract: "1",
+    o2cFocProductSku: "O2C_FOC_transfer",
+    o2cWithdrawalProductSku: "O2C_withdrawal",
+    o2cPendingTransaction: "O2C_TRANSFER,O2C_FOC_TRANSFER",
+    c2cSalePopupEligibleTags: ["COMMISSION"],
+    c2cPendingTransaction: "C2C_TRANSFER",
+    c2cRequestProductSku: "C2C_TRANSFER",
+    c2cWithdrawalRequestProductSku: "C2C_TRANSFER",
+    paymentOptions: [{ key: "CASH", value: "CASH" },],
+    externalRequestType: [
+      { key: "EXRCTRFREQ", value: "RC" },
+      { key: "EXPROMORCTRFREQ", value: "PROMORC" },
+      { key: "EXRCSTATREQ", value: "RC" },
+      { key: "EXTPROMOPPBREQ", value: "PROMOPPB" },
+      { key: "EXTPROMOVASTRFREQ", value: "PROMOVAS" },
+      { key: "EXESBTRFREQ", value: "ESB" },
+      { key: "EXPPBTRFREQ", value: "PPB" },
+      { key: "EXXRCTRFREQ", value: "XRC" },
+      { key: "EXTPROMOVASTRFREQ", value: "PVAS" },
+    ],
+    accountTypeIdMapping: [
+      { key: "RC", value: "AIRTIME" },
+      { key: "PROMORC", value: "AIRTIME" },
+      { key: "PROMOPPB", value: "AIRTIME" },
+      { key: "PROMOVAS", value: "AIRTIME" },
+      { key: "ESB", value: "AIRTIME" },
+      { key: 'PPB', value: "AIRTIME" },
+      { key: "XRC", value: "SKITTO" },
+      { key: "PVAS", value: "AIRTIME" }
+    ],
+    returnProductSku: "C2C_RETURN_TRANSFER",
+    o2c: "OT",
+    o2cWithdrawal: "OW",
+    c2c: "CT",
+    c2cWithdrawal: "CW",
+    o2cPopUpTAXTagName:"TAX",
+    o2cPopUpTAX2TagName:"TAX 2",
+    o2cPopUpCOMISSIONTagName:"COMMISSION",
+    o2cPopUpTDSTagName:"TDS",
+    c2cPopUpTAXTagName:"TAX",
+    c2cPopUpTAX2TagName:"TAX 2",
+    c2cPopUpCOMISSIONTagName:"COMMISSION",
+    c2cPopUpTDSTagName:"TDS",
+    c2cReturn: "CR",
+    c2sSale: "BD",
+    c2cApplicableContract: "",
+    REQUEST_GATEWAY_CODE: "WEB",
+    hideTransactionInfo: [],
+    hideTransactionInfoFromList: [],
+    hideSearchFields: [],
+    approvalTimeout: "30000", // in millis,
+    instrumentType: "Cash",
+    uploadFileLimit: 100,
+    pendingTransactionAdminResellerTypeId: ["DT_WAREHOUSE", "OPERATOR"],
+    pendingTransactionAdminRoleId: ["Reseller_admin"],
+    bundleProductTypes: ["services-data-bundle"],
+    bundlePaymentMethods: ["cash"],
+    bundleAccountTypeId: "DATA_BUNDLE",
+  },
+  contract: {
+    isRegionCreateContract: true,
+    isAccountTypeFixedAsDropdown: true,
+  },
+  voucher:{
+    voucherState: "ACTIVE",
+    showHRN: true,
+    stateList: [
+      "RESERVED",
+      "PRINT",
+      "ACTIVE",
+      "BLOCKED",
+      "EXPIRED",
+      "REDEEM_PENDING",
+      "REDEEMED",
+      "CANCELLED"
+    ],
+    recordsPerPage: 10,
+    printerProfile: {
+      batchNo: true,
+      orderId: false,
+      batchRange: true
+    }
+  },
+  wallet: {
+    currencySymbol: " ",
+  },
+  trip: {
+    hideKeysInViewPage:["motte_de_passe","motte_de_passe_flag"]
+  },
+  kyc: {
+    isResellerTypesChildren: false,
+    sendOperationIdParams: true,
+    preFilledParentIdDataFields: ["extraFields.dealerCode", "extraFields.distributorCode", "extraFields.subDistributorCode"]
+  }
+};
+
+console.log("loaded config \n", window.config);

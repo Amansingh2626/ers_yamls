@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_kyc=self.webpackChunk_unified_kyc||[]).push([[388],{23603:(e,n,r)=>{"use strict";r.d(n,{Z:()=>i});var t=/[A-Z]/g,u=/^ms-/,s={};function c(e){return"-"+e.toLowerCase()}const i=function(e){if(s.hasOwnProperty(e))return s[e];var n=e.replace(t,c);return s[e]=u.test(n)?"-"+n:n}}}]);

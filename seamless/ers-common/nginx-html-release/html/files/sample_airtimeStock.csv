@@ -1,0 +1,4 @@
+typeOfTransaction,resellerId,recipientMobileNo,paymentMethod,amount,comment
+AIRTIME STOCK,32452626267,,cash,30,comment1
+AIRTIME STOCK,,126267287,cash,24,comment2
+AIRTIME STOCK,,51672828982,cash,12,	

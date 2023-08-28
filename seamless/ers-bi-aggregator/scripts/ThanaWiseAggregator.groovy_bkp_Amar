@@ -1,0 +1,562 @@
+package com.seamless.customer.bi.aggregator.aggregate
+
+import com.seamless.customer.bi.aggregator.model.ReportIndex
+import com.seamless.customer.bi.aggregator.util.DateUtil
+import groovy.json.JsonBuilder
+import groovy.util.logging.Log4j
+import org.elasticsearch.action.search.SearchRequest
+import org.elasticsearch.action.search.SearchResponse
+import org.elasticsearch.action.search.SearchScrollRequest
+import org.elasticsearch.client.RestHighLevelClient
+import org.elasticsearch.common.unit.TimeValue
+import org.elasticsearch.index.query.BoolQueryBuilder
+import org.elasticsearch.index.query.QueryBuilders
+import org.elasticsearch.rest.RestStatus
+import org.elasticsearch.search.aggregations.Aggregation
+import org.elasticsearch.search.aggregations.AggregationBuilders
+import org.elasticsearch.search.aggregations.Aggregations
+import org.elasticsearch.search.aggregations.ParsedMultiBucketAggregation
+import org.elasticsearch.search.aggregations.bucket.composite.CompositeAggregationBuilder
+import org.elasticsearch.search.aggregations.bucket.composite.CompositeValuesSourceBuilder
+import org.elasticsearch.search.aggregations.bucket.composite.ParsedComposite
+import org.elasticsearch.search.aggregations.bucket.composite.TermsValuesSourceBuilder
+import org.elasticsearch.search.aggregations.metrics.ParsedSum
+import org.elasticsearch.search.builder.SearchSourceBuilder
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
+import org.springframework.jdbc.core.BatchPreparedStatementSetter
+import org.springframework.jdbc.core.ColumnMapRowMapper
+import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.transaction.annotation.Transactional
+import org.springframework.util.MultiValueMap
+import org.springframework.web.client.RestTemplate
+import java.text.SimpleDateFormat
+
+import java.util.*
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.*;
+
+/**
+ *
+ *
+ *
+ *
+ */
+@Log4j
+//@DynamicMixin
+public class ThanaWiseAggregator extends AbstractAggregator {
+
+    static final def TABLE = "geo_manager_mapping"
+    static final def TRIGGER_SQL = "select geo_code from " +TABLE;
+
+
+    @Autowired
+    RestHighLevelClient client
+
+    @Autowired
+    protected JdbcTemplate jdbcTemplate
+
+
+
+    @Value('${ThanaWiseAggregator.scrollSize:10000}')
+    int scrollSize
+
+
+    @Value('${ThanaWiseAggregator.notificationUrl:http://localhost:8277/register}')
+    String notificationUrl
+
+    @Transactional
+    @Scheduled(cron = '${ThanaWiseAggregator.cron:*/3 * * * * ?}')
+    public void aggregate() {
+
+        log.info("********** ThanaWiseAggregator Aggregator started at " + new Date())
+
+
+        List<String> areaCodes = fetchAreaCodeData();
+        List<ReportIndex> indices = DateUtil.getIndex()
+
+        for (ReportIndex index : indices) {
+            log.info(index.toString())
+            //fetch data from ES
+            List<ThanaWiseReportModel> thanaWiseAggregatorModels = aggregateDataES(index.getIndexName(), index
+                    .getStartDate(), index.getEndDate(), areaCodes)
+            //    insertAggregation(thanaWiseAggregatorModels)
+            log.info(thanaWiseAggregatorModels)
+
+            List<AreaDetailsModel> areas = fetchAreaDetails();
+
+            HttpHeaders headers = new HttpHeaders();
+            sendNotification(headers, areas, thanaWiseAggregatorModels)
+
+        }
+
+        log.info("********** C2SDailyAggregator Aggregator ended at " + new Date())
+    }
+
+    def sendNotification(HttpHeaders headers,
+                         List<AreaDetailsModel> areaDetails,
+                         List<ThanaWiseReportModel> responseModels)
+    {
+        log.info("Sending notifications start ***************")
+
+        areaDetails.forEach({ areaRecord ->
+            log.info("sending message for region: " + areaRecord.getRegionName())
+            ThanaWiseReportModel data = responseModels.stream().filter({ model ->
+                model.getArea() ==  areaRecord.getRegionName()}).findFirst().get()
+
+            if(data!=null) {
+                log.info("Sending sms ***************")
+                prepareSmsNotificationRequestBody(data, areaRecord)
+
+                log.info("Sending email ***************")
+
+                Map<String, Object> fields = new ConcurrentHashMap();
+                fields.put("notificationType", "EMAIL");
+                fields.put("recipientId", areaRecord.getEmail());
+                fields.put("senderId", "se.vms@seamless.se");
+                fields.put("message", readEmailMessage(data));
+                fields.put("referenceEventId", "eventId");
+
+
+                Map<String, Object> emailProps = new HashMap<>();
+                fields.put("EMAILPROPS", emailProps);
+
+                Map req = new HashMap();
+                req.put("eventTag","ADHOC_ALERT");
+                req.put("fields",fields);
+
+                log.info("Request Data: " + new JsonBuilder(req).toPrettyString());
+                HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(req, headers);
+                RestTemplate restTemplate = new RestTemplate();
+
+                try {
+                    String returnStatus = restTemplate.postForObject(notificationUrl, request,  String.class);
+                    log.info("Email sent status" + returnStatus);
+
+                }catch(Exception e){
+                    log.error(e);
+                }
+            }
+        })
+        log.info("notifications sending ended ***************");
+    }
+
+
+
+    def readEmailMessage(ThanaWiseReportModel thanaWiseReportModel){
+        File f = new File('/opt/seamless/conf/bi-aggregator/scripts/thana_message_content.ftl')
+        def engine = new groovy.text.GStringTemplateEngine()
+        def binding = [data : thanaWiseReportModel ]
+        def template = engine.createTemplate(f).make(binding)
+        return template.toString()
+    }
+
+
+    def prepareSmsNotificationRequestBody(ThanaWiseReportModel data, AreaDetailsModel record){
+
+        Map<String, Object> fields = new ConcurrentHashMap();
+        fields.put("notificationType","SMS");
+        fields.put("recipientId", record.getMsisdn());
+        fields.put("message", readReminderSmsBody(data));
+        fields.put("senderid", "9988776655");
+        fields.put("referenceEventId","eventId");
+
+        Map req = new HashMap();
+        req.put("eventTag","ADHOC_ALERT");
+        req.put("fields",fields);
+
+        //log.info("Request Data: " + new JsonBuilder(req).toPrettyString());
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(req, headers);
+        RestTemplate restTemplate = new RestTemplate();
+
+        try {
+            String returnStatus = restTemplate.postForObject(notificationUrl, request,  String.class);
+            log.info("SMS sent status" + returnStatus);
+
+        }catch(Exception e){
+            log.error(e);
+        }
+
+    }
+
+    static def readReminderSmsBody(ThanaWiseReportModel data){
+
+
+        def f = new File('/opt/seamless/conf/bi-aggregator/scripts/thana_message_content.ftl')
+        def engine = new groovy.text.GStringTemplateEngine()
+
+        def binding = [data : data ]
+        def template = engine.createTemplate(f).make(binding)
+        return template.toString()
+    }
+
+    private List<ThanaWiseReportModel> aggregateDataES(String index, String fromDate, String toDate, List<String> areaCodes) {
+
+
+        SearchRequest searchRequest = new SearchRequest(index)
+        SearchSourceBuilder searchSourceBuilder = fetchInput(fromDate, toDate, "C2C", areaCodes)
+        searchRequest.source(searchSourceBuilder)
+        searchRequest.scroll(TimeValue.timeValueMinutes(5))
+        List<ThanaWiseModel> c2sThanaWiseAggregatorModels = generateResponse(searchRequest,  "C2C");
+
+
+        searchSourceBuilder = fetchInput(fromDate, toDate,"C2S", areaCodes);
+        searchRequest.source(searchSourceBuilder);
+        searchRequest.scroll(TimeValue.timeValueMinutes(5))
+        List<ThanaWiseModel> c2cThanaWiseAggregatorModels = generateResponse(searchRequest, "C2S");
+
+        List<AreaDetailsModel> areas = fetchAreaDetails();
+        List<ThanaWiseReportModel> responseModels = generateFinalResponse(c2sThanaWiseAggregatorModels, c2cThanaWiseAggregatorModels, areas);
+        return responseModels;
+
+    }
+
+    private SearchResponse generateSearchResponse(SearchRequest searchRequest) {
+        SearchResponse searchResponse = null
+        log.info("*******Request:::: " + searchRequest.toString())
+        try {
+            searchResponse = client.search(searchRequest, COMMON_OPTIONS)
+        } catch (Exception e) {
+            log.error("Error mapping rule " + searchRequest + "\nError message : " + e)
+        }
+        return searchResponse
+    }
+
+    private SearchResponse generateScrollSearchResponse(SearchScrollRequest scrollRequest) {
+        SearchResponse searchResponse = null
+        try {
+            searchResponse = client.scroll(scrollRequest, COMMON_OPTIONS)
+        } catch (Exception e) {
+            log.error("Error mapping rule " + scrollRequest + "\nError message : " + e)
+        }
+        return searchResponse
+    }
+
+
+    private SearchSourceBuilder fetchInput(String fromDate, String toDate, String transactionType, List<String> areaCodes) {
+
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        BoolQueryBuilder queryBuilder = null
+        CompositeAggregationBuilder compositeBuilder = null
+        if(transactionType == "C2C")
+        {
+            List<CompositeValuesSourceBuilder<?>> sources = new ArrayList<>();
+            sources.add(new TermsValuesSourceBuilder("RECEIVER_FIELD_thanaCode").field("RECEIVER_FIELD_thanaCode.keyword").missingBucket(true));
+            sources.add(new TermsValuesSourceBuilder("receiver_ownerId").field("receiver_ownerId.keyword").missingBucket(true));
+            sources.add(new TermsValuesSourceBuilder("RECEIVER_FIELD_areaCode").field("RECEIVER_FIELD_areaCode.keyword").missingBucket(true));
+
+            compositeBuilder = new CompositeAggregationBuilder("ThanaWise",
+                    sources).size(10000);
+            compositeBuilder.subAggregation(AggregationBuilders.sum("totalAmountValue").field("transactionAmount"))
+            queryBuilder = QueryBuilders.boolQuery()
+                    .must(QueryBuilders.wildcardQuery("productSKU.keyword","C2C*"))
+                    .filter(QueryBuilders.termsQuery("SenderResellerType.keyword","SE"))
+                    .filter(QueryBuilders.termsQuery("ReceiverResellerType.keyword","RET"))
+                    .filter(QueryBuilders.termsQuery("resultCode", 0))
+                    .filter(QueryBuilders.termsQuery("RECEIVER_FIELD_areaCode.keyword", areaCodes))
+
+
+        }
+        else
+        {
+            List<CompositeValuesSourceBuilder<?>> sources = new ArrayList<>();
+            sources.add(new TermsValuesSourceBuilder("SENDER_FIELD_thanaCode").field("SENDER_FIELD_thanaCode.keyword").missingBucket(true));
+            sources.add(new TermsValuesSourceBuilder("sender_ownerId").field("sender_ownerId.keyword").missingBucket(true));
+            sources.add(new TermsValuesSourceBuilder("SENDER_FIELD_areaCode").field("SENDER_FIELD_areaCode.keyword").missingBucket(true));
+
+            compositeBuilder = new CompositeAggregationBuilder("ThanaWise",
+                    sources).size(10000);
+            compositeBuilder.subAggregation(AggregationBuilders.sum("totalAmountValue").field("transactionAmount"))
+
+            queryBuilder = QueryBuilders.boolQuery()
+                    .must(QueryBuilders.wildcardQuery("transactionProfile.keyword","C2S*"))
+                    .filter(QueryBuilders.termsQuery("resultCode", 0))
+                    .filter(QueryBuilders.termsQuery("SENDER_FIELD_areaCode.keyword", areaCodes))
+
+
+        }
+
+        queryBuilder = queryBuilder.filter(QueryBuilders.rangeQuery("timestamp").gte("now/d").lt("now+6h/d")
+                .includeLower(true).includeUpper(true))
+        searchSourceBuilder.query(queryBuilder);
+        searchSourceBuilder.aggregation(compositeBuilder).size(scrollSize);
+        return searchSourceBuilder;
+    }
+
+
+    private List<ThanaWiseModel> generateResponse(SearchRequest searchRequest, String type) {
+        List<ThanaWiseModel> thanaWiseModels = new ArrayList<>();
+        SearchResponse searchResponse = null;
+        try {
+            searchResponse = client.search(searchRequest, COMMON_OPTIONS);
+        } catch (Exception e) {
+            log.error("Error mapping rule " + searchRequest + "\nError message : " + e);
+        }
+        log.debug("*******Request:::: " + searchRequest.toString())
+        RestStatus status = searchResponse.status();
+        log.debug("response status -------------" + status);
+        if (status == RestStatus.OK) {
+            Aggregations aggregations = searchResponse.getAggregations();
+
+            ParsedComposite parsedComposite = aggregations.asMap().get("ThanaWise");
+            for (ParsedMultiBucketAggregation.ParsedBucket bucket : parsedComposite.getBuckets()) {
+                LinkedHashMap<String, String> keyValuesMap = bucket.getKey();
+                Map<String, Aggregation> aggregationMap = bucket.getAggregations().asMap();
+                Aggregation totalAmountAggregration = aggregationMap.get("totalAmountValue");
+                ParsedSum p = (ParsedSum) totalAmountAggregration;
+                // Date dateTimeDay = DateFormatter.formatDate(keyValuesMap.get("EndTimeDay"));
+                ThanaWiseModel thanaWiseModel = null;
+                if(type.equals("C2S")) {
+                    thanaWiseModel = new ThanaWiseModel(keyValuesMap.get("sender_ownerId"), keyValuesMap.get("SENDER_FIELD_thanaCode"), p.value(), keyValuesMap.get("SENDER_FIELD_areaCode"));
+                } else
+                {
+                    thanaWiseModel = new ThanaWiseModel(keyValuesMap.get("receiver_ownerId"), keyValuesMap.get("RECEIVER_FIELD_thanaCode"), p.value(), keyValuesMap.get("RECEIVER_FIELD_areaCode"));
+                }
+                thanaWiseModels.add(thanaWiseModel);
+            }
+        }
+        return thanaWiseModels;
+    }
+
+
+    private static List<ThanaWiseReportModel> generateFinalResponse(List<ThanaWiseModel> c2cResponseModels, List<ThanaWiseModel> c2sResponseModels, List<AreaDetailsModel> areaCodes){
+        //   List<String> regions = ["a","b","c"]
+
+
+        List<ThanaWiseReportModel> thanaWiseReportModels = new ArrayList<>()
+
+        areaCodes.forEach({ area ->
+            List<ThanaWiseModel> c2cByThana = c2cResponseModels.stream().filter(
+                    { c2c -> (c2c.getArea() == area.getRegionName()) }).collect(Collectors.toList());
+            double totalC2c = 0;
+            c2cByThana.stream().forEach({ c2c -> totalC2c = totalC2c + c2c.getAmount() })
+            List<ThanaWiseModel> c2sByThana = c2sResponseModels.stream().filter(
+                    { c2s -> (c2s.getArea() == area.getRegionName()) }).collect(Collectors.toList());
+            double totalC2s = 0;
+            c2sByThana.stream().forEach({ c2s -> totalC2s = totalC2s + c2s.getAmount() })
+
+//            String fromDateTime = getDateTime("lower");
+//            String toDateTime = getDateTime("upper");
+
+            ThanaWiseReportModel thanaWiseReportModel = new ThanaWiseReportModel(
+                    area.getRegionName(), totalC2c, totalC2s, c2cByThana, c2sByThana)
+            thanaWiseReportModels.add(thanaWiseReportModel)
+        })
+        return thanaWiseReportModels
+    }
+
+
+    private List<AreaDetailsModel> fetchAreaDetails()
+    {
+        String query = "select a.geo_code as regionName, b.`manager_name` managerName, b.`email` as email, b.`msisdn` as msisdn" +
+                " from geo_manager_mapping a, geo_manager b " +
+                " where a.geo_manager_id=b.id and manager_type=\"AREA\";"
+
+        List<AreaDetailsModel> areaDetailsModelList = new ArrayList<>();
+
+        def result = jdbcTemplate.queryForList(query)
+        for (Map<String,Object> row : result)
+        {
+            AreaDetailsModel areaDetails = new AreaDetailsModel(
+                    row.get("regionName") as String,
+                    row.get("managerName") as String,
+                    row.get("email") as String,
+                    row.get("msisdn") as String,
+            )
+
+            areaDetailsModelList.add(areaDetails)
+        }
+        return areaDetailsModelList
+    }
+
+    private List<String> fetchAreaCodeData(){
+
+
+        // fetch last trigger status from mysql cutoff_trigger_status
+        def triggerData = jdbcTemplate.query(TRIGGER_SQL, new ColumnMapRowMapper());
+
+        log.debug("Received ${triggerData.size()} rows from geo code mappings")
+        def areaCode = "";
+        def areaCodeList = [];
+        for(int i = 0; i < triggerData.size(); i++)
+        {
+            areaCode = triggerData.get(i).get("geo_code");
+            areaCodeList.add(areaCode)
+        }
+
+        return areaCodeList;
+    }
+
+
+}
+
+class ThanaWiseModel
+{
+    private String owner;
+    private String thana;
+    private double amount;
+    private String area;
+
+    ThanaWiseModel(String owner, String thana, double amount, String area) {
+        this.owner = owner
+        this.thana = thana
+        this.amount = amount
+        this.area = area
+    }
+
+    String getOwner() {
+        return owner
+    }
+
+    void setOwner(String owner) {
+        this.owner = owner
+    }
+
+    String getThana() {
+        return thana
+    }
+
+    void setThana(String thana) {
+        this.thana = thana
+    }
+
+    double getAmount() {
+        return amount
+    }
+
+    void setAmount(double amount) {
+        this.amount = amount
+    }
+
+    String getArea() {
+        return area
+    }
+
+    void setArea(String area) {
+        this.area = area
+    }
+}
+
+class ThanaWiseReportModel {
+    private String area;
+    private double totalC2cAmount;
+    private double totalC2sAmount;
+    private List<ThanaWiseModel> c2cThanaWise;
+    private List<ThanaWiseModel> c2sThanaWise;
+    private String date;
+
+
+    ThanaWiseReportModel(String area, Double totalC2cAmount, Double totalC2sAmount, List<ThanaWiseModel> c2cThanaWise, List<ThanaWiseModel> c2sThanaWise) {
+        this.area = area
+        this.totalC2cAmount = totalC2cAmount
+        this.totalC2sAmount = totalC2sAmount
+        this.c2cThanaWise = c2cThanaWise
+        this.c2sThanaWise = c2sThanaWise
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+        this.date = formatter.format(date);
+
+    }
+
+    String getArea() {
+        return area
+    }
+
+    void setArea(String area) {
+        this.area = area
+    }
+
+    double getTotalC2cAmount() {
+        return totalC2cAmount
+    }
+
+    void setTotalC2cAmount(double totalC2cAmount) {
+        this.totalC2cAmount = totalC2cAmount
+    }
+
+    double getTotalC2sAmount() {
+        return totalC2sAmount
+    }
+
+    void setTotalC2sAmount(double totalC2sAmount) {
+        this.totalC2sAmount = totalC2sAmount
+    }
+
+    List<ThanaWiseModel> getC2cThanaWise() {
+        return c2cThanaWise
+    }
+
+    void setC2cThanaWise(List<ThanaWiseModel> c2cThanaWise) {
+        this.c2cThanaWise = c2cThanaWise
+    }
+
+    List<ThanaWiseModel> getC2sThanaWise() {
+        return c2sThanaWise
+    }
+
+    void setC2sThanaWise(List<ThanaWiseModel> c2sThanaWise) {
+        this.c2sThanaWise = c2sThanaWise
+    }
+
+
+    String getDate() {
+        return date
+    }
+
+    void setDate(String date) {
+        this.date = date
+    }
+}
+
+class AreaDetailsModel {
+
+    private String regionName;
+    private String managerName;
+    private String email;
+    private String msisdn;
+
+    AreaDetailsModel(String regionName, String managerName, String email, String msisdn) {
+        this.regionName = regionName
+        this.managerName = managerName
+        this.email = email
+        this.msisdn = msisdn
+    }
+
+    String getRegionName() {
+        return regionName
+    }
+
+    void setRegionName(String regionName) {
+        this.regionName = regionName
+    }
+
+    String getManagerName() {
+        return managerName
+    }
+
+    void setManagerName(String managerName) {
+        this.managerName = managerName
+    }
+
+    String getEmail() {
+        return email
+    }
+
+    void setEmail(String email) {
+        this.email = email
+    }
+
+    String getMsisdn() {
+        return msisdn
+    }
+
+    void setMsisdn(String msisdn) {
+        this.msisdn = msisdn
+    }
+}
+
+

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:integration="http://www.springframework.org/schema/integration"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:http="http://www.springframework.org/schema/integration/http"
+       xmlns:stream="http://www.springframework.org/schema/integration/stream"
+       xsi:schemaLocation="http://www.springframework.org/schema/integration/http http://www.springframework.org/schema/integration/http/spring-integration-http.xsd
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+http://www.springframework.org/schema/integration/stream
+			https://www.springframework.org/schema/integration/stream/spring-integration-stream.xsd">
+
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/soap/outbound/gp_soap_outbound_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/soap/inbound/gp_soap_inbound_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/gp_outbound_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/inbound/gp_inbound_flow.xml"/>
+
+    <task:executor id="xmlConversionTaskExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="textConversionTaskExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="restTemplateTaskExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="soapWebServiceTemplateTaskExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <integration:logging-channel-adapter id="gpLogger" logger-name="GPLogger" level="ERROR" expression="'HEADERS: [[' + headers +']], PAYLOAD: [[' + payload +']]'"/>
+    <integration:poller  max-messages-per-poll="#{pollers['max-messages-per-poll']}" default="true" fixed-rate="0" time-unit="MILLISECONDS"/>
+    <stream:stderr-channel-adapter channel="errorChannel" append-newline="true"/>
+</beans>
+

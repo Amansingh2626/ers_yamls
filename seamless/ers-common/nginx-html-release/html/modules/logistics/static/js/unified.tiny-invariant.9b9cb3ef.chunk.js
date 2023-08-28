@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_logistics=self.webpackChunk_unified_logistics||[]).push([[4940],{1898:(i,n,s)=>{"use strict";s.d(n,{Z:()=>e});const e=function(i,n){if(!i)throw new Error("Invariant failed")}}}]);

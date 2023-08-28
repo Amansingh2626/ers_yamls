@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_bulk=self.webpackChunk_unified_bulk||[]).push([[388],{3603:(e,n,r)=>{"use strict";r.d(n,{Z:()=>a});var u=/[A-Z]/g,t=/^ms-/,s={};function i(e){return"-"+e.toLowerCase()}const a=function(e){if(s.hasOwnProperty(e))return s[e];var n=e.replace(u,i);return s[e]=t.test(n)?"-"+n:n}}}]);

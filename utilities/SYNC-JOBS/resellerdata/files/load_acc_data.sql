@@ -1,0 +1,1 @@
+load data local infile '/data/account.csv' REPLACE into table account_data_dump fields terminated by ',' enclosed by '"' lines terminated by '\n' (owner, accountId, accountTypeId,balance,updated_date);

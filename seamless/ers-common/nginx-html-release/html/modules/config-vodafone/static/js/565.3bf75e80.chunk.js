@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_config_vodafone=self.webpackChunk_unified_config_vodafone||[]).push([[565],{565:(e,n,o)=>{"use strict";o.d(n,{Z:()=>f});const f=o.p+"images/logo.png"}}]);

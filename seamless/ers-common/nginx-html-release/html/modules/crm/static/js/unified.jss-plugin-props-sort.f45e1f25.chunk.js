@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_crm=self.webpackChunk_unified_crm||[]).push([[6990],{2948:(e,n,t)=>{"use strict";t.d(n,{Z:()=>r});const r=function(){var e=function(e,n){return e.length===n.length?e>n?1:-1:e.length-n.length};return{onProcessStyle:function(n,t){if("style"!==t.type)return n;for(var r={},u=Object.keys(n).sort(e),c=0;c<u.length;c++)r[u[c]]=n[u[c]];return r}}}}}]);

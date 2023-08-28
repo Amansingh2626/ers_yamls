@@ -1,0 +1,1684 @@
+#
+# $Id$
+
+# This is the id of the TXE node which is used as part of the transaction reference
+# for transactions handled by this node. If running multiple nodes in parallel
+# this id MUST be different for each node!
+#
+node_id=01
+
+# JVM parameters
+#
+#env.jre.start_heap=128m
+#env.jre.max_heap=512m
+#env.jre.opts=-Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,address=9010,suspend=n
+
+## TXE services
+#
+# Which URL to use to export the transaction processing client interface
+#
+processing_service_url=http://0.0.0.0:8777/txe/transactionProcessing
+
+# Which URL to use to export the transaction exporting client interface
+#
+exporting_service_url=http://0.0.0.0:8777/txe/transactionExporting
+
+# Which URL to use to export the subscriber client interface
+#
+subscriber_service_url=http://0.0.0.0:8777/txe/subscriber
+
+# Which URL to use to export the reseller client interface
+#
+reseller_service_url=http://0.0.0.0:8777/txe/reseller
+
+# Which URL to use to export the systemadmin client interface
+#
+systemadmin_service_url=http://0.0.0.0:8777/txe/systemadmin
+
+# Which URL to use to export the eventcallback interface
+#
+eventcallback_service_url=http://0.0.0.0:8777/txe/callback
+
+coreproxyconnection.url=http://ers-coreproxy-service:8912/coreProxy
+
+
+## Platform Web Services
+#
+# Location of the reseller transaction interface
+#
+resellertransactionconnection.url=http://ers-coreproxy-service-8983:8983/reseller
+
+# Location of the reseller management interface
+#
+resellermanagementconnection.url=http://ers-coreproxy-service-8983:8983/resellerManagement
+
+# Location of the voucher database link interface
+#
+voucherdbconnection.url=http://ers-coreproxy-service:8912/voucherDb
+
+# Location of the subscriber database transaction interface
+#
+subscribertransactionconnection.url=http://ers-subscribersystem-service:8087/subscribers/transaction
+
+# Location of the subscriber database management interface
+#
+subscribermanagementconnection.url=http://ers-subscribersystem-service:8087/subscribers/management
+
+# Location of core single sign-on interface
+#
+singlesignonconnection.url=http://localhost:8911/singleSignon
+
+# Account Operation Link Connection url
+
+accountoperationlink.url=http://ers-account-management-service:8092/accountsystem/operations
+
+# Communication Message Service Link Connection url
+
+communicationmessagelink.url=http://localhost:8027/soa-integration/communicationmessage
+
+# Configuration for sending a request to USSDApp
+ussdapp.url=http://localhost:8680/cc/CC
+ussdapp.shortcode.resellerVisitConfirmationMenu=107
+
+# Profiling systems
+profilingsystemconnection = http://localhost:9808/profiling/getCustomerProfile
+
+# Credit Service
+creditserviceconnection = http://localhost:8099/api/services/
+
+# Configuration for the connection to the ersifplatform-internal
+#
+ersplatforminternal.url=http://localhost:8765/suggestedstock
+ersplatforminternal.user=
+ersplatforminternal.password=
+
+# Subscriber Product service Link Connection url
+#subscriber_product_service.url=http://ers-bi-aggregator-service:8999/flytxt-link/services
+
+
+# Location of the report transaction interfaces
+# All transactions starting with SUP are handled by the support service
+reporttransactionconnection.1.url=http://localhost:8071/supportsystem/reports
+reporttransactionconnection.1.report_id_regexp=SUP.*
+reporttransactionconnection.layout_language=en
+
+
+reporttransactionconnection.2.url=http://localhost:8920/reportengine/internal
+reporttransactionconnection.2.report_id_regexp=.*
+
+# ReportId for etopup last transaction
+reporttransactionconnection.etopup_last_transaction=SUP_LAST_TRANSACTION
+# ReportId for etopup transaction status
+reporttransactionconnection.etopup_transaction_status=SUP_TRANSACTION_STATUS
+
+# Location of the reseller management interface
+#resellermanagementconnection.url=http://localhost:8911/resellerManagement
+
+# reporttransactionconnection.report_mapping.reseller_link_pending_transactions is used by: getLastTransactionStatus
+reporttransactionconnection.report_mapping.reseller_link_pending_transactions=SUP_LINK_RESELLER_PENDING_TRANSACTIONS
+
+# reseller_last_transactions is used by: getLastTransactionStatus, getMolletLastTransactionStatus
+reporttransactionconnection.report_mapping.reseller_last_transactions=SUP_LAST_TRANSACTIONS
+# subscriber_last_transactions is used by: getLastTransactionStatus, getMolletLastTransactionStatus
+reporttransactionconnection.report_mapping.subscriber_last_transactions=SUP_SUB_LAST_TRANSACTIONS
+# reseller_transaction_status is used by: getTransactionStatus, getMolletTransactionStatus
+reporttransactionconnection.report_mapping.reseller_transaction_status=SUP_TRANSACTION_STATUS
+
+reporttransactionconnection.report_mapping.reversal_pending_transactions=SUP_REVERSAL_TRANSACTIONS
+
+# Which AccountTransactionEngine to use. Possible choices: LEGACY and GROUP.
+# LEGACY - Makes one method call per transaction, debits first
+# GROUP - Groups all transactions of the same account type and sends them in a single method call.
+#account_transaction_engine=TARGET
+#account_transaction_engine=LEGACY
+account_transaction_engine=LEGACY
+account_transaction_engine.comparator.className=com.seamless.ers.txe.transaction.comparator.MarginRuleIdComparator
+
+
+# Location of all principal systems and which principal id types they handle
+#
+principal_systems.SUBSCRIBERS.id_types=SUBSCRIBERID SUBSCRIBERKEY SUBSCRIBERMSISDN SUBSCRIBERANONYMOUSID
+principal_systems.SUBSCRIBERS.url=http://ers-subscribersystem-service:8087/principal
+principal_systems.RESELLERS.id_types=RESELLERID RESELLERUSER RESELLERMSISDN RESELLERIDANDMSISDN ADMINUSER TERMINALID RESELLERUSERNAME
+principal_systems.RESELLERS.url=http://ers-coreproxy-service:8912/principalService
+#principal_systems.RESELLERS.use_ssl=false
+#principal_systems.RESELLERS.keyManagerFilePath=/opt/seamless/conf/keystore.jks
+#principal_systems.RESELLERS.trustManagerFilePath=/opt/seamless/conf/cacerts.jks
+#principal_systems.RESELLERS.trustKeyStoreFilePassword=seamless2020
+#principal_systems.RESELLERS.trustManagerType=SunX509
+#principal_systems.RESELLERS.disableCNCheck=false
+
+principal_systems.RESELLERS.allow_resolve_principal_using_msisdn_as_webuser=false
+
+# Custom operation service providers
+# If the url is specified as "VOID" the custom operation will be
+# treated as No operation and will return success if the principals
+# are resolved correctly.
+service_providers.1.provider_id=SUBSCRIBERSYSTEM
+service_providers.1.operation_id=SUBSCRIBER_.*
+service_providers.1.url=http://ers-subscribersystem-service:8087/customOperations
+service_providers.2.provider_id=RESELLERSYSTEM
+service_providers.2.operation_id=RESELLER_.*
+service_providers.2.url=http://localhost:8911/customOperations
+service_providers.3.provider_id=VOIDPROVIDER
+service_providers.3.operation_id=VOID_OPERATION
+service_providers.3.url=VOID
+service_providers.4.provider_id=VASMANAGER
+service_providers.4.operation_id=FAF_.*
+service_providers.4.url=http://localhost:8096/customOperations
+service_providers.5.provider_id=COREPROXY
+service_providers.5.operation_id=SEND_SMS_NOTIFICATION.*
+service_providers.5.url=http://ers-coreproxy-service:8912/customOperationsService
+service_providers.6.provider_id=VASMANAGER
+service_providers.6.operation_id=CMBK.*
+service_providers.6.url=http://localhost:8096/customOperations
+service_providers.7.provider_id=OTPPROVIDER
+service_providers.7.operation_id=GENERATE_OTP
+service_providers.7.url=VOID
+
+service_providers.8.provider_id=OTPVALIDATOR
+service_providers.8.operation_id=OTP_VALIDATION
+service_providers.8.url=VOID
+
+service_providers.9.provider_id=VOUCHERDATADOWNLOAD
+service_providers.9.operation_id=VOUCHER_DATA_DOWNLOAD
+service_providers.9.url=http://localhost:8920/reportengine/customOperations
+
+accountconnection.classname=StaticFinderMap
+accountconnection.1.account_type_id=AIRTIME
+#accountconnection.1.account_provider_id=SOMETELCO
+accountconnection.1.classname=FixedAccountClientConnection
+
+#accountconnection.1.server_url=http://http://ers-account-link-simulator-service:8091/accountlinksimulator
+
+accountconnection.2.account_type_id=RESELLER
+accountconnection.2.classname=FixedAccountClientConnection
+accountconnection.2.server_url=http://ers-account-management-service:8092/accountsystem
+
+accountconnection.3.account_type_id=BOOKKEEPING
+accountconnection.3.classname=FixedAccountClientConnection
+accountconnection.3.server_url=http://ers-account-management-service:8092/accountsystem
+
+#accountconnection.4.account_type_id=DIGITAL
+accountconnection.4.account_type_id=DIGITAL_WALLET
+accountconnection.4.classname=FixedAccountClientConnection
+accountconnection.4.server_url=http://ers-account-management-service:8092/accountsystem
+
+accountconnection.5.account_type_id=P2P_WALLET
+accountconnection.5.classname=TransactionVoidConnection
+
+
+accountconnection.6.account_type_id=INCENTIVE_WALLET
+accountconnection.6.classname=FixedAccountClientConnection
+accountconnection.6.server_url=http://ers-account-management-service:8092/accountsystem
+
+accountconnection.7.account_type_id=FOC_WALLET
+accountconnection.7.classname=FixedAccountClientConnection
+accountconnection.7.server_url=http://ers-account-management-service:8092/accountsystem
+
+#purchase_providers.1.provider_id=ERS_VOUCHERS
+#purchase_providers.1.product_id_type=PRODUCT_SKU|GLOBAL_SKU
+#purchase_providers.1.url=http://ers-coreproxy-service:8912/voucherPurchase
+
+#purchase_providers.2.provider_id=TICKET_SIMULATOR
+#purchase_providers.2.product_id_type=TICKET
+#purchase_providers.2.url=http://http://ers-account-link-simulator-service:8091/ticketPurchase
+
+#purchase_providers.3.provider_id=VOD
+#purchase_providers.3.product_id_type=VOD
+#purchase_providers.3.url=http://localhost:9099/voucher-factory/services
+
+#purchase_providers.4.provider_id=SOA
+#purchase_providers.4.product_id_type=SOA_VOUCHER
+#purchase_providers.4.url=http://localhost:8027/soa-integration/generatevoucher
+#purchase.voucher.soa-integration.enabled=true
+
+## Account services
+#
+# The configuration of the connection to account services
+#
+# Example:
+# You map account types to services.
+# First you need to specifY the account type
+#accountservice.1.account_type_id=AIRTIME
+# Then specify the service type, available types are:
+#  WEBSERVICE - for the new WS interface in ersplatform-internal
+#  LEGACY - For the old WS interface in ersifextlink
+#  VOID -  for an always successful service that does nothing (for BOOKKEEPING)
+#accountservice.1.service_type=WEBSERVICE
+# Then follows type dependant settings, for WEBSERVICE and LEGACY you need
+# to specify the server URL
+#accountservice.1.server_url=http://http://ers-account-link-simulator-service:8091/accountlinksimulator
+# Last but not least, account_description can be specified
+#accountservice.1.account_description=Airtime
+#
+# Should TXE update principal account status after getAccountInformation
+# call in the principal system?
+#accountservice.1.update_principal_account_status=false
+
+purchase.request.oneStepPurchase=true
+
+#accountservice.1.account_type_id=AIRTIME
+#accountservice.1.service_type=LEGACY
+#accountservice.1.server_url=http://http://ers-account-link-simulator-service:8091/accountlinksimulator
+#accountservice.1.account_description=Airtime
+
+accountservice.1.account_type_id=AIRTIME
+accountservice.1.service_type=LEGACY
+#accountservice.1.server_url=http://ers-uciplink-service:8010/UCIPLink
+#accountservice.1.server_url=http://ers-uciplink-service:8010/ss-mtn-ocslink
+accountservice.1.server_url=http://ers-uciplink-service:8010/UCIPLink
+#accountservice.1.server_url=http://http://ers-account-link-simulator-service:8091/accountlinksimulator
+accountservice.1.account_description=Airtime
+
+accountservice.2.account_type_id=RESELLER
+accountservice.2.service_type=LEGACY
+accountservice.2.server_url=http://ers-account-management-service:8092/accountsystem
+
+accountservice.3.account_type_id=BOOKKEEPING
+accountservice.3.service_type=LEGACY
+accountservice.3.server_url=http://ers-account-management-service:8092/accountsystem
+
+accountservice.4.account_type_id=DIGITAL
+accountservice.4.service_type=LEGACY
+accountservice.4.server_url=http://ers-account-management-service:8092/accountsystem
+
+# accountservice.6.account_type_id=MOLLET_VOUCHER
+# accountservice.6.service_type=LEGACY
+# accountservice.6.server_url=http://ers-account-management-service:8092/accountsystem
+
+# accountservice.7.account_type_id=DATA_BUNDLE
+# accountservice.7.service_type=LEGACY
+# accountservice.7.server_url=http://localhost:8042/cislink
+
+
+accountservice.5.account_type_id=AIRTIME_POSTPAID
+accountservice.5.service_type=GROUP
+accountservice.5.server_url=http://ers-standard-link-service:8098/standard-link-soap
+accountservice.5.customer_id=GP
+accountservice.5.validation_operation_id=CCPSVALIDATETOPUP
+accountservice.5.topup_operation_id=CCPSTOPUP
+accountservice.5.account_description=Airtime Postpaid
+accountservice.5.accountclientconnection.operations_path=customOperation
+
+#accountservice.8.account_type_id=MOBILEMONEY
+#accountservice.8.service_type=LEGACY
+#accountservice.8.server_url=http://localhost:8020/sdplink
+
+#accountservice.9.account_type_id=KYC
+#accountservice.9.service_type=LEGACY
+#accountservice.9.server_url=http://localhost:8025/kyclink
+#accountservice.9.account_description=Register Sub Reseller
+
+#accountservice.10.account_type_id=IDD_BUNDLE
+#accountservice.10.service_type=LEGACY
+#accountservice.10.server_url=http://localhost:8041/cislink
+#accountservice.10.accountclientconnection.operations_path=customOperation
+
+#accountservice.11.account_type_id=SMS_BUNDLE
+#accountservice.11.service_type=LEGACY
+#accountservice.11.server_url=http://localhost:8041/cislink
+#accountservice.11.accountclientconnection.operations_path=customOperation
+
+#accountservice.12.account_type_id=DATA_BUNDLE
+#accountservice.12.service_type=LEGACY
+#accountservice.12.server_url=http://localhost:8027/soa-integration
+#accountservice.12.accountclientconnection.operations_url=http://localhost:8041/cislink/customOperation
+#accountservice.12.accountclientconnection.services_url=http://localhost:8042/cislink/services
+#accountservice.12.server_url=http://localhost:8042/cislink
+
+#accountservice.13.account_type_id=COMBO_BUNDLE
+#accountservice.13.service_type=LEGACY
+#accountservice.13.server_url=http://localhost:8041/cislink
+#accountservice.13.accountclientconnection.operations_path=customOperation
+
+#accountservice.14.account_type_id=SPL_BUNDLE
+#accountservice.14.service_type=LEGACY
+#accountservice.14.server_url=http://localhost:8042/cislink
+#accountservice.14.accountclientconnection.operations_path=customOperation
+
+#accountservice.15.account_type_id=FTTX
+#accountservice.15.service_type=LEGACY
+#accountservice.15.server_url=http://localhost:8060/fttxlink
+
+accountservice.6.account_type_id=SKITTO
+accountservice.6.service_type=LEGACY
+accountservice.6.server_url=http://ers-standard-link-service:8098/standard-link-soap
+accountservice.6.customer_id=GP
+accountservice.6.validation_operation_id=SKITTOVALIDATETOPUP
+accountservice.6.topup_operation_id=SKITTOTOPUP
+accountservice.6.account_description=SKITTO
+
+accountservice.7.account_type_id=ESB
+accountservice.7.service_type=LEGACY
+accountservice.7.server_url=http://ers-standard-link-service:8098/standard-link-soap
+accountservice.7.customer_id=GP
+accountservice.7.validation_operation_id=ESBVALIDATETOPUP
+accountservice.7.topup_operation_id=ESBTOPUP
+accountservice.7.account_description=ESB
+accountservice.7.accountclientconnection.operations_path=customOperation
+
+accountservice.8.account_type_id=PROMOVAS
+#accountservice.8.service_type=LEGACY
+accountservice.8.service_type=VOID
+accountservice.8.server_url=http://ers-standard-link-service:8098/standard-link-soap
+accountservice.8.customer_id=GP
+accountservice.8.topup_operation_id=PROMOVASTOPUP
+accountservice.8.validation_operation_id=PROMOVASVALIDATETOPUP
+accountservice.8.account_description=PROMOVAS_SERVICE
+
+
+
+
+accountservice.9.account_type_id=AIRTIME_PREPAID
+accountservice.9.service_type=LEGACY
+accountservice.9.server_url=http://ers-uciplink-service:8010/UCIPLink
+accountservice.9.account_description=Airtime
+accountservice.10.account_type_id=FOC_WALLET
+accountservice.10.service_type=LEGACY
+accountservice.10.server_url=http://ers-account-management-service:8092/accountsystem
+accountservice.11.account_type_id=INCENTIVE_WALLET
+accountservice.11.service_type=LEGACY
+accountservice.11.server_url=http://ers-account-management-service:8092/accountsystem
+
+accountservice.12.account_type_id=P2P_WALLET
+accountservice.12.service_type=VOID
+
+accountservice.13.account_type_id=DIGITAL_WALLET
+accountservice.13.service_type=LEGACY
+accountservice.13.server_url=http://ers-account-management-service:8092/accountsystem
+
+#cislink.account_type_id.special_bundle=SPL_BUNDLE
+
+# Account Service Fallback
+#
+# Not Mandatory
+#
+# This configuration is mapped with a particular type of Account,
+# and a list of ErrorCodes.
+# If this fallback option is true, and the topup fails for a
+# accountlink within the list of configured ErrorCodes it will redirect the topup
+# to this configured accountlink for the second time.
+
+#fallbackAccountService=true
+#####true
+#To disable any specific account account type for topup. Like for Data Bundle account, fallback is not require.
+#fallbackDisableForAccountTypes=SKITTO
+#fallbackAccountServiceName=AIRTIME_POSTPAID
+#fallbackErrorCodes=301,302
+
+#fallbackAccountService.1.enable=true
+#fallbackAccountService.1.name=AIRTIME_POSTPAID
+##Commented by Aman for testing
+#fallbackAccountService.1.fallbackAccountServiceCondition=${(map.response.account?? && map.response.account.accountClassId?? && (map.response.account.accountClassId?number > 1000) && map.transaction.fields??&& map.transaction.fields.supplierReference?? && (map.transaction.fields.supplierReference!="TR" && map.transaction.fields.supplierReference!="STR" && map.transaction.fields.supplierReference!="XR" && map.transaction.fields.supplierReference!="TGP") && map.response.resultCode??&&map.response.resultCode.resultCode?? && map.response.resultCode.resultCode == 0)?string }
+
+#fallbackAccountService.1.fallbackAccountServiceCondition=${(map.response.account?? && map.response.account.accountClassId?? && (map.response.account.accountClassId?number > 1000) && map.transaction.fields??&& map.transaction.fields.supplierReference?? && (map.transaction.fields.supplierReference!="TR" && map.transaction.fields.supplierReference!="STR" && map.transaction.fields.supplierReference!="XR") && map.response.resultCode??&&map.response.resultCode.resultCode?? && map.response.resultCode.resultCode == 0)?string }
+
+#fallbackAccountService.2.enable=true
+#fallbackAccountService.2.name=ESB
+#fallbackAccountService.2.fallbackAccountServiceCondition=${(map.transaction.fields??&& map.transaction.fields.supplierReference?? && map.transaction.fields.supplierReference=="STR" && map.response.resultCode??&&map.response.resultCode.resultCode?? && map.response.resultCode.resultCode == 0)?string }
+
+
+# To define external account systems or custom operation Ids for specific VAS
+# services use vasservices properties. operation_id is required.
+# One can define server_url + classname or link_operation_id or both.
+# If link_operation_id is the same as operation_id, then it can be omitted.
+#
+vasservices.1.operation_id=CMB
+vasservices.1.classname=TransactionVoidConnection
+
+#vasservices.2.operation_id=OLLET_REGISTER
+#vasservices.2.classname=TransactionVoidConnection
+
+vasservices.2.operation_id=MOLLET_REGISTER
+vasservices.2.server_url=http://ers-account-management-service:8092/accountsystem
+vasservices.2.classname=FixedAccountClientConnection
+
+vasservices.3.operation_id=MOLLET_REDEEM
+vasservices.3.server_url=http://ers-account-management-service:8092/accountsystem
+vasservices.3.classname=FixedAccountClientConnection
+#vasservices.2.link_operation_id=BIC_INFO
+
+#vasservices.2.operation_id=BIC_INFO
+#vasservices.2.server_url=http://http://ers-account-link-simulator-service:8091/accountlinksimulator
+#vasservices.2.classname=FixedAccountClientConnection
+#vasservices.2.link_operation_id=BIC_INFO
+
+# Resellers Operation
+# Resellers can activate themselves by sending activation
+# code over different clients. Setting activation_code true will enable activation code
+# checking.
+resellers.activation_code=true
+
+# Sub-resellers approving re-linking can either directly select there pin if true
+# otherwise they needs to supply their old pin.
+resellers.link_subreseller_approval_cpin=true
+
+# The supported reversal operations
+#reversal.supported_tx_profiles=CREDIT_TRANSFER,TOPUP
+reversal.supported_tx_profiles=CREDIT_TRANSFER,TOPUP,REVERSE_C2S_RC
+enable_partial_reversal_R2R=true
+
+enable_partial_reversal_R2S=true
+
+# Example of validating sender/receiver principal on charging system
+# By Default it is sender principal if you want to validate receiver on charging system just enable following property
+# Accepted values of this property key are: SENDER or RECEIVER.
+# giving value SENDER to this key is equillant to disabling it.
+# transaction.topup.validate_topup_principal=RECEIVER
+
+# State machine customizations:
+#
+#   prepare_for_result_codes - applies TransactionChainState.Pending to all
+#   REQUESTs that fail with the specified result codes (comma separated list).
+#   "Prepare" because it simulates the behavior of PREPARE requests, which
+#   postpones the transactions until further approval.
+#   Example:
+#     statemachine.prepare_for_result_codes=1029
+#     will prepare transactions if the receiver was not found so they can be
+#     approved later when the receiver registers.
+
+# SMS provider connection, by default assumes kannel is running on the same host with standard configuration
+smsprovider.classname=HttpSMSProvider
+smsprovider.url=http://gp-kannel-svc.ers-prod.svc.cluster.local:13013/cgi-bin/sendsms?username=ers&password=recharge
+# SMS prefix to be added to the destination number.
+#smsprovider.to_prefix=880
+
+#locale.default_currency=KES
+# MSISDN settings
+# Default country code padded to msisdn in case entered msisdn with only a networkcode
+# (starting with single 0)
+#locale.default_country_code=880
+#Default network code padded to msisdn in case entered msisdn less than digits of default_network_code_digits + subscriber_number_digits
+#locale.default_network_code=714
+#Length of msisdn excluding network code and country code
+#locale.subscriber_number_digits=6
+
+# Accepted country codes: These will be accepted even without an international prefix
+#locale.accepted_country_codes=254
+
+# Length of msisdn excluding network code and country code
+#locale.subscriber_number_digits=6
+
+# The length of subscriber number can now also be set as min and max values to allow
+# for varying length msisdn:s.
+# This setting will override locale.subscriber_number_digits
+#locale.min_subscriber_number_digits=10
+#locale.max_subscriber_number_digits=12
+
+# Optional properties for the length of the full MSISDN, default values are 10 and 15
+#locale.min_msisdn_length=9
+#locale.max_msisdn_length=12
+
+# Optional property to set range of allowed network_codes.
+#locale.accepted_network_codes=714
+
+# Does a number that starts with a network code require a leading '0'?
+# (0 will not be counted as part the the network code and will be removed from the MSISDN)
+#locale.network_code_requires_0_prefix=true
+
+# Currency settings
+#Decimal separator
+#locale.decimal_separator=,
+#Thousand separator
+#locale.thousand_separator=.
+
+# Custom currency settings.
+#
+# The format for the custom currency setting is:
+# locale.custom_currency.XTS=3
+#
+# In this case XTS is the three letter ISO 4217 code (XTS is a code reserved for testing)
+# and 3 is the amount of decimals. You can either make up your own currency code or override
+# an existing currency code.
+#
+#locale.custom_currency.XTS=3
+
+#ADDING FOR LANGUAGE FROM USSD
+cms.default_language_fallback=true
+default_language=en
+
+# CMS settings, used to resolve the request result message texts
+cms.classname=SimpleFileCMS
+# Optional default language in case the language is missing in the request to the CMS system.
+cms.default_language=en
+cms.languages=bn en
+cms.bn.filename=messages_bangla.properties
+cms.bn.encoding=UTF-8
+
+cms.en.filename=messages_english.properties
+cms.en.encoding=UTF-8
+# Flow control settings
+#flowcontrol.default.asynchronous=false
+#flowcontrol.default.cooldown_time=100
+#flowcontrol.default.max_parallel_requests=40
+#flowcontrol.default.log_stats=true
+#flowcontrol.default.log_stat_interval=60
+
+##Added for Performance Test
+flowcontrol.default.asynchronous = false
+#flowcontrol.default.queue_size = 5000
+#flowcontrol.default.min_threads = 16
+#flowcontrol.default.max_threads = 20000
+#flowcontrol.default.thread_idle_timeout = 1
+flowcontrol.default.cooldown_time = 100
+flowcontrol.default.max_parallel_requests = 200
+flowcontrol.default.log_stats = true
+flowcontrol.default.log_stat_interval = 10
+
+# Service manager settings
+# The default graceful shutdown time for stopping the server in milliseconds.
+# In case a shutdown takes longer time, a warning message will be printed in the log.
+servicemanager.shutdown_hooks=SIGHUP:timeout=60000
+
+
+# Transaction log provider settings
+transactionlog.class_name=com.seamless.ers.txe.transactionlog.xmlbeans.XMLBeansTransactionLoggingFactory
+transactionlog.archive.active=true
+
+transactionlog.log.db_driver=org.mariadb.jdbc.Driver
+transactionlog.log.db_url=jdbc:mysql://localhost:3306/transactionlog?autoReconnect=true&failoverreadonly=false&retriesAllDown=1000
+#transactionlog.log.db_url=jdbc:mysql://10.18.65.4:3361/transactionlog
+transactionlog.log.db_user=refill
+transactionlog.log.db_password=refill
+transactionlog.log.sdb_pool_implementation=HCP
+transactionlog.log.data_format=json
+transactionlog.log.pool_min_size=20
+transactionlog.log.pool_max_size=50
+transactionlog.log.pool_simultaneous_build_throttle=40
+transactionlog.log.fallback_logdir=/var/seamless/log/txe/fallback
+transactionlog.log.pool_timeout=10
+transactionlog.log.pool_validation_query=SELECT NOW()
+
+# Classic reference generator with 25 digits using:
+# - Node id
+# - Time stamp
+# - Sequence number (that will wrap when restarted etc)
+#
+transactionlog.log.reference_generator.class_name=com.seamless.common.referencegeneration.TimestampReferenceGenerator
+
+# Number of digits in the sequence number part
+#
+transactionlog.log.reference_generator.reference_counter_length=6
+
+# The format of the timestamp part of the reference
+#
+transactionlog.log.reference_generator.timestamp_format=yyyyMMddHHmmssSSS
+
+# If a timestamp is repeated (eg beccause of clock sync etc)
+#  this is the number of times it is allowed to repeat without logging a warning
+#
+transactionlog.log.reference_generator.timestamp_repeat_warning_count=10
+
+# New reference generator, using the node id and a node-unique database sequence number
+#
+
+# transactionlog.log.reference_generator.class_name=com.seamless.common.referencegeneration.DatabaseSequenceReferenceGenerator
+# Database connection for the sequence generator table
+#
+transactionlog.log.reference_generator.db_driver=org.mariadb.jdbc.Driver
+transactionlog.log.reference_generator.db_url=jdbc:mysql://localhost:3306/transactionlog?autoReconnect=true&failoverreadonly=false&retriesAllDown=1000
+#transactionlog.log.reference_generator.db_url=jdbc:mysql://10.18.65.4:3361/transactionlog
+transactionlog.log.reference_generator.db_user=refill
+transactionlog.log.reference_generator.db_password=refill
+transactionlog.log.reference_generator.sdb_pool_implementation=HCP
+transactionlog.log.reference_generator.db_autoCommit=true
+transactionlog.log.reference_generator.pool_min_size=1
+transactionlog.log.reference_generator.pool_max_size=20
+transactionlog.log.reference_generator.pool_timeout=40
+transactionlog.log.reference_generator.pool_validation_query=SELECT NOW()
+
+# The name of the reference number generated
+# (used in error logs to determine which reference generator had a problem)
+#
+transactionlog.log.reference_generator.reference_name=ERS transaction reference
+
+# The database table in which the sequence is stored (as a single row)
+#
+transactionlog.log.reference_generator.table_name=txe_transaction_reference_sequence
+
+# The column name for the sequence counter
+#
+transactionlog.log.reference_generator.sequence_column_name=seqNo
+
+# The number of digits in the sequence number part of the generated reference
+#
+transactionlog.log.reference_generator.num_sequence_digits=10
+
+# The alphabet used to generate the reference sequence number
+# Typically digits, but letters may be used to create a shorter transaction reference
+#
+transactionlog.log.reference_generator.sequence_number_alphabet=0123456789
+
+
+#transactionlog.log.cache.cluster.1.url =localhost:7001
+#transactionlog.log.cache.cluster.2.url =localhost:7003
+#transactionlog.log.cache.cluster.3.url =localhost:7005
+##################################################
+# Set to true if distributed locking is to be used (For active active)
+##################################################
+transactionlog.log.useDistributedLocking=false
+#transactionlog.log.transactionlocktimeout=60000
+#transactionlog.log.locktimeout=600000
+
+########################################
+# These two new properties are introduced to provide the functionality of
+# txe transaction archiver start/stop apart from txe, so that in case of any issue in archiver
+# So for backward compatibility we have put thee two properties be default values are already assigned,
+# these default values will allow txe to run as it is i.e. with archiver only.
+# we can start/stop archiver without restarting txe.
+# fallback true means txe will run exporter and archiver
+transLogFallback=true
+transactionlog.archive.classname=com.seamless.ers.txe.TXEStandaloneRestHost,com.seamless.ers.txe.TXEStandaloneHost,se.seamless.ers.txe.rest.TXERestServiceHost,com.seamless.ers.txe.test.transactionlog.TestTransactionLogging
+# To run archive separately just change these two values :
+# transLogFallback=false
+# transactionlog.archive.classname=com.seamless.ers.txe.archiver.TXETransactionLogStandaloneHost /only this class to be changed/, se.seamless.ers.txe.rest.TXERestServiceHost,com.seamless.ers.txe.test.transactionlog.TestTransactionLogging
+# NOTE : These properties are not mandatory , if you do not provide , default values will be taken and txe will run as it is.
+############################
+
+transactionlog.archive.db_driver=org.mariadb.jdbc.Driver
+transactionlog.archive.db_url=jdbc:mysql://10.18.65.4:3361/transactionlog?autoReconnect=true&failoverreadonly=false&retriesAllDown=1000
+transactionlog.archive.db_user=refill
+transactionlog.archive.db_password=refill
+transactionlog.archive.sdb_pool_implementation=HCP
+transactionlog.archive.pool_min_size=20
+transactionlog.archive.pool_max_size=50
+transactionlog.archive.pool_simultaneous_build_throttle=40
+# Time in seconds, indicates any derived datasource can only read data which
+# is more than this many seconds old. DO NOT CHANGE IT UNLESS YOU ARE SURE WHAT
+# YOU ARE DOING
+transactionlog.archive.bucket_close_time=2
+transactionlog.archive.pool_timeout=10
+transactionlog.archive.pool_validation_query=SELECT NOW()
+
+transactionlog.replication.active=true
+transactionlog.replication.interval=1s
+transactionlog.replication.batch_size=100
+
+
+
+
+# Connection to the database for keeping track of business counters
+businesscounters.db_driver=org.mariadb.jdbc.Driver
+businesscounters.db_url=jdbc:mysql://10.18.65.4:3362/businesscounters?autoReconnect=true&failOverReadOnly=false&retriesAllDown=1000
+businesscounters.db_user=refill
+businesscounters.db_password=refill
+businesscounters.pool_min_size=20
+businesscounters.pool_max_size=70
+businesscounters.pool_simultaneous_build_throttle=40
+businesscounters.sdb_pool_implementation=HCP
+businesscounters.pool_timeout=10
+businesscounters.pool_validation_query=SELECT NOW()
+
+
+# Connection to the database for keeping track of duplicate transactions
+shouldLoadDuplicateTransactionChecker=true
+duplicatetransactionchecker.db_driver=org.mariadb.jdbc.Driver
+duplicatetransactionchecker.db_url=jdbc:mysql://10.18.65.4:3361/duplicatetransactionchecker?autoReconnect=true&failOverReadOnly=false&retriesAllDown=1000
+duplicatetransactionchecker.db_user=refill
+duplicatetransactionchecker.db_password=refill
+duplicatetransactionchecker.pool_max_size=50
+duplicatetransactionchecker.sdb_pool_implementation=HCP
+duplicatetransactionchecker.pool_min_size=20
+duplicatetransactionchecker.pool_simultaneous_build_throttle=40
+duplicatetransactionchecker.clean_data_cron_expression=0 0 0/1 * * ?;
+duplicatetransactionchecker.min_persistence_duration_in_mins=60
+duplicatetransactionchecker.pool_timeout=10
+duplicatetransactionchecker.pool_validation_query=SELECT NOW()
+
+# --- License system settings ---
+# How often the license manager updates its counters to license service
+licensemanager.update_frequency=60000
+
+# Path to license file
+licenseservice.license_file=license.pgp
+# How often license service checks db integrity
+licenseservice.update_frequency=600000
+# license service db settings
+licenseservice.database.db_driver=org.mariadb.jdbc.Driver
+licenseservice.database.db_url=jdbc:mysql://10.18.65.4:3361/licensecounters?autoReconnect=true&failOverReadOnly=false&retriesAllDown=1000
+licenseservice.database.db_user=refill
+licenseservice.database.db_password=refill
+licenseservice.database.pool_min_size=20
+licenseservice.database.pool_max_size=50
+licenseservice.database.sdb_pool_implementation=HCP
+licenseservice.database.pool_timeout=10
+licenseservice.database.pool_validation_query=SELECT NOW()
+
+# Example of license SMS notification settings
+#
+#licenseservice.notification.default_language=en
+#licenseservice.notification.sender=1234
+#
+# buffer_period denotes the time in minute it should consider to avoid
+# sending multiple sms from different nodes
+#licenseservice.notifications.buffer_period=60
+#
+#licenseservice.notifications.state_notification_recipients=
+#
+#licenseservice.notifications.threshold_warnings.1.percentage=80
+#licenseservice.notifications.threshold_warnings.1.notification_id=LICENSE_AT_80P
+#licenseservice.notifications.threshold_warnings.1.notification_recipients=
+#
+#licenseservice.notifications.threshold_warnings.2.percentage=95
+#licenseservice.notifications.threshold_warnings.2.notification_id=LICENSE_AT_95P
+#licenseservice.notifications.threshold_warnings.2.notification_recipients=
+
+
+## Pricing configuration
+#
+# Set list of pricing engines
+# Syntax: pricing.engines.$engine_name$.$property_name$=$property_value$
+# There are 4 types of pricing engine.
+# 1. BeanshellPriceEngine
+#	pricing.engines.A.classname=BeanShellPriceEngine
+#	pricing.engines.A.script=pricing/mollet_transfer.bsh
+# 2. SimpleTopupPriceEngine
+#	pricing.engines.B.classname=SimpleTopupPriceEngine
+# 3. FreePriceEngine
+#	pricing.engines.C.classname=FreePriceEngine
+# 4. ExternalPriceEngine
+# 	pricing.engines.D.classname=ExternalPriceEngine
+# 	pricing.engines.D.url=http://localhost:8080/core/priceengine
+# 	pricing.engines.D.product_SKU=CREDIT_TRANSFER
+
+pricing.engines.VOD_BUSINESS_LOGIC.classname=VODBusinessLogicEngine
+pricing.engines.VOD_BUSINESS_LOGIC.url=http://ers-businesslogic-service:8922/businessLogic
+
+# --- EIRE configuration ---
+# Default layout for legacy report
+eire.layout_language=en
+# ReportId for mollet last transaction
+eire.mollet_last_transaction=MOLLET_001
+# ReportId for mollet transaction status
+eire.mollet_transaction_status=MOLLET_002
+# ReportId for etopup last transaction
+eire.etopup_last_transaction=REP_1106
+# ReportId for etopup transaction status
+eire.etopup_transaction_status=REP_1107
+
+pricing.engines.MOLLET_TRANSFER.classname=BeanShellPriceEngine
+pricing.engines.MOLLET_TRANSFER.script=pricing/mollet_transfer.bsh
+
+pricing.engines.LEGACY_MOLLET_VOUCHER_REDEEM.classname=ExternalPriceEngine
+pricing.engines.LEGACY_MOLLET_VOUCHER_REDEEM.url=http://ers-coreproxy-service:8912/coreProxy
+pricing.engines.LEGACY_MOLLET_VOUCHER_REDEEM.product_SKU=MVOUCHER_REDEEM
+
+pricing.engines.REDEEM_VOUCHER.classname=BeanShellPriceEngine
+pricing.engines.REDEEM_VOUCHER.script=pricing/redeem_voucher.bsh
+
+pricing.engines.MOLLET_DEREGISTER_SUBSCRIBER.classname=BeanShellPriceEngine
+pricing.engines.MOLLET_DEREGISTER_SUBSCRIBER.script=pricing/mollet_deregister_subscriber.bsh
+
+pricing.engines.MOLLET_DEPOSIT.classname=SimpleTopupPriceEngine
+pricing.engines.SIMPLE_TRANSFER.classname=SimpleTransferPriceEngine
+
+pricing.engines.SIMPLE_PURCHASE.classname=SimplePurchasePriceEngine
+pricing.engines.SIMPLE_GRATIFICATION.classname=SimpleGratificationPriceEngine
+
+pricing.engines.LEGACY_CREDIT_TRANSFER.classname=ExternalPriceEngine
+pricing.engines.LEGACY_CREDIT_TRANSFER.url=http://ers-coreproxy-service:8912/coreProxy
+pricing.engines.LEGACY_CREDIT_TRANSFER.product_SKU=CREDIT_TRANSFER
+
+pricing.engines.LEGACY_MOLLET_VOUCHER_CREATE.classname=ExternalPriceEngine
+pricing.engines.LEGACY_MOLLET_VOUCHER_CREATE.url=http://ers-coreproxy-service:8912/coreProxy
+pricing.engines.LEGACY_MOLLET_VOUCHER_CREATE.product_SKU=MOLLET_VOUCHER
+
+pricing.engines.LEGACY_R2S.classname=ExternalPriceEngine
+pricing.engines.LEGACY_R2S.url=http://ers-coreproxy-service:8912/coreProxy
+pricing.engines.LEGACY_R2S.product_SKU=TOPUP
+
+pricing.engines.LEGACY_P2P.classname=ExternalPriceEngine
+pricing.engines.LEGACY_P2P.url=http://ers-coreproxy-service:8912/coreProxy
+pricing.engines.LEGACY_P2P.product_SKU=P2P
+
+pricing.engines.LEGACY_VOUCHER.classname=ExternalPriceEngine
+pricing.engines.LEGACY_VOUCHER.url=http://ers-coreproxy-service:8912/coreProxy
+pricing.engines.LEGACY_VOUCHER.product_SKU=NA
+
+pricing.engines.EXTERNAL_BUSINESS_LOGIC.classname=ExternalBusinessLogicEngine
+pricing.engines.EXTERNAL_BUSINESS_LOGIC.url=http://ers-businesslogic-service:8922/businessLogic
+
+#pricing.engines.VOD_BUSINESS_LOGIC.classname=VODBusinessLogicEngine
+
+# enableOnSiblingTransfer:
+# This property represents if we want to enable ExternalBusinessLogicEngine for sibling transfer.
+# If not set, default value of this property will be considered 'true'
+# If set to false, pricing will be routed to BeanShellPriceEngine class and further configured script will be used.
+pricing.engines.EXTERNAL_BUSINESS_LOGIC.enableOnSiblingTransfer=true
+# In case enableOnSiblingTransfer is false, Following script will be used for alternative pricing of sibling transfer.
+
+pricing.engines.EXTERNAL_BUSINESS_LOGIC.include_reseller_rewards_account=false
+
+pricing.engines.EXTERNAL_BUSINESS_LOGIC.script=pricing/support_transfer.bsh
+
+##When core and coreproxy are deployed as separate components then uncomment the following properties and comment the default properties.
+pricing.engines.LEGACY_VOUCHER.classname=ExternalLegacyPriceEngine
+pricing.engines.LEGACY_VOUCHER.url=http://localhost:8910/legacyPricing
+#pricing.engines.LEGACY_VOUCHER.classname=ExternalPriceEngine
+#pricing.engines.LEGACY_VOUCHER.url=http://ers-coreproxy-service:8912/coreProxy
+pricing.engines.LEGACY_VOUCHER.product_SKU=NA
+
+pricing.engines.VAS.classname=BeanShellPriceEngine
+pricing.engines.VAS.script=pricing/vas.bsh
+
+pricing.engines.FREE.classname=FreePriceEngine
+
+pricing.engines.SIMPLE_TOPUP.classname=SimpleTopupPriceEngine
+
+pricing.engines.SIMPLE_REFUND.classname=SimpleRefundPriceEngine
+
+pricing.engines.SUPPORT_TRANSFER.classname=BeanShellPriceEngine
+pricing.engines.SUPPORT_TRANSFER.script=pricing/support_transfer.bsh
+
+pricing.engines.FAF.classname=BeanShellPriceEngine
+pricing.engines.FAF.script=pricing/faf.bsh
+
+pricing.engines.VOD_BUSINESS_LOGIC.classname=VODBusinessLogicEngine
+pricing.engines.VOD_BUSINESS_LOGIC.url=http://ers-businesslogic-service:8922/businessLogic
+
+pricing.engines.DIGITAL_SERVICES.enableOnSiblingTransfer=true
+pricing.engines.DIGITAL_SERVICES.script=pricing/support_transfer.bsh
+
+pricing.engines.DIGITAL_SERVICES.classname=DigitalServicesPriceEngine
+#pricing.engines.DIGITAL_SERVICES.url=http://ers-contract-management-system-service:38082/contractmanagement/api/v2/calculate-pricing
+pricing.engines.DIGITAL_SERVICES.url=http://ers-contract-management-system-service:38082/acms/v2/calculate-pricing
+pricing.engines.DIGITAL_SERVICES.systemToken={"ersReference":"1"}
+pricing.engines.DIGITAL_SERVICES.authorization=1
+pricing.engines.DIGITAL_SERVICES.operator=OPERATOR
+
+
+# Pricing mapping configuration.
+# Mapping transaction profile with pricing engine.
+# Every transaction need pricing engine.
+# Syntax:
+# 	pricing.mappings.$ordering_number$.$property_name$=$property_value$
+# Examples:
+# Set classifier
+#	pricing.mappings.1.classifier_match=.*/MOLLET_TRANSFER
+# Set engine
+#	pricing.mappings.1.engine=MOLLET_TRANSFER
+
+pricing.mappings.1.classifier_match=.*/Subscriber/MOLLET_TRANSFER.*
+pricing.mappings.1.engine=MOLLET_TRANSFER
+
+pricing.mappings.2.classifier_match=.*/.*BALANCE.*
+pricing.mappings.2.engine=FREE
+
+pricing.mappings.3.classifier_match=.*/MOLLET_ACTIVATE.*
+pricing.mappings.3.engine=FREE
+
+pricing.mappings.4.classifier_match=.*/.*CHANGE_PASSWORD.*
+pricing.mappings.4.engine=FREE
+
+pricing.mappings.5.classifier_match=.*/MOLLET_DEPOSIT.*
+pricing.mappings.5.engine=MOLLET_TRANSFER
+
+pricing.mappings.6.classifier_match=.*/MOLLET_REGISTER.*
+pricing.mappings.6.engine=FREE
+
+pricing.mappings.7.classifier_match=.*/LAST_TRANSACTION.*
+pricing.mappings.7.engine=FREE
+
+pricing.mappings.8.classifier_match=.*/MOLLET_DEREGISTER.*
+pricing.mappings.8.engine=MOLLET_DEREGISTER_SUBSCRIBER
+
+pricing.mappings.9.classifier_match=.*/MOLLET_WITHDRAWAL.*
+pricing.mappings.9.engine=MOLLET_TRANSFER
+
+pricing.mappings.10.classifier_match=.*/Reseller/(C2S_RC|C2S_PPB|C2S_PROMORC|C2S_XRC|C2S_PVAS|C2S_PROMOPPB).*
+pricing.mappings.10.engine=DIGITAL_SERVICES
+
+pricing.mappings.11.classifier_match=.*/(Reseller|Subscriber)/(FOC|SALE|TRANSFER|O2C_WITHDRAW|C2C_WITHDRAW|RETURN).*
+pricing.mappings.11.engine=DIGITAL_SERVICES
+
+pricing.mappings.12.classifier_match=.*/Subscriber/AIRTIME_TOPUP.*
+pricing.mappings.12.engine=EXTERNAL_BUSINESS_LOGIC
+
+pricing.mappings.13.classifier_match=.*/TRANSACTION_STATUS.*
+pricing.mappings.13.engine=FREE
+
+pricing.mappings.14.classifier_match=.*/MOLLET_VOUCHER_CREATE.*
+pricing.mappings.14.engine=EXTERNAL_BUSINESS_LOGIC
+
+pricing.mappings.15.classifier_match=.*/MOLLET_VOUCHER_REDEEM.*
+pricing.mappings.15.engine=REDEEM_VOUCHER
+
+pricing.mappings.16.classifier_match=.*/RESELLER_INFO.*
+pricing.mappings.16.engine=FREE
+
+pricing.mappings.17.classifier_match=.*/SUB_RESELLER_SEARCH.*
+pricing.mappings.17.engine=FREE
+
+pricing.mappings.18.classifier_match=.*/SUB_RESELLER_TYPES.*
+pricing.mappings.18.engine=FREE
+
+pricing.mappings.19.classifier_match=.*/REGISTER_SUB_RESELLER.*
+pricing.mappings.19.engine=FREE
+
+pricing.mappings.20.classifier_match=.*/REPORT.*
+pricing.mappings.20.engine=FREE
+
+pricing.mappings.21.classifier_match=.*/REGISTER_ETOPUP_SERVICE.*
+pricing.mappings.21.engine=FREE
+
+pricing.mappings.22.classifier_match=.*/*_ANONYMOUSID.*
+pricing.mappings.22.engine=FREE
+
+pricing.mappings.23.classifier_match=.*/AIRTIME_TRANSFER.*
+pricing.mappings.23.engine=EXTERNAL_BUSINESS_LOGIC
+
+pricing.mappings.24.classifier_match=.*/VAS.*
+pricing.mappings.24.engine=VAS
+
+pricing.mappings.25.classifier_match=.*/BLOCK_RESELLER.*
+pricing.mappings.25.engine=FREE
+
+pricing.mappings.26.classifier_match=.*/UNBLOCK_RESELLER.*
+pricing.mappings.26.engine=FREE
+
+pricing.mappings.27.classifier_match=.*/VALIDATE_TOPUP.*
+pricing.mappings.27.engine=FREE
+
+pricing.mappings.28.classifier_match=.*/TRANSACTIONS_SEARCH.*
+pricing.mappings.28.engine=FREE
+
+pricing.mappings.29.classifier_match=.*/RESET_BUSINESS_COUNTER.*
+pricing.mappings.29.engine=FREE
+
+pricing.mappings.30.classifier_match=.*/REVERSE_TRANSFER.*
+pricing.mappings.30.engine=FREE
+
+pricing.mappings.31.classifier_match=.*/GET_USER_INFO.*
+pricing.mappings.31.engine=FREE
+
+pricing.mappings.32.classifier_match=.*/RESELLER_ACTIVATE.*
+pricing.mappings.32.engine=FREE
+
+pricing.mappings.33.classifier_match=.*/GET_SUBSCRIBER_INFO.*
+pricing.mappings.33.engine=FREE
+
+pricing.mappings.34.classifier_match=.*/RESELLER_WITHDRAW.*
+pricing.mappings.34.engine=SIMPLE_TRANSFER
+
+pricing.mappings.35.classifier_match=.*/RESELLER_DEPOSIT.*
+pricing.mappings.35.engine=SIMPLE_TRANSFER
+
+pricing.mappings.36.classifier_match=.*/REGISTER_WEB_USER.*
+pricing.mappings.36.engine=FREE
+
+pricing.mappings.37.classifier_match=.*/Subscriber/ACTIVATE_SERVICE.*
+pricing.mappings.37.engine=FREE
+
+pricing.mappings.38.classifier_match=.*/Subscriber/MOLLET_TOPUP.*
+pricing.mappings.38.engine=EXTERNAL_BUSINESS_LOGIC
+
+pricing.mappings.39.classifier_match=.*/(REVERSE_FOC|REVERSE_SALE|REVERSE_TRANSFER|REVERSE_O2C_WITHDRAW|REVERSE_C2C_WITHDRAW|REVERSE_RETURN).*
+pricing.mappings.39.engine=FREE
+
+pricing.mappings.40.classifier_match=.*/(REVERSE_C2S_RC|REVERSE_C2S_PPB|REVERSE_C2S_PROMORC|REVERSE_C2S_XRC|REVERSE_C2S_PVAS|REVERSE_C2S_PROMOPPB).*
+pricing.mappings.40.engine=FREE
+
+pricing.mappings.41.classifier_match=.*/Reseller/MOLLET_TRANSFER.*
+pricing.mappings.41.engine=EXTERNAL_BUSINESS_LOGIC
+
+pricing.mappings.42.classifier_match=.*/REVERSE_MOLLET_VOUCHER_CREATE.*
+pricing.mappings.42.engine=FREE
+
+pricing.mappings.43.classifier_match=.*/REVERSE_MOLLET_TRANSFER.*
+pricing.mappings.43.engine=FREE
+
+pricing.mappings.44.classifier_match=.*/RESERVE_VOUCHERS.*
+pricing.mappings.44.engine=LEGACY_VOUCHER
+
+pricing.mappings.45.classifier_match=.*/PURCHASE.*
+pricing.mappings.45.engine=EXTERNAL_BUSINESS_LOGIC
+
+pricing.mappings.46.classifier_match=.*/CANCEL_VOUCHER_RESERVATION.*
+pricing.mappings.46.engine=FREE
+
+pricing.mappings.47.classifier_match=.*/MOLLET_QUERY_VOUCHER.*
+pricing.mappings.47.engine=FREE
+
+pricing.mappings.48.classifier_match=.*/REPORT_SOLD_VOUCHERS.*
+pricing.mappings.48.engine=FREE
+
+pricing.mappings.49.classifier_match=.*/RESELLER_LINK_SUB_RESELLER.*
+pricing.mappings.49.engine=FREE
+
+pricing.mappings.50.classifier_match=.*/RESELLER_DELINK_SUB_RESELLER.*
+pricing.mappings.50.engine=FREE
+
+pricing.mappings.51.classifier_match=.*/SYSTEM_INFO.*
+pricing.mappings.51.engine=FREE
+
+pricing.mappings.52.classifier_match=.*/SYSTEM_OPERATION.*
+pricing.mappings.52.engine=FREE
+
+pricing.mappings.53.classifier_match=ERSGetPrincipalInformationTransaction/.*
+pricing.mappings.53.engine=FREE
+
+pricing.mappings.54.classifier_match=.*/Subscriber/(C2S_RC|C2S_PPB|C2S_PROMORC|C2S_XRC|C2S_PVAS|C2S_PROMOPPB).*
+pricing.mappings.54.engine=EXTERNAL_BUSINESS_LOGIC
+
+pricing.mappings.55.classifier_match=.*/Subscriber/CUSTOM_OPERATION_FAF_.*
+pricing.mappings.55.engine=FREE
+
+pricing.mappings.56.classifier_match=.*/AdminUser/(SUPPORT_TRANSFER|FOC|SALE|TRANSFER|O2C_WITHDRAW|C2C_WITHDRAW|RETURN).*
+pricing.mappings.56.engine=SUPPORT_TRANSFER
+
+pricing.mappings.57.classifier_match=.*/(Reseller|Subscriber|AdminUser)/CUSTOM_OPERATION_.*
+pricing.mappings.57.engine=FREE
+
+pricing.mappings.58.classifier_match=.*/Subscriber/CUSTOM_OPERATION_SUBSCRIBER_CMBK.*
+pricing.mappings.58.engine=FREE
+
+pricing.mappings.59.classifier_match=.*/Subscriber/P2P.*
+#pricing.mappings.59.engine=EXTERNAL_BUSINESS_LOGIC
+pricing.mappings.59.engine=DIGITAL_SERVICES
+
+pricing.mappings.60.classifier_match=.*/MM2ERS.*
+pricing.mappings.60.engine=EXTERNAL_BUSINESS_LOGIC
+
+pricing.mappings.61.classifier_match=.*/VOS_PURCHASE.*
+pricing.mappings.61.engine=VOD_BUSINESS_LOGIC
+
+pricing.mappings.62.classifier_match=.*/VOT_PURCHASE.*
+pricing.mappings.62.engine=VOD_BUSINESS_LOGIC
+
+pricing.mappings.63.classifier_match=.*/VOUCHER_REDEEM.*
+pricing.mappings.63.engine=VOD_BUSINESS_LOGIC
+
+pricing.mappings.64.classifier_match=.*/VOUCHER_REQUERY.*
+pricing.mappings.64.engine=FREE
+
+pricing.mappings.65.classifier_match=.*/(Reseller)/MICROCREDIT.*
+pricing.mappings.65.engine=EXTERNAL_BUSINESS_LOGIC
+
+pricing.mappings.66.classifier_match=.*/MICROCREDIT_RECOVERY.*
+pricing.mappings.66.engine=EXTERNAL_BUSINESS_LOGIC
+
+pricing.mappings.67.classifier_match=.*/MOLLET_VOUCHER_CREATE.*
+pricing.mappings.67.engine=SIMPLE_TRANSFER
+
+pricing.mappings.68.classifier_match=.*/MOLLET_VOUCHER_REDEEM.*
+pricing.mappings.68.engine=SIMPLE_TRANSFER
+
+pricing.mappings.69.classifier_match=.*/BULKVOUCHER_PURCHASE.*
+pricing.mappings.69.engine=VOD_BUSINESS_LOGIC
+
+pricing.mappings.70.classifier_match=.*/SELF_REGISTRATION.*
+pricing.mappings.70.engine=FREE
+
+pricing.mappings.71.classifier_match=.*/Reseller/PRODUCT_RECHARGE.*
+pricing.mappings.71.engine=EXTERNAL_BUSINESS_LOGIC
+
+pricing.mappings.72.classifier_match=.*/Reseller/FIBER_BUNDLE.*
+pricing.mappings.72.engine=EXTERNAL_BUSINESS_LOGIC
+
+pricing.mappings.73.classifier_match=.*/Reseller/MOBILE_MONEY.*
+pricing.mappings.73.engine=EXTERNAL_BUSINESS_LOGIC
+
+pricing.mappings.74.classifier_match=.*/SPECIAL_BUNDLE.*
+pricing.mappings.74.engine=EXTERNAL_BUSINESS_LOGIC
+
+pricing.mappings.75.classifier_match=.*/UPDATE_RESELLER_PAYLIMIT.*
+pricing.mappings.75.engine=FREE
+
+pricing.mappings.76.classifier_match=.*/Reseller/POSTPAID_TOPUP.*
+pricing.mappings.76.engine=EXTERNAL_BUSINESS_LOGIC
+
+pricing.mappings.77.classifier_match=.*/Reseller/CASHIN.*
+pricing.mappings.77.engine=EXTERNAL_BUSINESS_LOGIC
+
+pricing.mappings.78.classifier_match=.*/UPDATE_RESELLER.*
+pricing.mappings.78.engine=FREE
+
+pricing.mappings.79.classifier_match=.*/TRACKED_TRANSACTION.*
+pricing.mappings.79.engine=FREE
+
+pricing.mappings.80.classifier_match=.*/PRINCIPAL_TRANSACTION.*
+pricing.mappings.80.engine=FREE
+
+pricing.mappings.81.classifier_match=.*/DATA_BUNDLE.*
+pricing.mappings.81.engine=DIGITAL_SERVICES
+
+pricing.mappings.82.classifier_match=.*/Reseller/PULLBACK.*
+pricing.mappings.82.engine=DIGITAL_SERVICES
+
+pricing.mappings.83.classifier_match=.*/Subscriber/BLOCK_SUBSCRIBER.*
+pricing.mappings.83.engine=FREE
+
+
+		
+pricing.mappings.83.engine=FREE
+pricing.mappings.84.classifier_match=.*/Reseller/SUPPORT_TRANSFER/.*
+pricing.mappings.84.engine=DIGITAL_SERVICES
+
+pricing.mappings.85.classifier_match=.*/(Reseller|Subscriber)/AUTO_CREDIT_TRANSFER.*
+pricing.mappings.85.engine=DIGITAL_SERVICES
+
+pricing.mappings.86.classifier_match=.*/.*LOCK_SUBSCRIBER_SYSTEM.*
+pricing.mappings.86.engine=FREE
+
+pricing.mappings.87.classifier_match=.*/RESET_SUBSCRIBER_PASSWORD.*
+pricing.mappings.87.engine=FREE
+
+pricing.mappings.88.classifier_match=.*/P2P_SERVICE_CHANGE_PASSWORD.*
+pricing.mappings.88.engine=FREE
+##
+# Pre pricing engine definition
+# Mapping transaction profile with pre-pricing engine.
+# Not all transactions need a pre-pricing engine.
+# If there is a need to resolve few parameters that are need during actual pricing calculation,
+# a specific class can be written and can be plugged here.
+# Syntax:
+#         pre-pricing.engines.$pre-pricing-engine-name$.$property_name$=$property_value$
+# Example:
+#pre-pricing.engines.DYNAMIC_PRODUCT_SERVICES.classname=DynamicProductFetchPrePricingEngine
+#pre-pricing.engines.DYNAMIC_PRODUCT_SERVICES.url=http://localhost:38082/acms/fetch-products-by-params
+# Any properties that are specific to your pricing engine, can be given as shown below
+#pre-pricing.engines.DYNAMIC_PRODUCT_SERVICES.dynamicPayee_level=1
+pre-pricing.engines.DYNAMIC_C2S_PRODUCT_SERVICES.classname=DynamicProductFetchPrePricingEngine
+pre-pricing.engines.DYNAMIC_C2S_PRODUCT_SERVICES.url=http://ers-contract-management-system-service:38082/acms/fetch-products-by-params
+# Any properties that are specific to your pricing engine, can be given as shown below
+pre-pricing.engines.DYNAMIC_C2S_PRODUCT_SERVICES.dynamicPayee_level=1
+pre-pricing.engines.DYNAMIC_C2S_PRODUCT_SERVICES.gatewayCodeReq=REQUEST_GATEWAY_CODE
+pre-pricing.engines.DYNAMIC_C2S_PRODUCT_SERVICES.serviceParam.1.externalRequestType=EXRCTRFREQ
+pre-pricing.engines.DYNAMIC_C2S_PRODUCT_SERVICES.serviceParam.1.serviceType=RC
+pre-pricing.engines.DYNAMIC_C2S_PRODUCT_SERVICES.serviceParam.2.externalRequestType=EXPROMORCTRFREQ
+pre-pricing.engines.DYNAMIC_C2S_PRODUCT_SERVICES.serviceParam.2.serviceType=PROMORC
+pre-pricing.engines.DYNAMIC_C2S_PRODUCT_SERVICES.serviceParam.3.externalRequestType=EXRCSTATREQ
+pre-pricing.engines.DYNAMIC_C2S_PRODUCT_SERVICES.serviceParam.3.serviceType=RC
+pre-pricing.engines.DYNAMIC_C2S_PRODUCT_SERVICES.serviceParam.4.externalRequestType=EXTPROMOPPBREQ
+pre-pricing.engines.DYNAMIC_C2S_PRODUCT_SERVICES.serviceParam.4.serviceType=PROMOPPB
+pre-pricing.engines.DYNAMIC_C2S_PRODUCT_SERVICES.serviceParam.5.externalRequestType=EXTPROMOVASTRFREQ
+pre-pricing.engines.DYNAMIC_C2S_PRODUCT_SERVICES.serviceParam.5.serviceType=PVAS
+#pre-pricing.engines.DYNAMIC_C2S_PRODUCT_SERVICES.serviceParam.5.serviceType=PROMOVAS
+pre-pricing.engines.DYNAMIC_C2S_PRODUCT_SERVICES.serviceParam.6.externalRequestType=EXESBTRFREQ
+pre-pricing.engines.DYNAMIC_C2S_PRODUCT_SERVICES.serviceParam.6.serviceType=ESB
+pre-pricing.engines.DYNAMIC_C2S_PRODUCT_SERVICES.serviceParam.7.externalRequestType=EXPPBTRFREQ
+pre-pricing.engines.DYNAMIC_C2S_PRODUCT_SERVICES.serviceParam.7.serviceType=PPB
+pre-pricing.engines.DYNAMIC_C2S_PRODUCT_SERVICES.serviceParam.8.externalRequestType=EXXRCTRFREQ
+pre-pricing.engines.DYNAMIC_C2S_PRODUCT_SERVICES.serviceParam.8.serviceType=XRC
+pre-pricing.engines.DYNAMIC_C2S_PRODUCT_SERVICES.serviceParam.9.externalRequestType=RCTRFREQ
+pre-pricing.engines.DYNAMIC_C2S_PRODUCT_SERVICES.serviceParam.9.serviceType=RC
+pre-pricing.engines.DYNAMIC_C2S_PRODUCT_SERVICES.serviceParam.10.externalRequestType=PPBTRFREQ
+pre-pricing.engines.DYNAMIC_C2S_PRODUCT_SERVICES.serviceParam.10.serviceType=PPB
+pre-pricing.engines.DYNAMIC_C2S_PRODUCT_SERVICES.serviceParam.11.externalRequestType=XRCTRFREQ
+pre-pricing.engines.DYNAMIC_C2S_PRODUCT_SERVICES.serviceParam.11.serviceType=XRC
+
+#### FOR PRE_PRICING CREDIT TRANSFER
+pre-pricing.engines.CREDIT_TRANSFER_PRE_PRICING.classname=DynamicTransferProductPrePricingEngine
+pre-pricing.engines.CREDIT_TRANSFER_PRE_PRICING.dynamicPayee_level=1
+pre-pricing.engines.CREDIT_TRANSFER_PRE_PRICING.operatorResellerId=operator
+pre-pricing.engines.CREDIT_TRANSFER_PRE_PRICING.product_sku_to_apply_receiver_contract=O2C_transfer,O2C_foc_transfer,C2C_TRANSFER,c2c_transfer,AUTO_CREDIT_TRANSFER,DE_REGISTER_WITHDRAWi,O2C_foc_TRANSFER,O2C_FOC_TRANSFER
+pre-pricing.engines.CREDIT_TRANSFER_PRE_PRICING.gatewayCodeReq=REQUEST_GATEWAY_CODE
+pre-pricing.engines.P2P_TRANSFER_PRE_PRICING.classname=ProductBasedOnSubscriberAccountPrePricingEngine
+pre-pricing.engines.P2P_TRANSFER_PRE_PRICING.product_joiner=2
+pre-pricing.engines.P2P_TRANSFER_PRE_PRICING.gatewayList=*
+#pre-pricing.engines.P2P_TRANSFER_PRE_PRICING.gatewayList=ADNDIGITAL1,ADNDIGITAL2
+pre-pricing.engines.P2P_TRANSFER_PRE_PRICING.product_class_id.1.productSku=Pre
+pre-pricing.engines.P2P_TRANSFER_PRE_PRICING.product_class_id.1.class_id_lower_limit=0
+pre-pricing.engines.P2P_TRANSFER_PRE_PRICING.product_class_id.1.class_id_higher_limit=1000
+pre-pricing.engines.P2P_TRANSFER_PRE_PRICING.product_class_id.2.productSku=Post
+pre-pricing.engines.P2P_TRANSFER_PRE_PRICING.product_class_id.2.class_id_lower_limit=1000
+pre-pricing.engines.P2P_TRANSFER_PRE_PRICING.product_class_id.2.class_id_higher_limit=10000
+# pre-pricing mapping configuration.
+# Mapping transaction profile with pre-pricing engine.
+# Syntax:
+#         pricing.mappings.$ordering_number$.$property_name$=$property_value$
+# Examples:
+#pre-pricing.mappings.1.classifier_match=.*/Reseller/<some_profile_id>.*
+#pre-pricing.mappings.1.engine=DYNAMIC_PRODUCT_SERVICES
+pre-pricing.mappings.1.classifier_match=.*/Reseller/(C2S_RC|C2S_PPB|C2S_PROMORC|C2S_XRC|C2S_PVAS|C2S_PROMOPPB)/.*
+pre-pricing.mappings.1.engine=DYNAMIC_C2S_PRODUCT_SERVICES
+pre-pricing.mappings.2.classifier_match=.*/Reseller/(FOC|SALE|TRANSFER|O2C_WITHDRAW|C2C_WITHDRAW|RETURN|AUTO_CREDIT_TRANSFER)/.*
+pre-pricing.mappings.2.engine=CREDIT_TRANSFER_PRE_PRICING
+pre-pricing.mappings.3.classifier_match=.*/Subscriber/P2P/.*
+pre-pricing.mappings.3.engine=P2P_TRANSFER_PRE_PRICING
+
+# Examples of product to provider mappings
+#
+#topup.productprovidermapping.1.product_sku=17
+#topup.productprovidermapping.1.provider_id=SOMETELCO
+#
+#topup.productprovidermapping.2.product_sku=18
+#topup.productprovidermapping.2.provider_id=TELCO2
+#
+#topup.productprovidermapping.3.product_sku=19
+#topup.productprovidermapping.3.provider_id=SOMEOTHERTELCO
+
+# Example of callback event
+eventcallback.1.callback_type=CANCEL_TRANSACTION_CALLBACK
+#This classname will call specific method in TXETransactionProcessingService
+eventcallback.1.classname=CancelTransactionCallback
+eventcallback.1.data.principal_id_type=ADMINUSER
+eventcallback.1.data.principal_id=eventscheduler
+eventcallback.1.data.principal_password=seamless
+
+# Connection to event scheduler
+# In order to enable it, you need to uncomment the url setting
+# but you need to make sure that you have ers-eventscheduler install
+#eventscheduler.connection.url=http://localhost:8337/eventscheduler
+eventscheduler.connection.user=username
+eventscheduler.connection.password=password
+
+# Example of event scheduler jobs
+# Type of transaction which requires some callback operation
+eventscheduler.1.classifier_match=.*
+# Event-Scheduler job id which needs to called
+eventscheduler.1.job_id=PENDING_TIMEOUT_EVENT
+# Event type specifies which callback type will be called once the job is fired
+eventscheduler.1.event_type=CANCEL_TRANSACTION_CALLBACK
+
+
+
+# Example of validating sender/receiver principal on charging system
+# By Default it is sender principal if you want to validate receiver on charging system just enable following property
+# Accepted values of this property key are: SENDER or RECEIVER.
+# giving value SENDER to this key is equillant to disabling it.
+transaction.topup.validate_topup_principal=RECEIVER
+
+# Connection to the database for keeping track of duplicate transactions
+#shouldLoadDuplicateTransactionChecker=false
+#duplicatetransactionchecker.db_driver=org.mariadb.jdbc.Driver
+#duplicatetransactionchecker.db_url=jdbc:mysql://10.18.65.4:3361/duplicatetransactionchecker
+#duplicatetransactionchecker.db_user=refill
+#duplicatetransactionchecker.db_password=refill
+#duplicatetransactionchecker.pool_max_size=100
+#duplicatetransactionchecker.pool_simultaneous_build_throttle=40
+#duplicatetransactionchecker.clean_data_cron_expression=0 0 0/1 * * ?;
+#duplicatetransactionchecker.min_persistence_duration_in_mins=60
+
+########################################### Profile Transformation Properties #########################################################
+#
+# For Transpforming any transaction's profile form one to another, we can use these configurations.
+#profile_transformations.<index>.id = <UNIQUE ID to avoid overriding the existing properties>
+#profile_transformations.<index>.old_profile = <Exisiting profile of the transaction>
+#profile_transformations.<index>.new_profile = <Desired Profile for the new transaction>
+#profile_transformations.<index>.criteria = <A freemarker expression which should evaluate to TRUE for the target transactions>
+#
+# Apart from these configuration we also need to add Transaction_Types in Support System properties and PriceEngine in txe.properties
+# for the new profile of the transactions.#
+
+#######################################################################################################################################
+profile_transformations.1.id = REPORT_TO_VOUCHER_REQUERY
+profile_transformations.1.old_profile = REPORT
+profile_transformations.1.new_profile = VOUCHER_REQUERY
+profile_transformations.1.criteria = <#if transaction.profileId?? && transaction.profileId?matches("REPORT") && transaction.reportId?? &&transaction.reportId?string == "misc/RESELLER_REP_VOUCHER_REQUERY.xml">true</#if>
+######################################################################################################################################
+profile_transformations.2.id = REGISTER_SUB_RESELLER_TO_SELF_REGISTRATION
+profile_transformations.2.old_profile = REGISTER_SUB_RESELLER
+profile_transformations.2.new_profile = SELF_REGISTRATION
+profile_transformations.2.criteria = <#if transaction.profileId=="REGISTER_SUB_RESELLER" && transaction.receiverPrincipal.resellerData.resellerTypeId == "byob">true<#else>false</#if>
+######################################################################################################################################
+# Transformation of TOPUP profile into PRODUCT_RECHARGE.
+profile_transformations.3.id = TOPUP_TO_PRODUCT_RECHARGE
+profile_transformations.3.old_profile = TOPUP
+profile_transformations.3.new_profile = PRODUCT_RECHARGE
+profile_transformations.3.criteria = <#if (transaction.getField("TRANSACTION_TYPE"))?? && transaction.getField("TRANSACTION_TYPE") == "PRODUCT_RECHARGE">true</#if>
+######################################################################################################################################
+profile_transformations.4.id = TOPUP_TO_POSTPAID_TOPUP
+profile_transformations.4.old_profile = TOPUP
+profile_transformations.4.new_profile = POSTPAID_TOPUP
+profile_transformations.4.criteria = <#if transaction.productSKU??><#if transaction.productSKU="AIRTIME_POSTPAID">true</#if></#if>
+######################################################################################################################################
+profile_transformations.5.id = TOPUP_TO_FBB
+profile_transformations.5.old_profile = TOPUP
+profile_transformations.5.new_profile =FIBER_BUNDLE
+profile_transformations.5.criteria = <#if transaction.productSKU?? ><#if transaction.productSKU?matches("FBB_.*")>true</#if></#if>
+######################################################################################################################################
+profile_transformations.6.id = REVERSE_FIBER_BUNDLE_TO_FIBER_BUNDLE_ROLLBACK
+profile_transformations.6.old_profile = REVERSE_FIBER_BUNDLE
+profile_transformations.6.new_profile =FIBER_BUNDLE_ROLLBACK
+profile_transformations.6.criteria = <#if transaction.productSKU?? ><#if transaction.productSKU?matches("FBB_.*")>true</#if></#if>
+######################################################################################################################################
+# Transformation of Transfer to Mobile Money
+profile_transformations.7.id = TRANSFER_TO_MOBILE_MONEY
+profile_transformations.7.old_profile = CREDIT_TRANSFER
+profile_transformations.7.new_profile = MOBILE_MONEY
+profile_transformations.7.criteria = <#if transaction.productSKU??><#if transaction.productSKU="MM_TRANSFER">true</#if></#if>
+######################################################################################################################################
+profile_transformations.8.id = TOPUP_TO_SPECIAL_BUNDLE
+profile_transformations.8.old_profile = TOPUP
+profile_transformations.8.new_profile = SPECIAL_BUNDLE
+profile_transformations.8.criteria = <#if transaction.productSKU?? ><#if transaction.productSKU?matches("special_bundle_.*")>true</#if></#if>
+##################################################################
+profile_transformations.9.id = TOPUP_TO_CASHIN
+profile_transformations.9.old_profile = TOPUP
+profile_transformations.9.new_profile = CASHIN
+profile_transformations.9.criteria = <#if transaction.productSKU??><#if transaction.productSKU="CASHIN">true</#if></#if>
+######################################################################################################################################
+profile_transformations.10.id = TOPUP_TO_DATA_BUNDLE
+profile_transformations.10.old_profile = TOPUP
+profile_transformations.10.new_profile = DATA_BUNDLE
+profile_transformations.10.criteria = <#if transaction.productSKU??><#if transaction.productSKU?matches("BUNDLE_.*")>true</#if></#if>
+######################################################################################################################################
+# Transformation of Transfer to PullBack
+profile_transformations.11.id = TRANSFER_TO_PULLBACK
+profile_transformations.11.old_profile = CREDIT_TRANSFER
+profile_transformations.11.new_profile = PULLBACK
+profile_transformations.11.criteria = <#if (transaction.getField("PULL_BACK"))?? && transaction.getField("PULL_BACK") == "0">false</#if>
+######################################################################################################################################
+profile_transformations.12.id = AUTO_CREDIT_TRANSFER_ID
+profile_transformations.12.old_profile = CREDIT_TRANSFER
+profile_transformations.12.new_profile = AUTO_CREDIT_TRANSFER
+profile_transformations.12.criteria = <#if transaction.productSKU??><#if transaction.productSKU = "AUTO_CREDIT_TRANSFER" >true</#if></#if>
+######################################################################################################################################
+profile_transformations.13.id = TRANSFER_TO_O2C_WITHDRAW
+profile_transformations.13.old_profile = CREDIT_TRANSFER
+profile_transformations.13.new_profile = O2C_WITHDRAW
+#profile_transformations.13.criteria = <#if transaction.productSKU??><#if transaction.productSKU="O2C_withdrawal">true</#if></#if>
+profile_transformations.13.criteria = <#if transaction.productSKU??><#if transaction.productSKU?matches("O2C_withdrawal","i")>true</#if></#if>
+######################################################################################################################################
+profile_transformations.14.id = TRANSFER_TO_SALE
+profile_transformations.14.old_profile = CREDIT_TRANSFER
+profile_transformations.14.new_profile = SALE
+#profile_transformations.14.criteria = <#if transaction.productSKU??><#if transaction.productSKU="O2C_transfer">true</#if></#if>
+profile_transformations.14.criteria = <#if transaction.productSKU??><#if transaction.productSKU?matches("O2C_transfer","i")>true</#if></#if>
+######################################################################################################################################
+profile_transformations.15.id = CREDIT_TRANSFER_TO_TRANSFER
+profile_transformations.15.old_profile = CREDIT_TRANSFER
+profile_transformations.15.new_profile = TRANSFER
+#profile_transformations.15.criteria = <#if transaction.productSKU??><#if transaction.productSKU="C2C_TRANSFER">true</#if></#if>
+#profile_transformations.15.criteria = <#if transaction.productSKU??><#if transaction.productSKU?matches("C2C_TRANSFER","i")>true</#if></#if>
+profile_transformations.15.criteria = <#if transaction.productSKU??><#if transaction.productSKU?matches("C2C_TRANSFER","i") || transaction.productSKU?matches("wallet_adjustment_digital","i") ||transaction.productSKU?matches("wallet_adjustment_foc","i") ||transaction.productSKU?matches("wallet_adjustment_incentive","i")>true</#if></#if>
+
+
+######################################################################################################################################
+profile_transformations.16.id = TRANSFER_TO_C2C_WITHDRAW
+profile_transformations.16.old_profile = CREDIT_TRANSFER
+profile_transformations.16.new_profile = C2C_WITHDRAW
+#profile_transformations.16.criteria = <#if transaction.productSKU??><#if transaction.productSKU="C2C_WITHDRAW_TRANSFER">true</#if></#if>
+profile_transformations.16.criteria = <#if transaction.productSKU??><#if transaction.productSKU?matches("C2C_WITHDRAW_TRANSFER","i")>true</#if></#if>
+######################################################################################################################################
+profile_transformations.17.id = TRANSFER_TO_RETURN
+profile_transformations.17.old_profile = CREDIT_TRANSFER
+profile_transformations.17.new_profile = RETURN
+#profile_transformations.17.criteria = <#if transaction.productSKU??><#if transaction.productSKU="C2C_RETURN_TRANSFER">true</#if></#if>
+profile_transformations.17.criteria = <#if transaction.productSKU??><#if transaction.productSKU?matches("C2C_RETURN_TRANSFER","i")>true</#if></#if>
+######################################################################################################################################
+profile_transformations.18.id = TRANSFER_TO_FOC
+profile_transformations.18.old_profile = CREDIT_TRANSFER
+profile_transformations.18.new_profile = FOC
+#profile_transformations.18.criteria = <#if transaction.productSKU??><#if transaction.productSKU="O2C_FOC_transfer">true</#if></#if>
+profile_transformations.18.criteria = <#if transaction.productSKU??><#if transaction.productSKU?matches("O2C_FOC_transfer","i")>true</#if></#if>
+######################################################################################################################################
+profile_transformations.19.id = TOPUP_TO_C2S_PROMORC
+profile_transformations.19.old_profile = TOPUP
+profile_transformations.19.new_profile = C2S_PROMORC
+#profile_transformations.19.criteria = <#if transaction.fields["productCategory"]??><#if transaction.fields["productCategory"]="RC">true</#if></#if>
+profile_transformations.19.criteria = <#if ((transaction.fields["productCategory"]?? && transaction.fields["productCategory"]="PROMORC")||(transaction.fields["externalRequestType"]?? && (transaction.fields["externalRequestType"] = "PROMORCTRFREQ" || transaction.fields["externalRequestType"] = "EXPROMORCTRFREQ")))>true</#if>
+######################################################################################################################################
+profile_transformations.20.id = TOPUP_TO_C2S_XRC
+profile_transformations.20.old_profile = TOPUP
+profile_transformations.20.new_profile = C2S_XRC
+#profile_transformations.20.criteria = <#if transaction.fields["productCategory"]??><#if transaction.fields["productCategory"]="PPB">true</#if></#if>
+profile_transformations.20.criteria = <#if ((transaction.fields["productCategory"]?? && transaction.fields["productCategory"]="XRC")||(transaction.fields["externalRequestType"]?? && (transaction.fields["externalRequestType"]="XRCTRFREQ" || transaction.fields["externalRequestType"]="EXXRCTRFREQ" )))>true</#if>
+######################################################################################################################################
+profile_transformations.21.id = TOPUP_TO_C2S_RC
+profile_transformations.21.old_profile = TOPUP
+profile_transformations.21.new_profile = C2S_RC
+#profile_transformations.21.criteria = <#if transaction.fields["productCategory"]??><#if transaction.fields["productCategory"]="PROMORC">true</#if></#if>
+profile_transformations.21.criteria = <#if ((transaction.fields["productCategory"]?? && transaction.fields["productCategory"]="RC")||(transaction.fields["externalRequestType"]?? && (transaction.fields["externalRequestType"] = "RCTRFREQ" || transaction.fields["externalRequestType"] = "EXRCTRFREQ")))>true</#if>
+######################################################################################################################################
+profile_transformations.22.id = TOPUP_TO_C2S_PROMOPPB
+profile_transformations.22.old_profile = TOPUP
+profile_transformations.22.new_profile = C2S_PROMOPPB
+#profile_transformations.22.criteria = <#if transaction.fields["productCategory"]??><#if transaction.fields["productCategory"]="XRC">true</#if></#if>
+profile_transformations.22.criteria = <#if ((transaction.fields["productCategory"]?? && transaction.fields["productCategory"]="PROMOPPB")||(transaction.fields["externalRequestType"]?? && (transaction.fields["externalRequestType"] = "PROMOPPBREQ" || transaction.fields["externalRequestType"] = "EXTPROMOPPBREQ")))>true</#if>
+######################################################################################################################################
+profile_transformations.23.id = TOPUP_TO_C2S_PVAS
+profile_transformations.23.old_profile = TOPUP
+profile_transformations.23.new_profile = C2S_PVAS
+#profile_transformations.23.criteria = <#if transaction.fields["productCategory"]??><#if transaction.fields["productCategory"]="PVAS">true</#if></#if>
+#profile_transformations.23.criteria = <#if ((transaction.fields["productCategory"]?? && transaction.fields["productCategory"]="PPB")||(transaction.fields["externalRequestType"]?? && (transaction.fields["externalRequestType"] = "PPBTRFREQ" || transaction.fields["externalRequestType"] = "EXPPBTRFREQ")))>true</#if>
+profile_transformations.23.criteria = <#if ((transaction.fields["productCategory"]?? && transaction.fields["productCategory"]="PVAS")||(transaction.fields["externalRequestType"]?? && (transaction.fields["externalRequestType"] = "PROMOVASTRFREQ" || transaction.fields["externalRequestType"] = "EXTPROMOVASTRFREQ")))>true</#if>
+######################################################################################################################################
+profile_transformations.24.id = TOPUP_TO_C2S_PPB
+profile_transformations.24.old_profile = TOPUP
+profile_transformations.24.new_profile = C2S_PPB
+#profile_transformations.24.criteria = <#if transaction.fields["productCategory"]??><#if transaction.fields["productCategory"]="PROMOPPB">true</#if></#if>
+#profile_transformations.24.criteria = <#if ((transaction.fields["productCategory"]?? && transaction.fields["productCategory"]="PVAS")||(transaction.fields["externalRequestType"]?? && (transaction.fields["externalRequestType"] = "PROMOVASTRFREQ" || transaction.fields["externalRequestType"] = "PROMOVASTRFREQ")))>true</#if>
+profile_transformations.24.criteria = <#if ((transaction.fields["productCategory"]?? && transaction.fields["productCategory"]="PPB")||(transaction.fields["externalRequestType"]?? && (transaction.fields["externalRequestType"] = "PPBTRFREQ" || transaction.fields["externalRequestType"] = "EXPPBTRFREQ")))>true</#if>
+######################################################################################################################################
+######################################################################################################################################
+profile_transformations.25.id = TRANSFER_DE_REGISTER_O2C_WITHDRAW
+profile_transformations.25.old_profile = CREDIT_TRANSFER
+profile_transformations.25.new_profile = O2C_WITHDRAW
+profile_transformations.25.criteria =<#if transaction.productSKU?? && transaction.productSKU?matches("DE_REGISTER_WITHDRAW","i") && transaction.receiverPrincipal?? && transaction.receiverPrincipal.principalId?? && transaction.receiverPrincipal.principalId.id?matches("operator","i")>true</#if>
+######################################################################################################################################
+profile_transformations.26.id = TRANSFER_DE_REGISTER_C2C_WITHDRAW
+profile_transformations.26.old_profile = CREDIT_TRANSFER
+profile_transformations.26.new_profile = C2C_WITHDRAW
+profile_transformations.26.criteria =<#if transaction.productSKU?? && transaction.productSKU?matches("DE_REGISTER_WITHDRAW","i") && transaction.receiverPrincipal?? && transaction.receiverPrincipal.principalId?? && !transaction.receiverPrincipal.principalId.id?matches("operator","i")>true</#if>
+
+######################################################################################################################################
+
+########## FTTX BUNDLE Configurations #############
+
+fttx_bundle_profile_id=FIBER_BUNDLE
+fttx_account_type=FTTX
+
+## Account type id transformation
+cislink.account_type_id.special_bundle=SPL_BUNDLE
+###################################################
+
+#Use messaging queue for business actions.
+#Business actions are created with class TransactionNotification
+useMessagingQueue=false
+queue.host=localhost
+queue.port=5672
+queue.username=seamless
+queue.password=seamless
+
+
+#For Creating Rest Template (rest client) pool
+ers_template_wrapper_pool.min_objects=5
+ers_template_wrapper_pool.max_objects=10
+ers_template_wrapper_pool.validation_interval=120
+
+
+####### OkHttpClient Configuration (Non Mandatory)
+okhttpclient.read_timeout.ms=10000
+okhttpclient.connect_timeout.ms=15000
+
+
+##
+#Below cache configurations supports standalone and cluster setup.
+#
+#If namespace is not given, a default namespace is assigned. All the operations are performed within this namespace
+cache.cluster.namespace=txe
+
+#If one url is specified in below configuration then it is considered as standalone setup
+cache.cluster.1.url=redis://10.18.12.124:6379
+useCache=false
+
+#<mandatory_start=true>
+test.mandatory.txe=true
+# Location of the system management interface
+systemmanagementconnection.url=http://localhost:8911/systemManagement
+coreproxyconnection.url=http://ers-coreproxy-service:8912/coreProxy
+#<mandatory_end=true>
+subscribers.password_regexp=0123456789
+
+ers.connections.support_services.url=http://localhost:8071/supportsystem/services
+
+
+##############################################################################
+# Config for spring boot
+spring.profiles.active=PROD
+server.port=8088
+
+springdoc.api-docs.path=/txe-api-docs
+springdoc.swagger-ui.path=/swagger-ui.html
+
+# Disabling the /v3/api-docs enpoint
+springdoc.api-docs.enabled=true
+
+# Disabling the swagger-ui
+springdoc.swagger-ui.enabled=true
+
+# API version to show on swagger UI
+txe_api.version=1.0
+
+# Expose soap services along with rest.
+# This will be in action when we use txerest start/stop/restart/status
+soap_services_publisher.enable=true
+#false
+#
+# Log file path
+logging.file=/var/seamless/log/txe/txe.log
+
+############# CORS config ####################
+cors.enable=true
+#comma separated origin list or star(*) to allow all
+cors.allowedorigins=*
+http.response.headers=system-token,authorization
+
+#unified one support
+dms.seamless-one-support-enabled=true
+#DMS
+dms.baseUrl=http://ers-dealer-management-system-service:8033/
+dms.getResellerInfo=dms/v1/resellers/getResellerInfo
+
+#-------------------------------------------------------------------------------------
+# Authentication Configuration (through nginx)
+#-------------------------------------------------------------------------------------
+idms.baseUrl=http://localhost/
+idms.loginUrl=login-backend
+idms.loginChannel=SEAMLESS-UNIFIED
+idms.loginUserId=OPERATOR
+idms.loginPassword=2021
+
+idms.baseUrlWithPort=http://ers-identity-management-service:8219
+idms.resolveUrl=/auth/v2/resolve
+
+# Enable DataFeeder
+log4j.additivity.com.seamless.common.data.dump.DataFeeder=true
+#-------------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------------
+#Configuration for executor service
+#-------------------------------------------------------------------------------------
+threadpoolmanager.pools.dataFeed.targetId=com.seamless.common.data.dump.dataFeed
+threadpoolmanager.pools.dataFeed.corePoolSize=25
+threadpoolmanager.pools.dataFeed.maxPoolSize=40
+threadpoolmanager.pools.dataFeed.keepAliveTime=60000
+threadpoolmanager.pools.dataFeed.keepAliveTimeUnit=MILLISECONDS
+#-------------------------------------------------------------------------------------
+
+#Configure freemarker
+#-------------------------------------------------------------------------------------
+dataFeed.freemarker.file.path=/opt/seamless/conf/txe/templates
+#-------------------------------------------------------------------------------------
+
+#Data feed version
+#-------------------------------------------------------------------------------------
+dataFeed.version=1
+dataFeed.componentName=txe
+#-------------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------------
+# Data Feed templates
+#-------------------------------------------------------------------------------------
+template.TRANSACTION=transaction.ftl
+#-------------------------------------------------------------------------------------
+
+
+#-------------------------------------------------------------------------------------
+# Fetching the products based on request type of GP customer.
+# Need to remove once C2S rule create
+#-------------------------------------------------------------------------------------
+
+productFetchGatewayEnabled=true
+externalRequestTypeKey=externalRequestType
+
+####Mapping for Product and gateway
+product.fetch.gateway.1.code=EXRCTRFREQ
+product.fetch.gateway.1.productid=rc_transfer_service
+product.fetch.gateway.2.code=EXRCTRFREQQ2
+product.fetch.gateway.2.productid=C2S_2
+product.fetch.gateway.3.code=EXRCTRFREQQ3
+product.fetch.gateway.3.productid=C2S_3
+product.fetch.gateway.4.code=EXTPROMOPPBREQ
+product.fetch.gateway.4.productid=Trigger
+product.fetch.gateway.5.code=CCTRFREQ
+product.fetch.gateway.5.productid=P2P
+product.fetch.gateway.6.code=EXTPROMOVASTRFREQ
+product.fetch.gateway.6.productid=promo_vas
+product.fetch.gateway.7.code=RCTRFREQ
+product.fetch.gateway.7.productid=rp2p_customer_recharge
+product.fetch.gateway.8.code=EXPPBTRFREQ
+product.fetch.gateway.8.productid=Trigger
+product.fetch.gateway.9.code=EXPROMORCTRFREQ
+product.fetch.gateway.9.productid=promo_rc
+product.fetch.gateway.10.code=EXXRCTRFREQ
+product.fetch.gateway.10.productid=skitto_product
+product.fetch.gateway.11.code=XRCTRFREQ
+product.fetch.gateway.11.productid=skitto_product
+product.fetch.gateway.12.code=EXESBTRFREQ
+product.fetch.gateway.12.productid=STR
+product.fetch.gateway.13.code=PPBTRFREQ
+product.fetch.gateway.13.productid=Trigger
+
+	
+subscriber.account_class_id.1.account_type=AIRTIME_PREPAID
+##Added by Aman
+subscriber.account_class_id.1.class_id_lower_limit=0
+contractURL=http://ers-contract-management-system-service:38082/acms
+subscriber.account_class_id.1.class_id_higher_limit=1000
+ 
+subscriber.account_class_id.2.account_type=AIRTIME_POSTPAID
+subscriber.account_class_id.2.class_id_lower_limit=1000
+subscriber.account_class_id.2.class_id_higher_limit=10000
+
+
+anonymousIdRegex=^00(\\d{9})?$
+
+## config for notification manager
+
+transactionpublisher.enable=true
+transactionpublisher.endpoint_url=http://ers-notification-manager-service:8277/register-txe-notification
+transactionpublisher.async=true
+transactionpublisher.threadpool_max_size=500
+
+########################### searchArchivedTransaction ###################
+searchArchivedTransaction.viewAllTransaction.resellerType=OPERATOR
+spring.jackson.time-zone=Asia/Dhaka
+
+
+stopExtCallForTopupReversal=true
+
+
+
+##Profiles for which charging system calls will be skipped for topup reversal
+profilesSupportedForStopExtCallTopupReversal=REVERSE_C2S_RC,REVERSE_C2S_PPB,REVERSE_C2S_PROMORC,REVERSE_C2S_XRC,REVERSE_C2S_PVAS,REVERSE_C2S_PROMOPPB
+
+transaction_reversal_based_on_resultCode_enable=true
+
+#This property can handle comma seperate multiple values, to add sender,receiver and initiator principal fields in transaction log for a R2R transfer
+#logPrincipalFields_to_transactionLog=externalCode,DomainCode,domainName,ownerName
+#logPrincipalFields_to_transactionLog=externalCode,DomainCode,domainName,ownerName,regionPath,domainCode,ownerMsisdn,parentResellerId,parentMsisdn,regionCode,areaCode,territoryCode,thanaCode
+
+#ADDED FOR TIME FORMAT FOR TRANSACTIONS SEARCH
+spring.jackson.time-zone=Asia/Dhaka
+
+##PROVIDED BY SRIJON FOR REGION REPORT DATA
+
+logPrincipalFields_to_transactionLog=externalCode,DomainCode,domainName,ownerName,regionPath,domainCode,ownerMsisdn,parentResellerId,parentMsisdn,regionCode,areaCode,territoryCode,thanaCode,areaName,regionName,thanaName,ownerCategory,parentResellerType,territoryName
+
+
+
+
+
+http.client.connection.maxConnectionsPerRoute=400
+http.client.connection.socketConnectionTimeout=50000
+http.client.connection.totalMaxConnections=400
+
+##Skip transactions with zero amount
+skipZeroAmountTransactionRows=true
+
+#To hide before and after balance for bookkeepping accounts
+searchArchivedTransaction.bookkeeping.accountTypes=BOOKKEEPING

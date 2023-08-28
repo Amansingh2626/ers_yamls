@@ -1,0 +1,55 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: gp-auto-pod-restart
+spec:
+  schedule: "0 * * * *"               #CRON TIME IS BASED ON GMT
+  successfulJobsHistoryLimit: 0
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: auto-deployment-restart
+          containers:
+          - name: gp-auto-pod-restart 
+            image: default-route-openshift-image-registry.apps.pocpbm-nexp.grameenphone.com/openshift/auto-restart:v1
+            imagePullPolicy: Always
+            env:
+            - name: TZ
+              value: "Asia/Dhaka"  
+            command:
+            - /bin/sh
+            - -c
+            - /others/deploy.sh
+            resources:
+              limits:
+                cpu: "50m"
+                memory: "1Gi"              
+              requests:
+                cpu: "50m"
+                memory: "1Gi"
+            volumeMounts:
+            - mountPath: /usr/share/zoneinfo/Asia/Dhaka
+              name: tz-dhaka
+              subPath: Dhaka               
+            - mountPath: /others
+              name: restart-script 
+            - mountPath: /data
+              name: restart-list 
+          restartPolicy: OnFailure
+          volumes:
+          - name: tz-dhaka
+            configMap:
+              name: asia-dhaka-tz-config
+              items:
+              - key: Dhaka
+                path: Dhaka          
+          - name: restart-script 
+            configMap:
+              name: dep-restart-script 
+              defaultMode: 0777
+          - name: restart-list 
+            configMap:
+              name: dep-restart-list 
+              defaultMode: 0777
+

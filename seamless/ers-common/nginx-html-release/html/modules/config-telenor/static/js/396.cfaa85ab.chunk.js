@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_config_telenor=self.webpackChunk_unified_config_telenor||[]).push([[396],{396:(e,n,t)=>{"use strict";t.r(n),t.d(n,{default:()=>s});var i=t(2411),o=t(6098),r=t.n(o);const s=function(){return i.createElement("img",{src:r(),style:{maxWidth:200,display:"block",margin:"0 auto"}})}},6098:(e,n,t)=>{e.exports=t.p+"images/logo.png"}}]);

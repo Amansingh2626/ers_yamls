@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:integration="http://www.springframework.org/schema/integration"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:http="http://www.springframework.org/schema/integration/http"
+       xmlns:stream="http://www.springframework.org/schema/integration/stream"
+       xsi:schemaLocation="http://www.springframework.org/schema/integration/http http://www.springframework.org/schema/integration/http/spring-integration-http.xsd
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+http://www.springframework.org/schema/integration/stream
+			https://www.springframework.org/schema/integration/stream/spring-integration-stream.xsd">
+
+<!--    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/c2cTransfer_flow.xml"/>-->
+<!--    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/o2cDirectTransfer_flow.xml"/>-->
+<!--    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/c2cReturnTransfer_flow.xml"/>-->
+<!--    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/o2cWithdraw_flow.xml"/>-->
+<!--    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/c2cWithdraw_flow.xml"/>-->
+<!--    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/addReseller_flow.xml"/>-->
+<!--    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/c2cUSSDTransfer_flow.xml"/>-->
+<!--    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/c2cUSSDWithdraw_flow.xml"/>-->
+<!--    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/c2sPromoRecharge_flow.xml"/>-->
+<!--    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/c2sTransfer_flow.xml"/>-->
+<!--    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/c2sTransferStatus_flow.xml"/>-->
+<!--    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/changePassword_flow.xml"/>-->
+<!--    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/channelUserMovement_flow.xml"/>-->
+<!--    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/cp2pUssdCreditTransfer_flow.xml"/>-->
+<!--    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/deactivateReseller_flow.xml"/>-->
+<!--    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/fetchLastXTransactions_flow.xml"/>-->
+<!--    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/promoBillPayment_flow.xml"/>-->
+<!--    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/promoVasReversal_flow.xml"/>-->
+<!--    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/promoVas_flow.xml"/>-->
+<!--    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/rp2pUSSDCustomerRecharge_flow.xml"/>-->
+<!--    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/viewChannelUser_flow.xml"/>-->
+<!--    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/postpaidBillPayment_flow.xml"/>-->
+<!--    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/userBalanceEnquiryUSSD_flow.xml"/>-->
+<!--    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/dailyStatusReport_flow.xml"/>-->
+<!--    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/fetchLastTransaction_flow.xml"/>-->
+<!--    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/changePasswordUSSD_flow.xml"/>-->
+<!--    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/lastXTransactions_flow.xml"/>-->
+<!--    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/subscriberLastTransferStatusUssd_flow.xml"/>-->
+<!--    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/subscriberLastTransactionStatusUssd_flow.xml"/>-->
+<!--    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/deregisterSubscriberService_flow.xml"/>-->
+<!--    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/rest/outbound/setPinUssd_flow.xml"/>-->
+
+<!--    <integration:channel id="txeSubscriberLastTransactionStatusUssdRequestChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txeTransferRequestChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txeReturnTransferRequestChannel">-->
+<!--        <integration:queue capacity="2000"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txeDirectTransferRequestChannel">-->
+<!--        <integration:queue capacity="2000"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txeO2CWithdrawRequestChannel">-->
+<!--        <integration:queue capacity="2000"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txeC2CWithdrawRequestChannel">-->
+<!--        <integration:queue capacity="2000"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txeChannelUserBalanceEnquiryChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txeAddResellerRequestChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txeC2CUSSDReturnTransferRequestChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txeC2CUSSDTransferRequestChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txeC2CUSSDWithdrawChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txePromoRechargeRequestChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="c2sTransferOutboundRequestChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="c2sTransferStatusOutboundRequestChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txeChangePasswordEXTGTRequestChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txeChannelUserMovementChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txeCp2pUssdCreditTransferRequestChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txeDeactivateResellerEXTGTRequestChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txeFetchLastXTransactionsChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txePromoBillPaymentChannelChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txePromoVasRequestChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txePromoVasReversalRequestChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txeRP2PUSSDCustomerRechargeChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txeLastTransferStatusUssdRequestChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txeLastTransferStatusUssdTextRequestChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txeSkittoRcUSSDRequestChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txeSkittoRcEXTGTRequestChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="c2sPostpaidBillPaymentOutboundRequestChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txeLastXTransactionsRequestChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txePostPaidBillPaymentRequestChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txeViewChannelUserRequestChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txeFetchLastTransactionRequestChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txeFetchLastXTransactionsRequestChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txeDailyStatusRequestChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txeUserBalanceEnquiryUSSDRequestChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txeChangePasswordUSSDRequestChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="txeSubscriberLastTransferStatusUssdRequestChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:channel id="validateOTPAndResetPasswordOutboundRequestChannel">-->
+<!--        <integration:queue capacity="200"/>-->
+<!--    </integration:channel>-->
+
+<!--    <integration:header-value-router id="outboundOperationRouter" input-channel="gpOutboundChannel" header-name="OPERATION">-->
+<!--        <integration:mapping value="C2CTRANSFERREQUEST" channel="txeTransferRequestChannel"/>-->
+<!--        <integration:mapping value="C2CRETURNTRANSFER" channel="txeReturnTransferRequestChannel"/>-->
+<!--        <integration:mapping value="CHANNELUSERBALANCEENQUIRY" channel="txeChannelUserBalanceEnquiryRequestChannel"/>-->
+<!--        <integration:mapping value="O2CDIRECTTRANSFER" channel="txeDirectTransferRequestChannel"/>-->
+<!--        <integration:mapping value="C2CWITHDRAW" channel="txeC2CWithdrawRequestChannel"/>-->
+<!--        <integration:mapping value="O2CWITHDRAW" channel="txeO2CWithdrawRequestChannel"/>-->
+<!--        <integration:mapping value="ADDRESELLER" channel="txeAddResellerRequestChannel"/>-->
+<!--        <integration:mapping value="C2CUSSDRETURNTRANSFER" channel="txeC2CUSSDReturnTransferRequestChannel"/>-->
+<!--        <integration:mapping value="C2CUSSDTRANSFER" channel="txeC2CUSSDTransferRequestChannel"/>-->
+<!--        <integration:mapping value="C2CUSSDWITHDRAW" channel="txeC2CUSSDWithdrawRequestChannel"/>-->
+<!--        <integration:mapping value="C2SPROMORECHARGE" channel="txePromoRechargeRequestChannel"/>-->
+<!--        <integration:mapping value="C2STRANSFER" channel="c2sTransferOutboundRequestChannel"/>-->
+<!--        <integration:mapping value="C2STRANSFERSTATUS" channel="c2sTransferStatusOutboundRequestChannel"/>-->
+<!--        <integration:mapping value="CHANGEPASSWORD" channel="txeChangePasswordEXTGTRequestChannel"/>-->
+<!--        <integration:mapping value="CHANNELUSERMOVEMENT" channel="txeChannelUserMovementRequestChannel"/>-->
+<!--        <integration:mapping value="CP2PUSSDCREDITTRANSFER" channel="txeCp2pUssdCreditTransferRequestChannel"/>-->
+<!--        <integration:mapping value="DEACTIVATERESELLER" channel="txeDeactivateResellerEXTGTRequestChannel"/>-->
+<!--        <integration:mapping value="FETCHLASTTRANSACTION" channel="txeFetchLastTransactionRequestChannel"/>-->
+<!--        <integration:mapping value="FETCHLASTXTRANSACTIONS" channel="txeFetchLastXTransactionsRequestChannel"/>-->
+<!--        <integration:mapping value="PROMOBILLPAYMENT" channel="txePromoBillPaymentRequestChannel"/>-->
+<!--        <integration:mapping value="PROMOVAS" channel="txePromoVasRequestChannel"/>-->
+<!--        <integration:mapping value="PROMOVASREVERSAL" channel="txePromoVasReversalRequestChannel"/>-->
+<!--        <integration:mapping value="RP2PUSSDCUSTOMERRECHARGE" channel="txeRP2PUSSDCustomerRechargeRequestChannel"/>-->
+<!--        <integration:mapping value="SKITTORCUSSD" channel="txeSkittoRcUSSDRequestChannel"/>-->
+<!--        <integration:mapping value="SKITTORCEXTGT" channel="txeSkittoRcEXTGTRequestChannel"/>-->
+<!--        <integration:mapping value="VIEWCHANNELUSER" channel="txeViewChannelUserRequestChannel"/>-->
+<!--        <integration:mapping value="POSTPAIDUSSDBILLPAYMENT" channel="txePostPaidBillPaymentRequestChannel"/>-->
+<!--        <integration:mapping value="DAILYSTATUS" channel="txeDailyStatusRequestChannel"/>-->
+<!--        <integration:mapping value="BALENQUIRYUSSD" channel="txeUserBalanceEnquiryUSSDRequestChannel"/>-->
+<!--        <integration:mapping value="CHANGEPASSWORDUSSD" channel="txeChangePasswordUSSDRequestChannel"/>-->
+<!--        <integration:mapping value="SUBSCRIBERLASTTRANSFERSTATUSUSSD" channel="txeSubscriberLastTransferStatusUssdRequestChannel"/>-->
+<!--        <integration:mapping value="LASTXTRANSACTIONS" channel="txeLastXTransactionsRequestChannel"/>-->
+<!--        <integration:mapping value="LASTTRANSFERSTATUSUSSD" channel="txeLastTransferStatusUssdRequestChannel"/>-->
+<!--        <integration:mapping value="LASTTRANSFERSTATUSUSSDTEXT" channel="txeLastTransferStatusUssdTextRequestChannel"/>-->
+<!--        <integration:mapping value="VALIDATEOTPANDRESETPASSWORD" channel="validateOTPAndResetPasswordOutboundRequestChannel"/>-->
+<!--        <integration:mapping value="C2SPOSTPAIDBILLPAYMENT" channel="c2sPostpaidBillPaymentOutboundRequestChannel"/>-->
+<!--        <integration:mapping value="SUBSCRIBERLASTTRANSACTIONSTATUSUSSD" channel="txeSubscriberLastTransactionStatusUssdRequestChannel"/>-->
+<!--        <integration:mapping value="SENDSMSNOTIFICATION" channel="sendSMSNotificationRequestChannel"/>-->
+<!--    </integration:header-value-router>-->
+
+</beans>

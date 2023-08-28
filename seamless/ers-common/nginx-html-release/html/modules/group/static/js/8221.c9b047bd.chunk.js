@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_group=self.webpackChunk_unified_group||[]).push([[8221],{98221:(a,o,p)=>{"use strict";p.r(o),p.d(o,{default:()=>e});const e=[{name:"groups",path:"group/groups"},{name:"domains",path:"group/domains"},{name:"operations",path:"group/operations"},{name:"relations",path:"group/relations"}]}}]);

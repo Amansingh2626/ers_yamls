@@ -1,0 +1,3 @@
+Reseller_Type,Reseller_Id,Reseller_MSISDN,Name,Status,External_Code,Password,MSISDN_2,MSISDN_3,SSN,Outlet_Type,Sub_Outlet_Type,Low_Balance_Alert,Contact_Person,Contact_Number,Address_1,Address_2,City,State,Country,Email_ID,Appointment_Date,Parent_Reseller_Id
+POS,POS_STRAHAN_523,880177672651,POS_STRAHAN_523,1,123456,RBCSTT,880123697645,880123697645,3334434343,kb,kb,1,RB,880123697645,FFFF,FFFF,Pewshwar,lah,Pak,xyz@gmail.com,10/02/2022,DIST_STRAHAN_524
+POS,POS_STRAHAN_525,880177672653,POS_STRAHAN_525,1,123456,RBCSTT,880123697645,880123697645,3334434343,kb,kb,1,RB,880123697645,FFFF,FFFF,Pewshwar,lah,Pak,xyz@gmail.com,10/02/2022,SE_STRAHAN_524

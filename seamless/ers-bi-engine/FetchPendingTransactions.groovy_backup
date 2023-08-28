@@ -1,0 +1,107 @@
+package com.seamless.customer.bi.engine.scripts;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.seamless.common.StringUtils;
+import com.seamless.customer.bi.engine.request.ReportRequest;
+import com.seamless.customer.bi.engine.response.ReportResponse;
+import com.seamless.customer.bi.engine.response.ResultCode;
+import com.seamless.customer.bi.engine.service.IReportScriptBaseService;
+import com.seamless.customer.bi.engine.service.IReportScriptService;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.search.SearchHits;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.logging.Logger;
+
+@Component("FetchPendingTransactions")
+public class FetchPendingTransactions extends IReportScriptBaseService implements IReportScriptService {
+    Logger log=Logger.getLogger("FetchPendingTransactions");
+    @Autowired
+    private RestHighLevelClient restHighLevelClient;
+
+    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+
+    @Autowired
+    ObjectMapper objectMapper;
+
+    @Override
+    public ReportResponse getAllRecords(ReportRequest reportRequest) {
+        log.info("FetchPendingTransactions method called for: [" + reportRequest.getReportData().getReportName() + "]");
+        // Custom logic to get the required result-data from elastic search
+        ReportResponse reportResponse=null;
+        Map<String, Map<String,Object>> transactionsMap=fetchPendingTransactionsByUserRole(reportRequest);
+        reportResponse=getResult(transactionsMap,reportRequest);
+        return reportResponse;
+
+    }
+
+    private ReportResponse getResult(Map<String,Map<String,Object>> transactionMap,ReportRequest reportRequest)
+    {
+        log.info("Started forming response for fetch pending transactions");
+        ReportResponse reportResponse = new ReportResponse();
+        List<Map<String, Object>> responseList = new ArrayList<>();
+        long recordCount = Integer.parseInt(reportRequest.getRawRequest().get("originalSize").toString())>transactionMap.size() ?transactionMap.size():Integer.parseInt(reportRequest.getRawRequest().get("originalSize").toString());
+        long count=0;
+        for (Map.Entry<String, Map<String, Object>> entry : transactionMap.entrySet())
+        {
+            count++;
+            Map<String, Object> transaction=entry.getValue();
+            responseList.add(transaction);
+            if(count==recordCount)
+                break;
+        }
+        reportResponse.setTotalRecordCount(transactionMap.size());
+        reportResponse.setList(responseList);
+        reportResponse.setResultCode(ResultCode.SUCCESS.getResultCode());
+        reportResponse.setResultDescription(ResultCode.SUCCESS.name());
+        log.info("Response for fetch pending transactions is "+reportResponse.toString());
+        return reportResponse;
+    }
+    public Map<String, Map<String,Object>> fetchPendingTransactionsByUserRole(ReportRequest reportRequest)
+    {
+        final String query = "{\"elasticIndex\":{\"indexName\":\"data_lake_\",\"isDataWeeklyIndexed\":true},\"elasticQuery\":{\"query\":{\"bool\":{\"must\":[{\"bool\":{\"must\":[{\"wildcard\":{\"NextLevelApprovals.keyword\":{\"value\":\"<:role:>\"}}},{\"terms\":{\"productSKU.keyword\":\"<-:productSKU:->\",\"boost\":1}},{\"wildcard\":{\"awaitingCustomerApproval.keyword\":{\"value\":\"true\"}}}]}},{\"range\":{\"timestamp\":{\"from\":\"<:fromDate:>\",\"to\":\"<:toDate:>\"}}}]}},\"sort\":[{\"@timestamp\":{\"order\":\"desc\"}}],\"_source\":{\"includes\":[\"ersReference\",\"productSKU\",\"receiverMSISDN\",\"receiverResellerId\",\"resultCode\",\"resultMessage\",\"senderMSISDN\",\"senderResellerId\",\"timestamp\",\"transactionAmount\",\"transactionProfile\",\"actionDoneBy\",\"state\"]},\"size\":\"10000\"}}";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_FORMAT);
+        String toDate= simpleDateFormat.format(new Date());
+        reportRequest.getRawRequest().put("toDate", toDate);
+        //Define scroll size : Default value is 6000
+        final int scrollSize = 6000;
+
+        //Original Size sent in the request is being set to originalSize key in the map.
+        reportRequest.getRawRequest().put("originalSize",reportRequest.getRawRequest().get("size"));
+
+        //Size is being set to 10000 to get all the records.
+        reportRequest.getRawRequest().put("size",10000);
+        Set<SearchResponse> searchResponses = executeElasticSearchQuery(reportRequest, objectMapper, restHighLevelClient, query, scrollSize);
+        List<SearchHits> searchHits = getSearchHits(searchResponses);
+
+        // Custom logic to get the required result-data from elastic search
+        Map<String, Map<String,Object>> transactionMap= new LinkedHashMap<>();
+        String pendingTransactionList="";
+        if (!searchResponses.isEmpty() || !searchHits.isEmpty()) {
+            log.info("Fetched " + searchHits.get(0).getHits().length + " number of transaction for the role id " + reportRequest.getRawRequest().get("role"));
+            for (int i = 0; i < searchHits.get(0).getHits().length; i++) {
+                transactionMap.put((String) searchHits.get(0).getAt(i).getSourceAsMap().get("ersReference"), searchHits.get(0).getAt(i).getSourceAsMap());
+                pendingTransactionList = pendingTransactionList.concat((String) searchHits.get(0).getAt(i).getSourceAsMap().get("ersReference")).concat(",");
+            }
+            if (!StringUtils.isEmpty(pendingTransactionList)) {
+                pendingTransactionList = pendingTransactionList.substring(0, pendingTransactionList.length() - 1);
+            }
+            reportRequest.getRawRequest().put("ersReferenceList", pendingTransactionList);
+            final String queryToFetchApprovedTransactions = "{\"elasticIndex\":{\"indexName\":\"data_lake_\",\"isDataWeeklyIndexed\":true},\"elasticQuery\":{\"query\":{\"bool\":{\"must\":[{\"bool\":{\"must\":[{\"terms\":{\"ReferredTransactionErsReference.keyword\":\"<-:ersReferenceList:->\",\"boost\":1}}]}}]}},\"sort\":[{\"@timestamp\":{\"order\":\"desc\"}}],\"_source\":{\"includes\":[\"ReferredTransactionErsReference\"]},\"size\":\"<:size:>\"}}";
+            Set<SearchResponse> searchResponsesToFetchApprovedTransactions = executeElasticSearchQuery(reportRequest, objectMapper, restHighLevelClient, queryToFetchApprovedTransactions, scrollSize);
+            List<SearchHits> searchHitsToFetchApprovedTransactions = getSearchHits(searchResponsesToFetchApprovedTransactions);
+            if (searchResponsesToFetchApprovedTransactions!=null&&!searchResponsesToFetchApprovedTransactions.isEmpty() && searchHitsToFetchApprovedTransactions.size()>0&&!searchHitsToFetchApprovedTransactions.isEmpty()) {
+                log.info("Fetched " + searchHits.get(0).getHits().length + " number of approved transactions for the role id " + reportRequest.getRawRequest().get("role"));
+                for (int i = 0; i < searchHitsToFetchApprovedTransactions.get(0).getHits().length; i++) {
+                    if (transactionMap.containsKey(searchHitsToFetchApprovedTransactions.get(0).getAt(i).getSourceAsMap().get("ReferredTransactionErsReference"))) {
+                        transactionMap.remove(searchHitsToFetchApprovedTransactions.get(0).getAt(i).getSourceAsMap().get("ReferredTransactionErsReference"));
+                    }
+                }
+            }
+        }
+        return transactionMap;
+    }
+}

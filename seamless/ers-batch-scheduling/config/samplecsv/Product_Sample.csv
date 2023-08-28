@@ -1,0 +1,2 @@
+product_code,product_sku,supplier_ref,ean_code,status,ruleIds,variable_price,availableFrom,availableUntil
+TestRCProduct,RC_TestRCProduct_TR_551_560,F1,1143,0,ADNDIGITAL_PPB_CDIST|ADNDIGITAL_PPB_CRET,2023-01-01,2029-01-01

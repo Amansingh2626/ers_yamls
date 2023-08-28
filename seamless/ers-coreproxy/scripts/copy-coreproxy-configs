@@ -1,0 +1,31 @@
+#!/bin/bash
+name=`echo ${POD_NAME} | rev |cut -d'-' -f1 | rev `
+
+mkdir -p /opt/seamless/conf/core
+mkdir -p /opt/seamless/conf/core/defaults
+mkdir -p /opt/seamless/conf/core/jetm
+mkdir -p /opt/seamless/conf/core/langmaps
+mkdir -p /opt/seamless/conf/core/log4j
+mkdir -p /opt/seamless/conf/coreproxy
+
+
+cp /ers-common-config/* /opt/seamless/conf/
+cp /core/* /opt/seamless/conf/core
+cp /coreproxy/* /opt/seamless/conf/coreproxy
+cp /core-defaults/*  /opt/seamless/conf/core/defaults
+cp /core-jetm/* /opt/seamless/conf/core/jetm
+cp /core-langmaps/* /opt/seamless/conf/core/langmaps
+cp /core-log4j/* /opt/seamless/conf/core/log4j
+
+
+sed -i "s+/var/seamless/log/coreproxy/+/var/seamless/log/coreproxy/${name}/+g" /opt/seamless/conf/core/log4j/accountlink-log4j.properties
+sed -i "s+/var/seamless/log/coreproxy/+/var/seamless/log/coreproxy/${name}/+g" /opt/seamless/conf/core/log4j/clientws-log4j.properties
+sed -i "s+/var/seamless/log/coreproxy/+/var/seamless/log/coreproxy/${name}/+g" /opt/seamless/conf/core/log4j/core-log4j.properties
+sed -i "s+/var/seamless/log/coreproxy/+/var/seamless/log/coreproxy/${name}/+g" /opt/seamless/conf/core/log4j/coreproxy-log4j.properties
+sed -i "s+/var/seamless/log/coreproxy/+/var/seamless/log/coreproxy/${name}/+g" /opt/seamless/conf/core/log4j/terminalapp-log4j.properties
+sed -i "s+/var/seamless/log/coreproxy/+/var/seamless/log/coreproxy/${name}/+g" /opt/seamless/conf/core/log4j/tomcat-log4j.properties
+sed -i "s+/var/seamless/log/coreproxy/+/var/seamless/log/coreproxy/${name}/+g" /opt/seamless/conf/core/log4j/ussdapp-log4j.properties
+#sed -i "s+/var/seamless/log/coreproxy/+/var/seamless/log/coreproxy/${name}/+g" /opt/seamless/conf/coreproxy/log4j.properties
+sed -i "s+/var/seamless/log/coreproxy+/var/seamless/log/coreproxy/${name}+g" /opt/seamless/conf/coreproxy/log4j2.xml
+
+

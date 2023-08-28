@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration https://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd"
+       xmlns:integration="http://www.springframework.org/schema/integration"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:integration-http="http://www.springframework.org/schema/integration/http">
+
+    <task:executor id="c2sTransferStatusExecutor"  keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+    <task:executor id="c2sTransferStatusValidExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+    <task:executor id="c2sTransferStatusResponseExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+    <task:executor id="c2sTransferStatusRestTemplateExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+
+    <integration:channel id="c2sTransferStatusRequestChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="c2sTransferStatusValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="c2sTransferStatusRestTemplateInputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="c2sTransferStatusInValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="c2sTransferStatusResponseChainInputChannel">
+        <integration:queue/>
+    </integration:channel>
+
+    <integration:channel id="c2sTransferStatusTransformerResponseChannel"/>
+    <integration:channel id="c2sTransferStatusPollerServiceActivatorResponseChannel"/>
+    <integration:channel id="c2sTransferStatusServiceActivatorResponseChannel"/>
+    <integration:channel id="c2sTransferStatusOperationHeaderEnricherOutputChannel"/>
+    <integration:channel id="c2sTransferStatusValidatorOutputChannel"/>
+    <integration:channel id="c2sTransferStatusValidationChainOutputChannel"/>
+
+
+    <!--  Validator Chain  -->
+    <integration:chain input-channel="c2sTransferStatusRequestChannel" output-channel="c2sTransferStatusValidationChainOutputChannel">
+        <integration:poller task-executor="c2sTransferStatusExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:header-enricher>
+            <integration:header name="OPERATION" value="C2STRANSFERSTATUS"/>
+        </integration:header-enricher>
+        <integration:service-activator ref="standardRequestValidator"/>
+    </integration:chain>
+
+    <integration:header-value-router input-channel="c2sTransferStatusValidationChainOutputChannel" header-name="IS_VALID_REQUEST">
+        <integration:mapping value="TRUE" channel="c2sTransferStatusValidRequestOutputChannel"/>
+        <integration:mapping value="FALSE" channel="c2sTransferStatusResponseChainInputChannel"/>
+    </integration:header-value-router>
+
+    <!--  Successful Validation Chains  -->
+    <integration:chain input-channel="c2sTransferStatusValidRequestOutputChannel" send-timeout="1000000"
+                       output-channel="c2sTransferStatusRestTemplateInputChannel">
+        <integration:poller task-executor="c2sTransferStatusValidExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="c2sTransferStatusRequestTransformer"
+                                 ref="c2STransferStatusTransformer"
+                                 method="transformInboundRequest">
+        </integration:transformer>
+        <integration:object-to-json-transformer content-type="application/json"/>
+
+    </integration:chain>
+
+    <!--  Outbound Call Chain  -->
+    <integration:chain input-channel="c2sTransferStatusRestTemplateInputChannel" send-timeout="1000000"
+                       output-channel="c2sTransferStatusResponseChainInputChannel">
+        <integration:poller task-executor="c2sTransferStatusRestTemplateExecutor"  time-unit="MILLISECONDS" fixed-delay="1200"
+                            max-messages-per-poll="-1"/>
+        <integration:service-activator  ref="standardRestTemplateServiceActivator" async="true" />
+    </integration:chain>
+
+    <!--  Response Chain  -->
+    <integration:chain input-channel="c2sTransferStatusResponseChainInputChannel" send-timeout="1000000"
+                       output-channel="inboundRequestMarshallerOutputChannel">
+        <integration:poller task-executor="c2sTransferStatusResponseExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="c2sTransferStatusResponseTransformer"
+                                 ref="c2STransferStatusTransformer"
+                                 method="transformOutboundResponse"/>
+        <integration:transformer ref="standardMarshalingTransformer"/>
+    </integration:chain>
+
+</beans>

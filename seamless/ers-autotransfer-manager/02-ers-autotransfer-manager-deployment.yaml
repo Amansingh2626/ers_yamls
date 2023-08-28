@@ -1,0 +1,131 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ers-autotransfer-manager
+  namespace: ers-prod
+  labels:
+    app: ers-autotransfer-manager
+    version: v1
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+       maxSurge:  40%
+       maxUnavailable: 20%
+  selector:
+    matchLabels:
+      app: ers-autotransfer-manager
+      version: v1
+  template:
+    metadata:
+#      annotations:
+#        sidecar.istio.io/proxyCPULimit: 100m
+#        sidecar.istio.io/proxyMemoryLimit: 200Mi
+#        sidecar.istio.io/proxyCPU: 50m
+#        sidecar.istio.io/proxyMemory: 128Mi
+#        status.sidecar.istio.io/port: "0"
+#        traffic.sidecar.istio.io/includeOutboundIPRanges: 10.18.68.82/32 
+#        traffic.sidecar.istio.io/excludeInboundPorts: "0"
+#        sidecar.istio.io/inject: "true"
+      labels:
+        app: ers-autotransfer-manager
+        version: v1
+    spec:
+      serviceAccountName: ers-prod-app-sa
+      securityContext:
+        fsGroupChangePolicy: "OnRootMismatch"
+        seLinuxOptions:
+          type: "spc_t"
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "4"
+      initContainers:
+        - name: copy-configs
+          image: sdsdockerhub/ubuntu:latest
+       #   resources:
+       #     limits:
+       #       cpu: '200m'
+       #       memory: 200Mi
+       #     requests:
+       #       cpu: 100m
+       #       memory: 100Mi
+          command: ['bash','/scripts/copy-config-scripts']
+          volumeMounts:
+            - mountPath: /opt/seamless/conf
+              name: ers-config-path
+            - mountPath: /ers-common-config
+              name: vol-common-conf
+            - mountPath: /autotransfer_config
+              name: vol-conf
+            - mountPath: /autotransfer_template 
+              name: vol-conf-template 
+            - mountPath: /scripts
+              name: vol-init-script 
+      containers:
+        - name: ers-autotransfer-manager
+          image: sdsdockerhub/ers-autotransfer-manager:feature-GPB-1143-1
+          #image: sdsdockerhub/ers-autotransfer-manager:feature-GPB-912-29
+          imagePullPolicy: IfNotPresent
+        #  resources:
+        #    limits:
+        #      cpu: '1000m'
+        #      memory: 200Mi
+        #    requests:
+        #      cpu: 500m
+        #      memory: 500Mi
+#         readinessProbe:
+#           tcpSocket:
+#             port: 8086
+#           initialDelaySeconds: 30
+#           periodSeconds: 5
+#         livenessProbe:
+#           tcpSocket:
+#             port: 8086
+#           initialDelaySeconds: 30
+#           periodSeconds: 20
+          env:
+         # - name: JAVA_TOOL_OPTIONS
+         #   value: "-Xms200M -Xmx200M -XX:+UseContainerSupport -XX:MaxRAMPercentage=90.0 -XX:ActiveProcessorCount=1"
+          - name: DEFAULT_TIME_ZONE
+            value: "Asia/Dhaka" 
+          - name: TZ
+            value: "Asia/Dhaka"        
+          ports:
+            - containerPort: 8086
+          #dnsPolicy: Default
+          volumeMounts:
+            - mountPath: /opt/seamless/conf
+              name: ers-config-path 
+            - mountPath: /var/seamless/log/autotransfer-manager
+              name: vol-log
+            - mountPath: /usr/share/zoneinfo/Asia/Dhaka
+              name: tz-dhaka
+              subPath: Dhaka              
+      volumes:
+        - name: tz-dhaka
+          configMap:
+            name: asia-dhaka-tz-config
+            items:
+            - key: Dhaka
+              path: Dhaka              
+        - name: vol-common-conf
+          configMap:
+            name: ers-common-config
+        - name: vol-conf
+          configMap:
+            name: autotransfer-manager-config 
+        - name: vol-conf-template
+          configMap:
+            name: autotransfer-manager-template 
+        - name: vol-init-script
+          configMap:
+            name: autotransfer-copy-script 
+        - name: vol-log
+          persistentVolumeClaim:
+            claimName: ers-autotransfer-manager-log 
+        - name: ers-config-path
+          emptyDir: {}
+      imagePullSecrets:
+        - name: private-repo 

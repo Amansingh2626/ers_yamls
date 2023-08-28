@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_inventory=self.webpackChunk_unified_inventory||[]).push([[9008],{43292:(n,t,e)=>{"use strict";function u(n){return function(t){var e=t.dispatch,u=t.getState;return function(t){return function(r){return"function"==typeof r?r(e,u,n):t(r)}}}}e.d(t,{Z:()=>i});var r=u();r.withExtraArgument=u;const i=r}}]);

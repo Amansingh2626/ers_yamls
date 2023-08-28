@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_config_grameenphone=self.webpackChunk_unified_config_grameenphone||[]).push([[940],{1898:(n,e,i)=>{"use strict";i.d(e,{Z:()=>f});const f=function(n,e){if(!n)throw new Error("Invariant failed")}}}]);

@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_commission=self.webpackChunk_unified_commission||[]).push([[9130],{15452:e=>{"use strict";e.exports=(e,t)=>{if("string"!=typeof e||"string"!=typeof t)throw new TypeError("Expected the arguments to be of type `string`");if(""===t)return[e];const i=e.indexOf(t);return-1===i?[e]:[e.slice(0,i),e.slice(i+t.length)]}}}]);

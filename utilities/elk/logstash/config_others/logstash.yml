@@ -1,0 +1,21 @@
+node.name: ers-prod-otherslog
+#path.config: /usr/share/logstash/custom/pipeline
+#path.settings: /usr/share/logstash/custom/pipeline
+path.settings: /usr/share/logstash/log4j/pipeline
+http.host: "0.0.0.0"
+http.port: 9045
+path.data: "/var/seamless/log/logstash/ers_data/"
+path.logs: "/var/seamless/log/logstash/ers_logs/"
+pipeline.separate_logs: true
+log.level: info
+pipeline.workers: 8
+xpack:
+  monitoring:
+    enabled: true
+    elasticsearch:
+      username: 'elastic'
+      password: 'Seamless@123'
+      hosts: ["https://10.10.4.193:9200"]
+      ssl:
+        verification_mode: certificate
+        certificate_authority: "/usr/share/logstash/custom/certs/ca.crt"

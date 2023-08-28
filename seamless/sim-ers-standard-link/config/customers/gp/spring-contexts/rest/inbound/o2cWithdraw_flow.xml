@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration https://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd"
+       xmlns:integration="http://www.springframework.org/schema/integration"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:integration-http="http://www.springframework.org/schema/integration/http">
+
+
+    <task:executor id="o2cWithdrawExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+    <task:executor id="o2cWithdrawValidExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+    <task:executor id="o2cWithdrawResponseExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+    <task:executor id="o2cWithdrawRestTemplateExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+
+    <integration:channel id="o2cWithdrawRequestChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="o2cWithdrawValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="o2cWithdrawRestTemplateInputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="o2cWithdrawInValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="o2cWithdrawResponseChainInputChannel">
+        <integration:queue/>
+    </integration:channel>
+
+    <integration:channel id="o2cWithdrawTransformerResponseChannel"/>
+    <integration:channel id="o2cWithdrawPollerServiceActivatorResponseChannel"/>
+    <integration:channel id="o2cWithdrawServiceActivatorResponseChannel"/>
+    <integration:channel id="o2cWithdrawOperationHeaderEnricherOutputChannel"/>
+    <integration:channel id="o2cWithdrawValidatorOutputChannel"/>
+    <integration:channel id="o2cWithdrawValidationChainOutputChannel"/>
+
+
+    <!--  Validator Chain  -->
+    <integration:chain input-channel="o2cWithdrawRequestChannel" output-channel="o2cWithdrawValidationChainOutputChannel" >
+        <integration:poller task-executor="o2cWithdrawExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:header-enricher>
+            <integration:header name="OPERATION" value="O2CWITHDRAW"/>
+        </integration:header-enricher>
+        <integration:service-activator ref="standardRequestValidator"/>
+    </integration:chain>
+
+    <integration:header-value-router input-channel="o2cWithdrawValidationChainOutputChannel" header-name="IS_VALID_REQUEST">
+        <integration:mapping value="TRUE" channel="o2cWithdrawValidRequestOutputChannel"/>
+        <integration:mapping value="FALSE" channel="o2cWithdrawResponseChainInputChannel"/>
+    </integration:header-value-router>
+
+    <!--  Successful Validation Chains  -->
+    <integration:chain input-channel="o2cWithdrawValidRequestOutputChannel" send-timeout="1000000"
+                       output-channel="o2cWithdrawRestTemplateInputChannel">
+        <integration:poller task-executor="o2cWithdrawValidExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="o2cWithdrawRequestTransformer"
+                                 ref="o2CWithdrawTransformer"
+                                 method="transformInboundRequest">
+        </integration:transformer>
+        <integration:object-to-json-transformer content-type="application/json"/>
+
+    </integration:chain>
+
+    <!--  Outbound Call Chain  -->
+    <integration:chain input-channel="o2cWithdrawRestTemplateInputChannel" send-timeout="1000000"
+                       output-channel="o2cWithdrawResponseChainInputChannel">
+        <integration:poller task-executor="o2cWithdrawRestTemplateExecutor" time-unit="MILLISECONDS" fixed-delay="1200"
+                            max-messages-per-poll="-1"/>
+        <integration:service-activator  ref="standardRestTemplateServiceActivator" async="true" />
+    </integration:chain>
+
+    <!--  Response Chain  -->
+    <integration:chain input-channel="o2cWithdrawResponseChainInputChannel" send-timeout="1000000"
+                       output-channel="inboundRequestMarshallerOutputChannel">
+        <integration:poller task-executor="o2cWithdrawResponseExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="o2cWithdrawResponseTransformer"
+                                 ref="o2CWithdrawTransformer"
+                                 method="transformOutboundResponse"/>
+        <integration:transformer ref="standardMarshalingTransformer"/>
+    </integration:chain>
+
+</beans>

@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_logistics=self.webpackChunk_unified_logistics||[]).push([[7193],{7288:(e,s,o)=>{"use strict";o.d(s,{Z:()=>i}),e=o.hmd(e);const i=(b="undefined"!=typeof self?self:"undefined"!=typeof window?window:void 0!==o.g?o.g:e,"function"==typeof(f=b.Symbol)?f.observable?n=f.observable:(n=f("observable"),f.observable=n):n="@@observable",n);var b,n,f}}]);

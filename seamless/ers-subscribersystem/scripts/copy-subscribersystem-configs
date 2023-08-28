@@ -1,0 +1,12 @@
+#!/bin/bash
+name=`echo ${POD_NAME} | rev |cut -d'-' -f1 | rev `
+
+mkdir -p /opt/seamless/conf/subscribersystem 
+
+
+cp /ers-common-config/* /opt/seamless/conf/
+cp /subscribersystem-config/* /opt/seamless/conf/subscribersystem 
+
+#sed -i "s+/var/seamless/log/subscribersystem/subscribersystem.log+/var/seamless/log/subscribersystem/${name}/subscribersystem.log+g" /opt/seamless/conf/subscribersystem/log4j.properties
+sed -i "s+/var/seamless/log/subscribersystem/subscribersystem.log+/var/seamless/log/subscribersystem/${name}/subscribersystem.log+g" /opt/seamless/conf/subscribersystem/log4j2.xml
+

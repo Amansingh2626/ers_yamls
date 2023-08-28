@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_logistics=self.webpackChunk_unified_logistics||[]).push([[388],{3603:(e,s,t)=>{"use strict";t.d(s,{Z:()=>c});var n=/[A-Z]/g,r=/^ms-/,i={};function u(e){return"-"+e.toLowerCase()}const c=function(e){if(i.hasOwnProperty(e))return i[e];var s=e.replace(n,u);return i[e]=r.test(s)?"-"+s:s}}}]);

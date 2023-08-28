@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration https://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd"
+       xmlns:integration="http://www.springframework.org/schema/integration"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:integration-http="http://www.springframework.org/schema/integration/http">
+
+    <task:executor id="userBalanceEnquiryUSSDExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="userBalanceEnquiryUSSDValidExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="userBalanceEnquiryUSSDResponseExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="userBalanceEnquiryUSSDRestTemplateExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+
+    <integration:channel id="userBalanceEnquiryUSSDRequestChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="userBalanceEnquiryUSSDValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="userBalanceEnquiryUSSDRestTemplateInputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="userBalanceEnquiryUSSDInValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="userBalanceEnquiryUSSDResponseChainInputChannel">
+        <integration:queue/>
+    </integration:channel>
+
+    <integration:channel id="userBalanceEnquiryUSSDTransformerResponseChannel"/>
+    <integration:channel id="userBalanceEnquiryUSSDPollerServiceActivatorResponseChannel"/>
+    <integration:channel id="userBalanceEnquiryUSSDServiceActivatorResponseChannel"/>
+    <integration:channel id="userBalanceEnquiryUSSDOperationHeaderEnricherOutputChannel"/>
+    <integration:channel id="userBalanceEnquiryUSSDValidatorOutputChannel"/>
+    <integration:channel id="userBalanceEnquiryUSSDValidationChainOutputChannel"/>
+
+
+    <!--  Validator Chain  -->
+    <integration:chain input-channel="userBalanceEnquiryUSSDRequestChannel"
+                       output-channel="userBalanceEnquiryUSSDValidationChainOutputChannel">
+        <integration:poller task-executor="userBalanceEnquiryUSSDExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:header-enricher>
+            <integration:header name="OPERATION" value="BALENQUIRYUSSD"/>
+        </integration:header-enricher>
+        <integration:service-activator ref="standardRequestValidator"/>
+    </integration:chain>
+
+    <integration:header-value-router input-channel="userBalanceEnquiryUSSDValidationChainOutputChannel" header-name="IS_VALID_REQUEST">
+        <integration:mapping value="TRUE" channel="userBalanceEnquiryUSSDValidRequestOutputChannel"/>
+        <integration:mapping value="FALSE" channel="userBalanceEnquiryUSSDResponseChainInputChannel"/>
+    </integration:header-value-router>
+
+    <!--  Successful Validation Chains  -->
+    <integration:chain input-channel="userBalanceEnquiryUSSDValidRequestOutputChannel" send-timeout="1000000"
+                       output-channel="userBalanceEnquiryUSSDRestTemplateInputChannel">
+        <integration:poller task-executor="userBalanceEnquiryUSSDValidExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="userBalanceEnquiryUSSDRequestTransformer"
+                                 ref="userBalanceEnquiryUSSDTransformer"
+                                 method="transformInboundRequest">
+        </integration:transformer>
+        <integration:object-to-json-transformer content-type="application/json"/>
+    </integration:chain>
+
+    <!--  Outbound Call Chain  -->
+    <integration:chain input-channel="userBalanceEnquiryUSSDRestTemplateInputChannel" send-timeout="1000000"
+                       output-channel="userBalanceEnquiryUSSDResponseChainInputChannel">
+        <integration:poller task-executor="userBalanceEnquiryUSSDRestTemplateExecutor" time-unit="MILLISECONDS" fixed-delay="1200"
+                            max-messages-per-poll="-1"/>
+        <integration:service-activator ref="standardRestTemplateServiceActivator" async="true"/>
+    </integration:chain>
+
+    <!--  Response Chain  -->
+    <integration:chain input-channel="userBalanceEnquiryUSSDResponseChainInputChannel" send-timeout="1000000"
+                       output-channel="inboundRequestMarshallerOutputChannel">
+        <integration:poller task-executor="userBalanceEnquiryUSSDResponseExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="userBalanceEnquiryUSSDResponseTransformer"
+                                 ref="userBalanceEnquiryUSSDTransformer"
+                                 method="transformOutboundResponse"/>
+        <integration:transformer ref="standardMarshalingTransformer"/>
+    </integration:chain>
+</beans>

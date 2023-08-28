@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_config_tunisia=self.webpackChunk_unified_config_tunisia||[]).push([[396],{396:(i,e,n)=>{"use strict";n.r(e),n.d(e,{default:()=>a});var t=n(411),u=n(410);const a=function(){return t.createElement(u.r,{style:{maxWidth:200,display:"block",margin:"0 auto"}})}}}]);

@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_order=self.webpackChunk_unified_order||[]).push([[4554],{94554:(r,n,u)=>{"use strict";u.d(n,{g8:()=>c,bO:()=>o});var e=u(99367),c=function(r){return e.Z.gms("/group/".concat(r))},o=function(r){var n="/group/admin/".concat(r,"/groups");return e.Z.gms(n)}}}]);

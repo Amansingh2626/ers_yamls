@@ -1,0 +1,358 @@
+package com.seamless.ers.standardlink.transformers;
+ 
+import com.seamless.common.locale.Locale;
+import com.seamless.ers.standardlink.config.StandardLinkConfig;
+import com.seamless.ers.standardlink.model.common.ERSIOTransformer;
+import com.seamless.ers.standardlink.model.common.ResultCode;
+import com.seamless.ers.standardlink.model.configs.ProviderConfigurations;
+import com.seamless.ers.standardlink.model.exception.TransformerException;
+import com.seamless.ers.standardlink.model.internal.StandardLinkResultCodes;
+import com.seamless.ers.standardlink.utilities.StandardLinkUtilities;
+import etm.core.configuration.EtmManager;
+import etm.core.monitor.EtmPoint;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.integration.support.MessageBuilder;
+import org.springframework.messaging.Message;
+import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedCaseInsensitiveMap;
+ 
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+ 
+/**
+ * This transformer is used for both Postpaid bill payment and Transfer service
+ */
+ 
+@Component
+public class C2STransferStatusTransformer implements ERSIOTransformer
+{
+ 
+    private static final Logger LOGGER = LoggerFactory.getLogger(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.class);
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.DATE_FORMAT);
+ 
+    @Autowired
+    private StandardLinkConfig standardLinkConfig;
+ 
+    @Override
+    public Message<?> transformInboundRequest(Message<?> message) throws TransformerException
+    {
+        EtmPoint point = EtmManager.getEtmMonitor().createPoint("C2STransferStatusTransformer :: transformOutboundRequest");
+ 
+        try
+        {
+            LinkedCaseInsensitiveMap<Object> requestFields = (LinkedCaseInsensitiveMap<Object>) message.getPayload();
+            LinkedCaseInsensitiveMap<Object> command = (LinkedCaseInsensitiveMap<Object>) requestFields.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.COMMAND);
+ 
+            ProviderConfigurations providerConfigurations = standardLinkConfig.getProviders().get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.PROVIDER);
+            Map<String, Object> operationFields = providerConfigurations.getOperations().get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.OPERATION).getFields();
+            LinkedCaseInsensitiveMap<String> constants = providerConfigurations.getOperations().get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.OPERATION).getConstants();
+ 
+            Map<String, Object> request = new HashMap<>();
+            Map<String, Object> fieldsMap = new HashMap<>();
+ 
+            fieldsMap.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.SIZE, operationFields.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.FETCHLIMIT));
+ 
+            if (command.containsKey(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.MSISDN) && command.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.MSISDN) != null && !StringUtils.isEmpty(command.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.MSISDN).toString()))
+            {
+               // fieldsMap.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.SENDERMSISDN, String.valueOf(command.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.MSISDN)));
+                fieldsMap.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.SENDERMSISDN, Locale.getInstance().formatMSISDNAsE164(String.valueOf(command.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.MSISDN))));
+                fieldsMap.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.SENDERRESELLERID, "");
+                LOGGER.info("Trying to fetch the last transaction for MSISDN: " + command.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.MSISDN));
+            }
+ 
+            else if (command.containsKey(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.LOGINID) && command.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.LOGINID) != null && !StringUtils.isEmpty(command.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.LOGINID).toString()))
+            {
+                fieldsMap.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.SENDERRESELLERID, command.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.LOGINID));
+                fieldsMap.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.SENDERMSISDN, "");
+                LOGGER.info("Trying to fetch the last transaction for resellerId: " + command.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.LOGINID));
+            }
+            if (command.containsKey(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.TXNID))
+            {
+                fieldsMap.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.TRANSACTIONID, command.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.TXNID));
+            }
+            else
+            {
+                fieldsMap.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.TRANSACTIONID, "");
+            }
+            if (command.containsKey(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.EXTREFNUM)&& Objects.nonNull(command.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.EXTREFNUM)) && StringUtils.isNotEmpty(command.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.EXTREFNUM).toString()))
+            {
+                fieldsMap.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.CLIENTREFERENCE, command.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.EXTREFNUM));
+            }
+            else
+            {
+                fieldsMap.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.CLIENTREFERENCE, "*");
+            }
+            fieldsMap.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.REQUESTTYPE, operationFields.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.REQUESTTYPES));
+            fieldsMap.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.REPORTNAME, operationFields.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.REPORTNAME));
+ 
+            request.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.REQUEST, fieldsMap);
+ 
+            return MessageBuilder.withPayload(request).copyHeaders(message.getHeaders()).setHeaderIfAbsent(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.SYSTEM_TOKEN, message.getHeaders().get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.SYSTEM_TOKEN)).setHeaderIfAbsent(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.VALIDATE_ONLY, false).build();
+        }
+        catch (Exception e)
+        {
+            LOGGER.error("An error occurred during transformation", e.getMessage());
+            throw new TransformerException(StandardLinkResultCodes.TRANSFORMATION_ERROR, "An error occurred during request transformation : " + e.getMessage());
+        }
+        finally
+        {
+            if (point != null)
+            {
+                point.collect();
+            }
+        }
+    }
+ 
+    /**
+     * Transforms outgoing response to Server compatible response
+     *
+     * @param outgoingResponse
+     * @return
+     * @throws TransformerException
+     */
+    @Override
+    public Object transformOutboundResponse(Object outgoingResponse) throws TransformerException
+    {
+        EtmPoint point = EtmManager.getEtmMonitor().createPoint("GpC2STransferStatusTransformer :: transformOutboundResponse");
+ 
+        try
+        {
+            LOGGER.info("Forming GP response for operation " + com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.OPERATION);
+ 
+            if (outgoingResponse != null)
+            {
+                LOGGER.info("Successfully received response for operation " + com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.OPERATION);
+ 
+                if (outgoingResponse instanceof CompletableFuture)
+                {
+                    outgoingResponse = ((CompletableFuture<?>) outgoingResponse).get();
+                }
+ 
+                Map<String, Object> responseMap = (Map<String, Object>) outgoingResponse;
+                ProviderConfigurations providerConfigurations = standardLinkConfig.getProviders().get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.PROVIDER);
+                LinkedCaseInsensitiveMap<Object> operationFields = providerConfigurations.getOperations().get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.OPERATION).getFields();
+ 
+                Map<String, Object> response = Collections.synchronizedMap(new LinkedHashMap<>());
+ 
+                response.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.DATE, simpleDateFormat.format(new Date()));
+                response.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.GP_EXT_REQUEST_TYPE, operationFields.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Txe.RESPONSE_TYPE));
+ 
+                if (outgoingResponse instanceof Exception) {
+                    Exception exception = (Exception) outgoingResponse;
+                    response.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.MESSAGE, StandardLinkUtilities.getRootCause(exception));
+                    response.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.TXNSTATUS, StandardLinkResultCodes.FAILED);
+                    response.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.REQSTATUS, StandardLinkResultCodes.INTERNAL_COMPONENT_ERROR);
+                    return response;
+                }
+ 
+                Map<String, Object> internalResponse = (LinkedHashMap<String, Object>) outgoingResponse;
+                Map<String, Object> request = (Map<String, Object>) internalResponse.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.REQUEST_PAYLOAD);
+                Map<String, Object> requestPayloadCommand = (Map<String, Object>) request.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.COMMAND);
+ 
+                if (!internalResponse.isEmpty() && internalResponse.containsKey(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Txe.RESULT_CODE)) {
+                    Integer resultCodeValue = (Integer) internalResponse.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Txe.RESULT_CODE);
+                    String defaultMessage = String.valueOf(internalResponse.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Txe.RESULT_MESSAGE) != null ? internalResponse.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Txe.RESULT_MESSAGE) : internalResponse.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Txe.MESSAGE) != null ? internalResponse.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Txe.MESSAGE) : internalResponse.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Txe.RESULT_DESCRIPTION));
+                    if (resultCodeValue == StandardLinkResultCodes.SUCCESS) {
+                        ResultCode resultCode = standardLinkConfig.getResultCodeFor(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.PROVIDER, com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.OPERATION, String.valueOf(resultCodeValue), String.valueOf(resultCodeValue), defaultMessage);
+                        response.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.MESSAGE, resultCode.getDescription());
+                        response.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.TXNSTATUS, StandardLinkResultCodes.INTERNAL_SUCCESS);
+//                      response.put(Constants.Gp.REQSTATUS, resultCode.getInternalResultCode());
+                        response.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.TXNID, internalResponse.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Txe.ERS_REFERENCE));
+                        StringBuilder message = new StringBuilder();
+                        if (requestPayloadCommand.containsKey(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.EXTREFNUM) && !StringUtils.isEmpty(requestPayloadCommand.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.EXTREFNUM).toString())) {
+                            response.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.EXTREFNUM, requestPayloadCommand.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.EXTREFNUM));
+                        } else {
+                            response.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.EXTREFNUM, "");
+                        }
+                        if (responseMap.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.LIST) != null) {
+                            ArrayList<Map<String, Object>> transactions = (ArrayList<Map<String, Object>>) responseMap.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.LIST);
+ 
+                            for (int i = 0; i < transactions.size(); i++)
+                            {
+                                if (transactions.get(i).containsKey(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.ERSREFERENCE) && Objects.nonNull(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.ERSREFERENCE) && !StringUtils.isEmpty(transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.ERSREFERENCE).toString()))
+                                {
+                                    response.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.TXNID, transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.ERSREFERENCE).toString());
+                                }
+                                else
+                                {
+                                    response.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.TXNID, "");
+                                }
+                                if (transactions.get(i).containsKey(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.RESULTCODE) && Objects.nonNull(transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.RESULTCODE)) && !StringUtils.isEmpty(transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.RESULTCODE).toString()))
+                                {
+                                    String reqStatusCode = String.valueOf(transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.RESULTCODE));
+                                    resultCode = standardLinkConfig.getResultCodeFor(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.PROVIDER, com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.OPERATION, String.valueOf(reqStatusCode), String.valueOf(reqStatusCode), defaultMessage);
+ 
+                                    if (resultCode.getInternalResultCode().equalsIgnoreCase(String.valueOf(StandardLinkResultCodes.INTERNAL_SUCCESS))) {
+                                        boolean isNativeResultCodePresent = transactions.get(i).containsKey(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.NATIVE_RESULT_CODE) && Objects.nonNull(transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.NATIVE_RESULT_CODE)) && !StringUtils.isEmpty(transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.NATIVE_RESULT_CODE).toString());
+                                        if (isNativeResultCodePresent && !String.valueOf(transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.NATIVE_RESULT_CODE)).equalsIgnoreCase("0")){
+                                            response.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.REQSTATUS, StandardLinkResultCodes.AMBIGUOUS);
+                                        }else {
+                                            response.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.REQSTATUS, resultCode.getInternalResultCode());
+                                        }
+                                    }
+                                    else {
+                                        response.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.REQSTATUS, StandardLinkResultCodes.FAILED);
+                                    }
+                                    //response.put(Constants.Gp.REQSTATUS, transactions.get(i).get(Constants.Gp.RESULTCODE).toString());
+                                }
+                                else
+                                {
+                                    response.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.REQSTATUS, "");
+                                }
+ 
+                                if (transactions.get(i).containsKey(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.RESULTSTATUS) && Objects.nonNull(transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.RESULTSTATUS)) && !StringUtils.isEmpty(transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.RESULTSTATUS).toString()))
+                                {
+                                    response.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.MESSAGE, transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.RESULTSTATUS).toString());
+ 
+                                    if (transactions.get(i).containsKey(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.ERSREFERENCE) && Objects.nonNull(transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.ERSREFERENCE)) && !StringUtils.isEmpty(transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.ERSREFERENCE).toString()))
+                                    {
+                                        message.append("Last transfer status of transaction ID:"+transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.ERSREFERENCE).toString()).append(",");
+                                    }
+                                    if (transactions.get(i).containsKey(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.TIMESTAMP) && Objects.nonNull(transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.TIMESTAMP)) && !StringUtils.isEmpty(transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.TIMESTAMP).toString()))
+                                    {
+                                        Date transactionDate=new SimpleDateFormat(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.DATE_FORMAT).parse(transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.TIMESTAMP).toString());
+                                        SimpleDateFormat date=new SimpleDateFormat(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.DATE_FORMAT_2);
+                                        String tnsDate = date.format(transactionDate);
+                                        message.append("transfer date time:").append(tnsDate).append(",");
+                                    }
+                                    if (transactions.get(i).containsKey(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.SENDERMSISDN2) && Objects.nonNull(transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.SENDERMSISDN2)) && !StringUtils.isEmpty(transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.SENDERMSISDN2).toString()))
+                                    {
+                                        String msisdn = Locale.getInstance().formatAsE164(transactions.get(i).get(Constants.Gp.SENDERMSISDN2).toString());
+                                        message.append("MSISDN:").append(msisdn.replaceFirst("880","")).append(",");
+                                    }
+                                    message.append("transfer status:").append(transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.RESULTSTATUS).toString().toUpperCase(java.util.Locale.ROOT)).append(",");
+                                    if (transactions.get(i).containsKey(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.SERVICE_TYPE) && Objects.nonNull(transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.SERVICE_TYPE)) && !StringUtils.isEmpty(transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.SERVICE_TYPE).toString()))
+                                    {
+                                        message.append("service type:").append(operationFields.get(transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.SERVICE_TYPE).toString())).append(",");
+                                    }
+                                    if (transactions.get(i).containsKey(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.PRODUCTSKU) && Objects.nonNull(transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.PRODUCTSKU)) && !StringUtils.isEmpty(transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.PRODUCTSKU).toString()))
+                                    {
+                                        message.append("product:").append(transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.PRODUCTSKU).toString()).append(",");
+                                    }
+                                    if (transactions.get(i).containsKey(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.TRANSACTIONAMOUNT) && Objects.nonNull(transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.TRANSACTIONAMOUNT)) && !StringUtils.isEmpty(transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.TRANSACTIONAMOUNT).toString()))
+                                    {
+                                        message.append("value:").append(transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.TRANSACTIONAMOUNT).toString());
+                                    }
+                                    response.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.MESSAGE, message);
+                                }
+                                else
+                                {
+                                    response.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.MESSAGE, "");
+                                }
+                                if (transactions.get(i).containsKey(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.TRANSACTIONAMOUNT) && Objects.nonNull(transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.TRANSACTIONAMOUNT)) && !StringUtils.isEmpty(transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.TRANSACTIONAMOUNT).toString()))
+                                {
+                                    response.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.AMOUNT, transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.TRANSACTIONAMOUNT).toString());
+                                }
+                                else
+                                {
+                                    response.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.AMOUNT, "");
+                                }
+                                if (transactions.get(i).containsKey(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.TIMESTAMP) && Objects.nonNull(transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.TIMESTAMP)) && !StringUtils.isEmpty(transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.TIMESTAMP).toString()))
+                                {
+                                    response.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.TXNDATE, transactions.get(i).get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.TIMESTAMP).toString());
+                                }
+                                else
+                                {
+                                    response.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.TXNDATE, "");
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        ResultCode resultCode = standardLinkConfig.getResultCodeFor(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.PROVIDER, com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.OPERATION, String.valueOf(resultCodeValue), String.valueOf(resultCodeValue), defaultMessage);
+                        response.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.MESSAGE, resultCode.getDescription());
+                        response.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.TXNSTATUS, StandardLinkResultCodes.INTERNAL_SUCCESS);
+                        response.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.REQSTATUS, resultCodeValue == StandardLinkResultCodes.NO_RECORD_FOUND ? resultCode.getInternalResultCode() : StandardLinkResultCodes.FAILED);
+                        response.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.EXTREFNUM, requestPayloadCommand.get(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.EXTREFNUM));
+                    }
+                }
+                else
+                {
+                    response.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.MESSAGE, "Request has failed on server.");
+                    response.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.TXNSTATUS, StandardLinkResultCodes.INTERNAL_SUCCESS);
+                    response.put(com.seamless.ers.standardlink.transformers.C2STransferStatusTransformer.Constants.Gp.REQSTATUS, StandardLinkResultCodes.FAILED);
+                }
+                return response;
+            }
+        }
+        catch (Exception e)
+        {
+            LOGGER.error("An error occurred during transformation", e.getMessage());
+            throw new TransformerException(StandardLinkResultCodes.TRANSFORMATION_ERROR, "An error occurred during response transformation : " + e.getMessage());
+        }
+        finally
+        {
+            if (point != null)
+            {
+                point.collect();
+            }
+        }
+        return outgoingResponse;
+    }
+ 
+    private static final class Constants
+    {
+        private static final String PROVIDER = "gp";
+        private static final String OPERATION = "c2sTransferStatus";
+        private static final String SYSTEM_TOKEN = "system-token";
+        private static final String VALIDATE_ONLY = "validateOnly";
+ 
+        /**
+         *
+         */
+        private static final class Gp
+        {
+            private static final String TXNID = "TXNID";
+            private static final String CLIENTREFERENCE = "clientReference";
+            private static final String ERSREFERENCE = "ersReference";
+            private static final String RESULTCODE = "resultCode";
+            private static final String RESULTSTATUS = "resultMessage";
+            private static final String TRANSACTIONAMOUNT = "transactionAmount";
+            private static final String TIMESTAMP = "timestamp";
+            private static final String LIST = "list";
+            private static final String SIZE = "size";
+            private static final String FETCHLIMIT = "fetchLimit";
+            private static final String SENDERRESELLERID = "senderResellerId";
+            private static final String SENDERMSISDN = "senderMsisdn";
+            private static final String SENDERMSISDN2 = "senderMSISDN";
+            private static final String PRODUCTSKU = "productSKU";
+            private static final String TRANSFER_STATUS = "senderMsisdn";
+            private static final String TRANSACTIONID = "transactionId";
+            private static final String REQUESTTYPE = "requestType";
+            private static final String REPORTNAME = "reportName";
+            private static final String REQUESTTYPES = "requestTypes";
+            private static final String REQUEST = "request";
+            private static final String REQSTATUS = "REQSTATUS";
+            private static final String MESSAGE = "MESSAGE";
+            private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+            private static final String DATE_FORMAT_2 = "dd/MM/yy HH:mm:ss";
+            private static final String SERVICE_TYPE="serviceType";
+            private static final String COMMAND = "COMMAND";
+            private static final String MSISDN = "MSISDN";
+            private static final String LOGINID = "LOGINID";
+            private static final String DATE = "DATE";
+            private static final String EXTREFNUM = "EXTREFNUM";
+            private static final String TXNSTATUS = "TXNSTATUS";
+            private static final String REQUEST_PAYLOAD = "requestPayload";
+            private static final String GP_EXT_REQUEST_TYPE = "TYPE";
+            private static final String AMOUNT = "AMOUNT";
+            private static final String TXNDATE = "TXNDATE";
+            private static final String NATIVE_RESULT_CODE = "NativeResultCode";
+        }
+ 
+        private static final class Txe
+        {
+            private static final String ERS_REFERENCE = "ersReference";
+            private static final String RESULT_CODE = "resultCode";
+            private static final String RESULT_MESSAGE = "resultMessage";
+            private static final String MESSAGE = "message";
+            private static final String RESULT_DESCRIPTION = "resultDescription";
+            private static final String RESPONSE_TYPE = "responseType";
+        }
+    }
+}

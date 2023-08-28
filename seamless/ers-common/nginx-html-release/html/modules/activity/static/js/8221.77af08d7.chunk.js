@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_activity=self.webpackChunk_unified_activity||[]).push([[8221],{98221:(i,t,e)=>{"use strict";e.r(t),e.d(t,{default:()=>c});const c=[{name:"viewActivity",path:"activity/viewActivity"}]}}]);

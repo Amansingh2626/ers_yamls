@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration https://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd"
+       xmlns:integration="http://www.springframework.org/schema/integration"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:integration-http="http://www.springframework.org/schema/integration/http">
+
+    <task:executor id="postpaidBillPaymentExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+    <task:executor id="postpaidBillPaymentValidExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+    <task:executor id="postpaidBillPaymentResponseExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+    <task:executor id="postpaidBillPaymentRestTemplateExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}"  rejection-policy="DISCARD"/>
+
+    <integration:channel id="postpaidBillPaymentRequestChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="postpaidBillPaymentValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="postpaidBillPaymentRestTemplateInputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="postpaidBillPaymentInValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="postpaidBillPaymentInValidResponseChainInputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="postpaidBillPaymentResponseChainInputChannel">
+        <integration:queue/>
+    </integration:channel>
+
+    <integration:channel id="postpaidBillPaymentTransformerResponseChannel"/>
+    <integration:channel id="postpaidBillPaymentPollerServiceActivatorResponseChannel"/>
+    <integration:channel id="postpaidBillPaymentServiceActivatorResponseChannel"/>
+    <integration:channel id="postpaidBillPaymentOperationHeaderEnricherOutputChannel"/>
+    <integration:channel id="postpaidBillPaymentValidatorOutputChannel"/>
+    <integration:channel id="postpaidBillPaymentValidationChainOutputChannel"/>
+
+
+    <!--  Validator Chain  -->
+    <integration:chain input-channel="postpaidBillPaymentRequestChannel" output-channel="postpaidBillPaymentValidationChainOutputChannel">
+        <integration:poller task-executor="postpaidBillPaymentExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:header-enricher>
+            <integration:header name="OPERATION" value="POSTPAIDUSSDBILLPAYMENT"/>
+        </integration:header-enricher>
+        <integration:service-activator ref="standardRequestValidator"/>
+    </integration:chain>
+
+    <integration:header-value-router input-channel="postpaidBillPaymentValidationChainOutputChannel" header-name="IS_VALID_REQUEST">
+        <integration:mapping value="TRUE" channel="postpaidBillPaymentValidRequestOutputChannel"/>
+        <integration:mapping value="FALSE" channel="postpaidBillPaymentResponseChainInputChannel"/>
+    </integration:header-value-router>
+
+    <!--  Successful Validation Chains  -->
+    <integration:chain input-channel="postpaidBillPaymentValidRequestOutputChannel" send-timeout="1000000"
+                       output-channel="postpaidBillPaymentRestTemplateInputChannel">
+        <integration:poller task-executor="postpaidBillPaymentValidExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="postpaidBillPaymentRequestTransformer"
+                                 ref="postpaidBillPaymentUSSDTransformer"
+                                 method="transformInboundRequest">
+        </integration:transformer>
+        <integration:object-to-json-transformer content-type="application/json"/>
+    </integration:chain>
+
+    <!--  Outbound Call Chain  -->
+    <integration:chain input-channel="postpaidBillPaymentRestTemplateInputChannel" send-timeout="1000000"
+                       output-channel="postpaidBillPaymentResponseChainInputChannel">
+        <integration:poller task-executor="postpaidBillPaymentRestTemplateExecutor" time-unit="MILLISECONDS" fixed-delay="1200"
+                            max-messages-per-poll="-1"/>
+        <integration:service-activator  ref="standardRestTemplateServiceActivator" async="true" />
+    </integration:chain>
+
+    <!--  Success Chain  -->
+    <integration:chain input-channel="postpaidBillPaymentResponseChainInputChannel" send-timeout="1000000"
+                       output-channel="inboundRequestMarshallerOutputChannel">
+        <integration:poller task-executor="postpaidBillPaymentResponseExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="postpaidBillPaymentResponseTransformer"
+                                 ref="postpaidBillPaymentUSSDTransformer"
+                                 method="transformOutboundResponse"/>
+        <integration:transformer ref="standardMarshalingTransformer"/>
+    </integration:chain>
+
+</beans>

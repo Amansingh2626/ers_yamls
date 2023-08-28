@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration https://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd"
+       xmlns:integration="http://www.springframework.org/schema/integration"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:integration-http="http://www.springframework.org/schema/integration/http">
+
+    <task:executor id="viewChannelUserExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="viewChannelUserValidExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="viewChannelUserResponseExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="viewChannelUserRestTemplateExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+
+    <integration:channel id="viewChannelUserRequestChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="viewChannelUserValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="viewChannelUserRestTemplateInputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="viewChannelUserInValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="viewChannelUserResponseChainInputChannel">
+        <integration:queue/>
+    </integration:channel>
+
+    <integration:channel id="viewChannelUserTransformerResponseChannel"/>
+    <integration:channel id="viewChannelUserPollerServiceActivatorResponseChannel"/>
+    <integration:channel id="viewChannelUserServiceActivatorResponseChannel"/>
+    <integration:channel id="viewChannelUserOperationHeaderEnricherOutputChannel"/>
+    <integration:channel id="viewChannelUserValidatorOutputChannel"/>
+    <integration:channel id="viewChannelUserValidationChainOutputChannel"/>
+
+
+    <!--  Validator Chain  -->
+    <integration:chain input-channel="viewChannelUserRequestChannel"
+                       output-channel="viewChannelUserValidationChainOutputChannel">
+        <integration:poller task-executor="viewChannelUserExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:header-enricher>
+            <integration:header name="OPERATION" value="VIEWCHANNELUSER"/>
+        </integration:header-enricher>
+        <integration:service-activator ref="standardRequestValidator"/>
+    </integration:chain>
+
+    <integration:header-value-router input-channel="viewChannelUserValidationChainOutputChannel" header-name="IS_VALID_REQUEST">
+        <integration:mapping value="TRUE" channel="viewChannelUserValidRequestOutputChannel"/>
+        <integration:mapping value="FALSE" channel="viewChannelUserResponseChainInputChannel"/>
+    </integration:header-value-router>
+
+    <!--  Successful Validation Chains  -->
+    <integration:chain input-channel="viewChannelUserValidRequestOutputChannel" send-timeout="1000000"
+                       output-channel="viewChannelUserRestTemplateInputChannel">
+        <integration:poller task-executor="viewChannelUserValidExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="viewChannelUserRequestTransformer"
+                                 ref="viewChannelUserTransformer"
+                                 method="transformInboundRequest">
+        </integration:transformer>
+        <integration:object-to-json-transformer content-type="application/json"/>
+    </integration:chain>
+
+    <!--  Outbound Call Chain  -->
+    <integration:chain input-channel="viewChannelUserRestTemplateInputChannel" send-timeout="1000000"
+                       output-channel="viewChannelUserResponseChainInputChannel">
+        <integration:poller task-executor="viewChannelUserRestTemplateExecutor" time-unit="MILLISECONDS" fixed-delay="1200"
+                            max-messages-per-poll="-1"/>
+        <integration:service-activator ref="standardRestTemplateServiceActivator" async="true"/>
+    </integration:chain>
+
+    <!--  Response Chain  -->
+    <integration:chain input-channel="viewChannelUserResponseChainInputChannel" send-timeout="1000000"
+                       output-channel="inboundRequestMarshallerOutputChannel">
+        <integration:poller task-executor="viewChannelUserResponseExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="viewChannelUserResponseTransformer"
+                                 ref="viewChannelUserTransformer"
+                                 method="transformOutboundResponse"/>
+        <integration:transformer ref="standardMarshalingTransformer"/>
+    </integration:chain>
+</beans>

@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_wallet=self.webpackChunk_unified_wallet||[]).push([[388],{3603:(e,t,n)=>{"use strict";n.d(t,{Z:()=>i});var r=/[A-Z]/g,u=/^ms-/,s={};function a(e){return"-"+e.toLowerCase()}const i=function(e){if(s.hasOwnProperty(e))return s[e];var t=e.replace(r,a);return s[e]=u.test(t)?"-"+t:t}}}]);

@@ -1,0 +1,14 @@
+Location Based FlexiLoad Transaction Report for ${data.regionName} Region
+ERS Sales(${data.date}):
+
+C2S : Total BDT ${data.totalC2sAmount}
+<% data.c2sAreaWise.eachWithIndex { v, i -> %>
+${v.area} Area : BDT ${v.amount}
+<% } %>
+
+C2C : Total BDT ${data.totalC2cAmount}
+<% data.c2cAreaWise.eachWithIndex { v, i -> %>
+${v.area} Area : BDT ${v.amount}
+<% } %>
+
+C2S (Channel to Subscriber) > STS & C2C (Channel to Channel) > STR. For any data mis-match, please revert back to Md. Shadlee Islam Ruhdan; 01711082115.

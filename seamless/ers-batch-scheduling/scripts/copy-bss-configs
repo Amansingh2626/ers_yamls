@@ -1,0 +1,21 @@
+#!/bin/bash
+
+mkdir -p /opt/seamless/conf/batch-scheduling
+mkdir -p /opt/seamless/conf/batch-scheduling/templates
+mkdir -p /opt/seamless/conf/batch-scheduling/datafeeder/templates
+mkdir -p /opt/seamless/conf/batch-scheduling/samplecsv
+mkdir -p /opt/seamless/conf/batch-scheduling/notifications
+
+
+mkdir -p /var/seamless/spool/multiwallet-transfer/done/stage
+mkdir -p /var/seamless/spool/multiwallet-transfer/done/validations-not-successful
+mkdir -p /var/seamless/spool/multiwallet-transfer/done/processed
+
+chmod  -R 777 /var/seamless/spool/multiwallet-transfer
+
+cp /ers-common-config/* /opt/seamless/conf/.
+cp /bss-config/* /opt/seamless/conf/batch-scheduling/.
+cp /bss-config-templates/* /opt/seamless/conf/batch-scheduling/templates/.
+cp /bss-config-samplecsv/* /opt/seamless/conf/batch-scheduling/samplecsv/.
+cp /bss-config-datafed-template/* /opt/seamless/conf/batch-scheduling/datafeeder/templates/.
+cp /bss-notifications/* /opt/seamless/conf/batch-scheduling/notifications/. 

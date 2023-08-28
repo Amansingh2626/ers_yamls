@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: ers-prod
+  labels:
+    app: ers-txe
+  name: ers-txe-service
+spec:
+  ports:
+    - name: http-txe
+      port: 8777
+      targetPort: 8777
+  selector:
+    app: ers-txe
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: ers-prod
+  labels:
+    app: ers-txe
+  name: ers-txe-service-8088
+spec:
+  ports:
+    - name: http-txe-8088
+      port: 8088
+      targetPort: 8088
+  selector:
+    app: ers-txe
+  type: ClusterIP

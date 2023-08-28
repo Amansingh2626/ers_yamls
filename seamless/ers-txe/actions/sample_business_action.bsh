@@ -1,0 +1,36 @@
+/*************************************************
+The following method is called when you include following business Action
+ businesslogic.actions.TRANSACTION_PARAM_CONVERTER.classname=BashShellAction
+ businesslogic.actions.TRANSACTION_PARAM_CONVERTER.actionScript=actions/sample_business_action.bsh
+
+Using this script you can perform any actions that you want on the transaction.
+For example if you want to replace the parameters of the transactions with some other value.
+Below sample code will replace the supplierReference value with some external_supplierReference.
+
+If an exception is thrown while evaluating this script, the exception will be logged.
+However, this will not make the transaction to fail.
+
+Only transaction and logger objects are provided to this script.
+
+**/
+
+public void action(TXETransaction transaction) {
+
+    logger.debug("Converting params");
+    if (transaction.getProfileId().equalsIgnoreCase("SPECIAL_BUNDLE")) {
+
+        String externalSupplierRefField = "external_supplierReference";
+        String externalSupplierRefValue = transaction.getField(externalSupplierRefField);
+
+        String ersSupplierRefField = ERSWSLinkConstants.SUPPLIER_REFERENCE;
+        String ersSupplierRefValue = transaction.getField(ersSupplierRefField);
+
+        if (ersSupplierRefValue != null && externalSupplierRefValue != null) {
+            logger.info("Changing supplierReference value from " + ersSupplierRefValue + "to " + externalSupplierRefValue);
+
+            //Make sure that no data is lost. So, first move external_supplierReference param value to some field and then replace it.
+            transaction.putField(ersSupplierRefField + "_OLD", ersSupplierRefValue);
+            transaction.putField(ersSupplierRefField, externalSupplierRefValue);
+        }
+    }
+}

@@ -1,0 +1,22 @@
+oc create -f 1-nginx-html-release.yaml --namespace ers-prod 
+oc create -f 2-sample-busybox.yaml --namespace ers-prod 
+
+oc exec -it  my-busy-box -- sh -c 'rm -rf /usr/share/nginx/html/config.prod.js'
+oc exec -it  my-busy-box -- sh -c 'rm -rf /usr/share/nginx/html/favicon.ico'
+oc exec -it  my-busy-box -- sh -c 'rm -rf /usr/share/nginx/html/files'
+oc exec -it  my-busy-box -- sh -c 'rm -rf /usr/share/nginx/html/fonts'
+oc exec -it  my-busy-box -- sh -c 'rm -rf /usr/share/nginx/html/images'
+oc exec -it  my-busy-box -- sh -c 'rm -rf /usr/share/nginx/html/index.html'
+oc exec -it  my-busy-box -- sh -c 'rm -rf /usr/share/nginx/html/locales'
+oc exec -it  my-busy-box -- sh -c 'rm -rf /usr/share/nginx/html/modules'
+oc exec -it  my-busy-box -- sh -c 'rm -rf /usr/share/nginx/html/package.json'
+oc exec -it  my-busy-box -- sh -c 'rm -rf /usr/share/nginx/html/static'
+
+oc cp html my-busy-box:/usr/share/nginx/.
+oc exec -it  my-busy-box -- sh -c 'chmod -R 777 /usr/share/nginx/html/* '
+oc delete -f 2-sample-busybox.yaml --namespace ers-prod 
+
+
+
+oc get pods --no-headers |awk '/ers-nginx/{print $1}'|xargs -n1 -i  oc exec -it {} -- ls -l /usr/share/nginx/html
+

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+mkdir -p /opt/seamless/conf/group-management/
+mkdir -p /opt/seamless/conf/group-management/templates
+
+
+cp /ers-common-config/* /opt/seamless/conf/
+cp /group-management-config/* /opt/seamless/conf/group-management/
+cp /group-management-templates-config/* /opt/seamless/conf/group-management/templates/

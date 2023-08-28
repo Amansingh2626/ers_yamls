@@ -1,0 +1,45 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: alertmanager-config
+  namespace: ers-prod
+data:
+  config.yml: |-
+    global:
+    templates:
+    - '/etc/alertmanager/*.tmpl'
+    route:
+      receiver: Default
+      group_by:
+      - namespace
+      routes:      
+      - receiver: critical-alert 
+        group_by: ['alertname', 'priority']
+        group_wait: 10s
+        repeat_interval: 90s
+        match:
+          namespace: ers-prod
+          severity: critical
+      - receiver: warning-alert
+        group_by: ['alertname', 'priority']
+        group_wait: 3m
+        repeat_interval: 8m
+        match:
+          namespace: ers-prod
+          severity: warning
+    receivers:
+    - name: Default
+    - name: critical-alert 
+      email_configs:
+      - to: 'gp-prod-critical-aaaahgqssuygjegev44krv2xbm@sdsglobal.slack.com,barun.kumar.das@seamless.se,mohammad.ershad@grameenphone.com,rubel.hosen@wipro.com'
+        send_resolved: false
+        from: ers-prod@grameenphone.com
+        smarthost: '10.18.104.7:587'
+        require_tls: false
+    - name: warning-alert 
+      email_configs:
+      - to: 'gp-prod-warning-aaaahgqsiro6iyvzd4roordcsi@sdsglobal.slack.com,barun.kumar.das@seamless.se,mohammad.ershad@grameenphone.com,rubel.hosen@wipro.com'
+        send_resolved: false
+        from: ers-prod@grameenphone.com
+        smarthost: '10.18.104.7:587'
+        require_tls: false

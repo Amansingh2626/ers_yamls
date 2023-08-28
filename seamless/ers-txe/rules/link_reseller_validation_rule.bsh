@@ -1,0 +1,46 @@
+import com.seamless.ers.txe.transaction.model.ERSLinkSubResellerTransaction;
+import com.seamless.ers.interfaces.ersifclient.dto.ResultCodes;
+import com.seamless.ers.interfaces.ersifcommon.dto.PrincipalType;
+import com.seamless.ers.interfaces.ersifcommon.dto.resellers.ResellerStatus;
+
+
+
+public boolean validate(TXETransaction transaction)
+{
+	if(transaction instanceof ERSLinkSubResellerTransaction)
+	{
+		ERSLinkSubResellerTransaction linkResellerTransaction = (ERSLinkSubResellerTransaction)transaction;
+
+		if (linkResellerTransaction.getChild().getPrincipalType() == PrincipalType.Reseller)
+		{
+			// Check if child is frozen.
+			if (linkResellerTransaction.getChild().getResellerData().getStatus() == ResellerStatus.Frozen)
+			{
+				logger.debug("The target reseller is frozen");
+
+				linkResellerTransaction.setResult(ResultCodes.RECEIVER_IS_FROZEN);
+				return false;
+			}
+
+			// Check if child is blocked
+			if (linkResellerTransaction.getChild().getResellerData().getStatus() == ResellerStatus.Blocked)
+			{
+				logger.debug("The target reseller is blocked");
+
+				linkResellerTransaction.setResult(ResultCodes.RECEIVER_IS_BLOCKED);
+				return false;
+			}
+
+			// Check if child is deactivated
+			if (linkResellerTransaction.getChild().getResellerData().getStatus() != ResellerStatus.Active)
+			{
+				logger.debug("The target reseller is not active");
+
+				linkResellerTransaction.setResult(ResultCodes.RECEIVER_IS_NOT_ACTIVE);
+				return false;
+			}
+		}
+	}
+
+	return true;
+}

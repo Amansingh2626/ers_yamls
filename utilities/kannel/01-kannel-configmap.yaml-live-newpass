@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gp-kannel-conf
+  namespace: ers-prod
+data:
+  kannel.conf: | 
+    group = core
+    admin-port = 13000
+    smsbox-port = 13001
+    admin-password = seamless
+    log-file = "/var/seamless/log/kannel/gateway.log"
+    log-level = 1
+    admin-deny-ip = "*.*.*.*"
+    admin-allow-ip = "127.0.0.1"
+    box-deny-ip = "*.*.*.*"
+    box-allow-ip = "127.0.0.1"
+    unified-prefix = "+,00"
+    access-log = "/var/seamless/log/kannel/access.log"
+    
+    group = smsbox
+    bearerbox-host = localhost
+    sendsms-port = 13013
+    global-sender = 13013
+    sendsms-chars = "0123456789 %+-"
+    log-file = "/var/seamless/log/kannel/smsbox.log"
+    log-level = 1
+    access-log = "/var/seamless/log/kannel/access.log"
+    reply-couldnotfetch = "Service currently unavailable"
+    mo-recode = true
+    
+    group = smsc
+    smsc = smpp
+    smsc-id = gr3975t1
+    system-type = ""
+    interface-version = 34
+    smsc-username = sdsers
+    smsc-password = sds321
+    host = 10.12.121.29 
+    port = 5566
+    transceiver-mode = false
+    source-addr-ton = 1
+    source-addr-npi = 1
+    dest-addr-ton = 1
+    dest-addr-npi = 1
+    enquire-link-interval = 10
+    reconnect-delay = 10
+    alt-charset= "UTF-8"
+    wait-ack = 10
+    wait-ack-expire = '0x08' 
+            
+    group = sendsms-user
+    username = ers
+    password = recharge
+    user-deny-ip = "*.*.*.*"
+    user-allow-ip = "*.*.*.*"
+    concatenation=true
+    max-messages=10
+    
+    group = sms-service
+    keyword = default
+    text = "No service available"

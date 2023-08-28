@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_report=self.webpackChunk_unified_report||[]).push([[388],{23603:(e,r,t)=>{"use strict";t.d(r,{Z:()=>o});var n=/[A-Z]/g,u=/^ms-/,s={};function i(e){return"-"+e.toLowerCase()}const o=function(e){if(s.hasOwnProperty(e))return s[e];var r=e.replace(n,i);return s[e]=u.test(r)?"-"+r:r}}}]);

@@ -1,0 +1,13 @@
+#!/bin/bash
+name=`echo ${POD_NAME} | rev |cut -d'-' -f1 | rev `
+mkdir -p /opt/seamless/conf/product-management
+mkdir -p /opt/seamless/conf/product-management/templates
+
+cp /ers-common-config/* /opt/seamless/conf/
+cp /product-management-config/* /opt/seamless/conf/product-management/
+cp /product-management-template-config/* /opt/seamless/conf/product-management/templates/
+
+#sed -i "s+/var/seamless/log/product-management/+/var/seamless/log/product-management/${name}/+g" /opt/seamless/conf/product-management/log4j.properties
+sed -i "s+/var/seamless/log/product-management/+/var/seamless/log/product-management/${name}/+g" /opt/seamless/conf/product-management/log4j2.properties
+#sed -i "s+/var/seamless/log/product-management/+/var/seamless/log/product-management/${name}/+g" /opt/seamless/conf/product-management/log4j.properties
+sed -i "s+/var/seamless/log/product-management/+/var/seamless/log/product-management/${name}/+g" /opt/seamless/conf/product-management/log4j2.properties

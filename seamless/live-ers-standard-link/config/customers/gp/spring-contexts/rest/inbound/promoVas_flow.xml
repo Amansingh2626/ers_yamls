@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration https://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd"
+       xmlns:integration="http://www.springframework.org/schema/integration"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:integration-http="http://www.springframework.org/schema/integration/http">
+
+    <task:executor id="promoVasExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="promoVasValidExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="promoVasResponseExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+    <task:executor id="promoVasRestTemplateExecutor" keep-alive="#{executors['keep-alive']}" pool-size="#{executors['pool-size']}" queue-capacity="#{executors['queue-capacity']}" rejection-policy="DISCARD"/>
+
+    <integration:channel id="promoVasRequestChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="promoVasValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="promoVasRestTemplateInputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="promoVasInValidRequestOutputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="promoVasInValidResponseChainInputChannel">
+        <integration:queue/>
+    </integration:channel>
+    <integration:channel id="promoVasResponseChainInputChannel">
+        <integration:queue/>
+    </integration:channel>
+
+    <integration:channel id="promoVasTransformerResponseChannel"/>
+    <integration:channel id="promoVasPollerServiceActivatorResponseChannel"/>
+    <integration:channel id="promoVasServiceActivatorResponseChannel"/>
+    <integration:channel id="promoVasOperationHeaderEnricherOutputChannel"/>
+    <integration:channel id="promoVasValidatorOutputChannel"/>
+    <integration:channel id="promoVasValidationChainOutputChannel"/>
+
+
+    <!--  Validator Chain  -->
+    <integration:chain input-channel="promoVasRequestChannel" output-channel="promoVasValidationChainOutputChannel">
+        <integration:poller task-executor="promoVasExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:header-enricher>
+            <integration:header name="OPERATION" value="PROMOVAS"/>
+        </integration:header-enricher>
+        <integration:service-activator ref="standardRequestValidator"/>
+    </integration:chain>
+
+    <integration:header-value-router input-channel="promoVasValidationChainOutputChannel" header-name="IS_VALID_REQUEST">
+        <integration:mapping value="TRUE" channel="promoVasValidRequestOutputChannel"/>
+        <integration:mapping value="FALSE" channel="promoVasResponseChainInputChannel"/>
+    </integration:header-value-router>
+
+    <!--  Successful Validation Chains  -->
+    <integration:chain input-channel="promoVasValidRequestOutputChannel" send-timeout="1000000"
+                       output-channel="promoVasRestTemplateInputChannel">
+        <integration:poller task-executor="promoVasValidExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="promoVasRequestTransformer"
+                                 ref="promoVasEXTGTChannelTransformer"
+                                 method="transformInboundRequest">
+        </integration:transformer>
+        <integration:object-to-json-transformer content-type="application/json"/>
+    </integration:chain>
+
+    <!--  Outbound Call Chain  -->
+    <integration:chain input-channel="promoVasRestTemplateInputChannel" send-timeout="1000000"
+                       output-channel="promoVasResponseChainInputChannel">
+        <integration:poller task-executor="promoVasRestTemplateExecutor" time-unit="MILLISECONDS" fixed-delay="1200"
+                            max-messages-per-poll="-1"/>
+        <integration:service-activator ref="standardRestTemplateServiceActivator" async="true"/>
+    </integration:chain>
+
+    <!--  Success Chain  -->
+    <integration:chain input-channel="promoVasResponseChainInputChannel" send-timeout="1000000"
+                       output-channel="inboundRequestMarshallerOutputChannel">
+        <integration:poller task-executor="promoVasResponseExecutor" time-unit="MILLISECONDS" fixed-delay="#{pollers['fixed-delay']}"
+                             max-messages-per-poll="#{pollers['max-messages-per-poll']}"/>
+        <integration:transformer id="promoVasResponseTransformer"
+                                 ref="promoVasEXTGTChannelTransformer"
+                                 method="transformOutboundResponse"/>
+        <integration:transformer ref="standardMarshalingTransformer"/>
+    </integration:chain>
+</beans>

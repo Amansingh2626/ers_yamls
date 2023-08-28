@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: ers-prod
+  labels:
+    app: ers-ldaplink 
+  name: ldaplink-service
+spec:
+  ports:
+    - name: http-ldaplink
+      port: 8824
+      targetPort: 8824
+  selector:
+    app: ers-ldaplink 
+  type: ClusterIP

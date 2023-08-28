@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gp-filebeat-auditlog
+  labels:
+    app: filebeat
+  namespace: ers-prod
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+       maxSurge: 50%  
+  selector:
+    matchLabels:
+      app: filebeat
+  template:
+    metadata:
+#      annotations:
+#        sidecar.istio.io/proxyCPULimit: 100m
+#        sidecar.istio.io/proxyMemoryLimit: 200Mi
+#        sidecar.istio.io/proxyCPU: 10m
+#        sidecar.istio.io/proxyMemory: 128Mi
+#        status.sidecar.istio.io/port: "0"
+#        traffic.sidecar.istio.io/excludeInboundPorts: "0"
+#        sidecar.istio.io/inject: "true"      
+      labels:
+        app: filebeat
+    spec:
+      serviceAccountName: ers-prod-app-sa
+      securityContext:
+        fsGroupChangePolicy: "OnRootMismatch"
+        seLinuxOptions:
+          type: "spc_t"
+      containers:
+        - image: sdsdockerhub/filebeat:8.1.0
+          name: gp-filebeat
+#          resources: 
+#            limits:
+#              cpu: "2000m"
+#              memory: 3000Mi
+#            requests:
+#              cpu: "1500m"
+#              memory: 2000Mi
+          env:
+          - name: TZ
+            value: "Asia/Dhaka"
+          command: ['filebeat','-c','/usr/share/filebeat/custom/filebeat.yml']
+          volumeMounts:
+          - name: access-management-system-log
+            mountPath: /var/seamless/log/access-management-system 
+          - name: product-management-log
+            mountPath: /var/seamless/log/product-management 
+          - name: notification-ui-log
+            mountPath: /var/seamless/log/notification-ui 
+          - name: contract-management-system-log
+            mountPath: /var/seamless/log/contract-management-system 
+          - name: region-management-log 
+            mountPath: /var/seamless/log/region-management-core 
+          - name: ers-identity-management-pvc
+            mountPath: /var/seamless/log/identity-management 
+          - name: account-management-service-log 
+            mountPath: /var/seamless/log/account-management-service 
+          - name: dealer-management-system-log 
+            mountPath: /var/seamless/log/dealer-management-system 
+          - name: batch-scheduling-log 
+            mountPath: /var/seamless/log/batch-scheduling 
+          - name: filebeat-config
+            mountPath: /usr/share/filebeat/custom/
+          - name: filebeat-registry
+            mountPath: /usr/share/filebeat/registry/
+          - name: filebeat-own-log
+            mountPath: /usr/share/filebeat/logs            
+      volumes:
+        - name: access-management-system-log 
+          persistentVolumeClaim:
+            claimName: access-management-system-log
+        - name: product-management-log 
+          persistentVolumeClaim:
+            claimName: product-management-log 
+        - name: notification-ui-log 
+          persistentVolumeClaim:
+            claimName: notification-ui-log 
+        - name: contract-management-system-log 
+          persistentVolumeClaim:
+            claimName: contract-management-system-log 
+        - name: region-management-log
+          persistentVolumeClaim:
+            claimName: region-management-log 
+        - name: ers-identity-management-pvc 
+          persistentVolumeClaim:
+            claimName: ers-identity-management-log 
+        - name: account-management-service-log 
+          persistentVolumeClaim:
+            claimName: account-management-service-log 
+        - name: dealer-management-system-log 
+          persistentVolumeClaim:
+            claimName: dealer-management-system-log 
+        - name: batch-scheduling-log 
+          persistentVolumeClaim:
+            claimName: batch-scheduling-log 
+        - name: filebeat-registry 
+          persistentVolumeClaim:
+            claimName: filebeat-registry-auditlog
+        - name: filebeat-config
+          configMap:
+            name: gp-filebeat-configmap-auditlog
+        - name: filebeat-own-log
+          emptyDir: {}

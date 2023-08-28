@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: alertmanager-templates
+  namespace: ers-prod
+data:
+  default.tmpl: |
+    {{/* ******************************* */}}
+    {{/* CUSTOM SUBJECT TEMPLATE */}}
+    {{/* ******************************* */}}
+    {{/* Note: Subject line should not contain new lines, that's why the subject template needs to be one line */}}
+    
+    {{ define "__subject" }} [{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ .GroupLabels.SortedPairs.Values | join " -- "     }}{{ if gt (len .CommonLabels) (len .GroupLabels) }} ({{ with .CommonLabels.Remove .GroupLabels.Names }}{{ .Values | join " " }}{{ end }}){{ end }}{{ end }}
+    
+    
+    {{/* ******************************* */}}
+    {{/* CUSTOM PLAINTEXT EMAIL TEMPLATE */}}
+    {{/* ******************************* */}}
+    
+    {{ define "email.default.text" }}
+    ## Overall Info
+    - Link to Alertmanager: {{ template "__alertmanagerURL" . }}
+    
+    ## Alerts
+    {{ if gt (len .Alerts.Firing) 0 -}}
+    Total firing alerts: {{ .Alerts.Firing | len }}
+    Total resolved alerts: {{ .Alerts.Resolved | len }}
+    {{ end }}
+    
+    ### Firing Alerts
+    {{ range .Alerts.Firing }}
+    ----- 
+    Time: {{ .StartsAt }}
+    Labels:
+    {{ range .Labels.SortedPairs -}}
+    {{ "  " }}- {{ .Name }} : {{ .Value }}
+    {{ end }}
+    {{ if gt (len .Annotations) 0 }}Annotations:{{ end }}
+    {{ range .Annotations.SortedPairs -}}
+    {{ "  " }}- {{ .Name }} : {{ .Value }}
+    {{ end -}}
+    -----
+    {{ end }}
+    
+    ### Resolved Alerts
+    {{ range .Alerts.Resolved }}
+    ----- 
+    Time: {{ .StartsAt }}
+    Labels:
+    {{ range .Labels.SortedPairs -}}
+    {{ "  " }}- {{ .Name }} : {{ .Value }}
+    {{ end }}
+    {{ if gt (len .Annotations) 0 }}Annotations:{{ end }}
+    {{ range .Annotations.SortedPairs -}}
+    {{ "  " }}- {{ .Name }} : {{ .Value }}
+    {{- end }}
+    -----
+    {{ end }}
+    
+    {{ end }}          

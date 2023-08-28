@@ -1,0 +1,68 @@
+#!/bin/bash
+
+mkdir -p /opt/seamless/conf/txe
+mkdir -p /opt/seamless/conf/txe/actions
+mkdir -p /opt/seamless/conf/txe/pricing
+mkdir -p /opt/seamless/conf/txe/rules
+mkdir -p /opt/seamless/conf/txe/samples
+mkdir -p /opt/seamless/conf/txe/samples/minimum
+mkdir -p /opt/seamless/conf/txe/templates
+
+
+
+cp /ers-common-config/* /opt/seamless/conf/.
+cp /txe/*       /opt/seamless/conf/txe/.
+cp /actions/*   /opt/seamless/conf/txe/actions/.
+cp /pricing/*   /opt/seamless/conf/txe/pricing/.
+cp /rules/*     /opt/seamless/conf/txe/rules/.
+cp /samples/*   /opt/seamless/conf/txe/samples/.
+cp /minimum/*   /opt/seamless/conf/txe/samples/minimum/.
+cp /templates/* /opt/seamless/conf/txe/templates/.
+
+
+mkdir -p /var/seamless/log/txe/${HOSTNAME_COMMAND}
+mkdir -p /var/seamless/log/txe/${HOSTNAME_COMMAND}/fallback
+chmod -R 777 /var/seamless/log/txe
+
+#renaming the nodeId according to the number of statefulset
+value=`echo ${HOSTNAME_COMMAND} | rev | cut -d '-' -f1|rev`
+value=`printf -v value "%02d" $value; echo $value`
+sed -i "s+node_id=01+node_id=${value}+g" /opt/seamless/conf/txe/txe.properties
+
+sed -i "s+/var/seamless/log/txe+/var/seamless/log/txe/${HOSTNAME_COMMAND}+g"    /opt/seamless/conf/txe/log4j2.xml
+#sed -i "s+/var/seamless/log/txe+/var/seamless/log/txe/${HOSTNAME_COMMAND}+g"    /opt/seamless/conf/txe/log4j.properties
+sed -i "s+/var/seamless/log/txe+/var/seamless/log/txe/${HOSTNAME_COMMAND}+g"    /opt/seamless/conf/txe/txe.properties
+
+
+mkdir -p /var/lib/mariadb-custom/${HOSTNAME_COMMAND}
+chmod -R 777  /var/lib/mariadb-custom/${HOSTNAME_COMMAND}
+
+echo [mysqld]  >> /etc/mysql/conf.d/custom.cnf;
+echo default-storage-engine=InnoDB  >> /etc/mysql/conf.d/custom.cnf;
+echo server-id=2001  >> /etc/mysql/conf.d/custom.cnf;
+echo datadir=/var/lib/mariadb-custom/${HOSTNAME_COMMAND}   >> /etc/mysql/conf.d/custom.cnf;
+echo tmpdir=/var/tmp  >> /etc/mysql/conf.d/custom.cnf;
+#echo innodb_buffer_pool_size = 1G  >> /etc/mysql/conf.d/custom.cnf;
+echo innodb_flush_log_at_trx_commit = 2  >> /etc/mysql/conf.d/custom.cnf;
+#echo innodb_log_buffer_size = 8M  >> /etc/mysql/conf.d/custom.cnf;
+#echo innodb_log_file_size = 256MB  >> /etc/mysql/conf.d/custom.cnf;
+echo innodb_log_files_in_group = 2  >> /etc/mysql/conf.d/custom.cnf;
+echo innodb_file_per_table = 1  >> /etc/mysql/conf.d/custom.cnf;
+#echo max_allowed_packet=128M  >> /etc/mysql/conf.d/custom.cnf;
+#echo key_buffer_size=512M  >> /etc/mysql/conf.d/custom.cnf;
+echo query_cache_size=0  >> /etc/mysql/conf.d/custom.cnf;
+echo wait_timeout=604800  >> /etc/mysql/conf.d/custom.cnf;
+echo long_query_time=0.5  >> /etc/mysql/conf.d/custom.cnf;
+echo character_set_server=utf8  >> /etc/mysql/conf.d/custom.cnf;
+echo max_connections=2000  >> /etc/mysql/conf.d/custom.cnf;
+echo innodb_max_dirty_pages_pct = 80  >> /etc/mysql/conf.d/custom.cnf;
+echo innodb_flush_method=O_DIRECT  >> /etc/mysql/conf.d/custom.cnf;
+echo innodb_lock_wait_timeout = 120  >> /etc/mysql/conf.d/custom.cnf;
+echo innodb_commit_concurrency=0  >> /etc/mysql/conf.d/custom.cnf;
+echo innodb_open_files=2000  >> /etc/mysql/conf.d/custom.cnf;
+echo log_queries_not_using_indexes  >> /etc/mysql/conf.d/custom.cnf;
+echo innodb_autoinc_lock_mode=2  >> /etc/mysql/conf.d/custom.cnf;
+echo innodb_doublewrite=1  >> /etc/mysql/conf.d/custom.cnf;
+echo [mysql]  >> /etc/mysql/conf.d/custom.cnf;
+echo user=mysql  >> /etc/mysql/conf.d/custom.cnf;
+echo default-character-set=utf8  >> /etc/mysql/conf.d/custom.cnf;

@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_order=self.webpackChunk_unified_order||[]).push([[7193],{7288:(e,o,b)=>{"use strict";b.d(o,{Z:()=>d}),e=b.hmd(e);const d=(n="undefined"!=typeof self?self:"undefined"!=typeof window?window:void 0!==b.g?b.g:e,"function"==typeof(f=n.Symbol)?f.observable?s=f.observable:(s=f("observable"),f.observable=s):s="@@observable",s);var n,s,f}}]);

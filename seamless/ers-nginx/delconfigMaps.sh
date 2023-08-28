@@ -1,0 +1,13 @@
+kubectl delete configmap nginx-conf-one   --namespace ers-prod
+kubectl delete configmap nginx-conf-two   --namespace ers-prod
+kubectl delete configmap nginx-conf-three --namespace ers-prod
+kubectl delete configmap nginx-config --namespace ers-prod
+kubectl delete configmap nginx-config-script  --namespace ers-prod
+kubectl delete configmap nginx-config-support  --namespace ers-prod
+kubectl delete configmap nginx-config-services  --namespace ers-prod
+kubectl delete configmap nginx-config-services-public --namespace ers-prod
+kubectl delete configmap nginx-config-ext  --namespace ers-prod
+kubectl delete configmap nginx-config-init  --namespace ers-prod
+#kubectl delete configmap nginx-config-thirdparty   --namespace ers-prod
+#kubectl delete configmap nginx-config-html   --namespace ers-prod
+#kubectl delete configmap copy-nginx-configs   --namespace ers-prod

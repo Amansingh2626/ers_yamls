@@ -1,0 +1,97 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gp-kannel
+  namespace: ers-prod
+spec:
+  replicas: 14
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+       maxSurge:  40%
+       maxUnavailable: 20%  
+  selector:
+    matchLabels:
+      app: gp-kannel
+  template:
+    metadata:
+      labels:
+        app: gp-kannel
+    spec:
+      containers:
+        - name: gp-kannel-bearerbox
+          image: sdsdockerhub/gp-kannel-v1-nonroot:latest
+          resources:
+            limits:
+              cpu: "1"
+              memory: "2Gi"
+            requests:
+              cpu: "500m"
+              memory: 1Gi
+#         command: ['/usr/local/sbin/bearerbox','-v','1','/etc/kannel/custom/kannel.conf']
+          command: ['/usr/local/sbin/bearerbox','/etc/kannel/custom/kannel.conf']
+          env:
+          - name: DEFAULT_TIME_ZONE
+            value: "Asia/Dhaka"
+          - name: TZ
+            value: "Asia/Dhaka"          
+          ports:
+          - containerPort: 13001        
+          volumeMounts:
+            - name: gp-kannel-conf-vol
+              mountPath: /etc/kannel/custom/                                  
+            - mountPath: /usr/share/zoneinfo/Asia/Dhaka
+              name: tz-dhaka
+              subPath: Dhaka
+        - name: gp-kannel-smsbox
+          image: sdsdockerhub/gp-kannel-v1-nonroot:latest
+          resources:
+            limits:
+              cpu: "1"
+              memory: "2Gi"
+            requests:
+              cpu: '500m'
+              memory: 1Gi
+          command: ['/usr/local/sbin/smsbox','-v','1','/etc/kannel/custom/kannel.conf']
+          env: 
+          - name: DEFAULT_TIME_ZONE
+            value: "Asia/Dhaka"
+          - name: TZ
+            value: "Asia/Dhaka"
+          ports:
+          - containerPort: 13013
+          volumeMounts:
+            - name: gp-kannel-conf-vol
+              mountPath: /etc/kannel/custom/
+            - mountPath: /usr/share/zoneinfo/Asia/Dhaka
+              name: tz-dhaka
+              subPath: Dhaka
+      volumes:
+        - name: gp-kannel-conf-vol
+          configMap:
+            name: gp-kannel-conf
+        - name: tz-dhaka
+          configMap:
+            name: asia-dhaka-tz-config
+            items:
+            - key: Dhaka
+              path: Dhaka
+            
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gp-kannel-svc
+  namespace: ers-prod
+spec:
+  selector:
+    app: gp-kannel
+  ports:
+    - name: http-gp-kannel-svc
+      port: 13013
+      protocol: TCP
+      targetPort: 13013
+  type: ClusterIP
+
+

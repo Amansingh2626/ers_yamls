@@ -1,0 +1,84 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gp-redis-svc-txe
+  namespace: ers-prod
+spec:
+  selector:
+    app: gp-redis-txe
+  ports:
+    - name: http-gp-redis-svc-txe
+      port: 6379
+      protocol: TCP
+      targetPort: 6379
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: gp-redis-txe
+  namespace: ers-prod
+spec:
+  replicas: 1
+  serviceName: gp-redis-svc-txe
+  #strategy:
+  #  type: RollingUpdate
+  #  rollingUpdate:
+  #     maxSurge: 50%
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      partition: 1
+  selector:
+    matchLabels:
+      app: gp-redis-txe
+  template:
+    metadata:
+      labels:
+        app: gp-redis-txe
+    spec:
+      terminationGracePeriodSeconds: 5
+      serviceAccountName: ers-prod-app-sa
+      securityContext:
+        fsGroupChangePolicy: "OnRootMismatch"
+        seLinuxOptions:
+          type: "spc_t"            
+      containers:
+        - name: gp-redis
+          image: sdsdockerhub/redis:latest
+         # resources:
+         #   limits:
+         #     cpu: '3'
+         #     memory: 12Gi
+         #   requests:
+         #     cpu: '2'
+         #     memory: 10Gi
+          command: ['redis-server','/etc/custom-redis/redis.conf']
+          ports:
+          - containerPort: 6379
+          volumeMounts:
+            - name: gp-redis-conf-vol
+              mountPath: /etc/custom-redis 
+            - name: gp-redis-log-vol
+              mountPath: /var/seamless/log/redis/ 
+            - name: gp-redis-contrib-vol
+              mountPath: /opt/seamless/contrib/redis 
+      volumes:
+        - name: gp-redis-conf-vol
+          configMap:
+            name: redis-conf 
+        - name: gp-redis-log-vol
+          emptyDir: {}
+      imagePullSecrets:
+        - name: private-repo 
+  volumeClaimTemplates:
+  - metadata:
+      name: gp-redis-contrib-vol 
+    spec:
+      #storage-provisioner: nfs.storage-class/nfs
+      storageClassName: nfs-storage-class
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 5Gi

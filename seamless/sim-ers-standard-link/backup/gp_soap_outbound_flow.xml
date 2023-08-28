@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:integration="http://www.springframework.org/schema/integration"
+       xmlns:http="http://www.springframework.org/schema/integration/http"
+       xsi:schemaLocation="http://www.springframework.org/schema/integration/http http://www.springframework.org/schema/integration/http/spring-integration-http.xsd
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd">
+
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/soap/outbound/skitto_topup_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/soap/outbound/registerSubscriberService_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/soap/outbound/deregisterSubscriberService_flow.xml"/>
+    <import resource="file:///opt/seamless/conf/standard-link/customers/gp/spring-contexts/soap/outbound/setPinUssd_flow.xml"/>
+
+
+    <integration:channel id="outboundSkittoTopupRequestChannel">
+        <integration:queue capacity="200" />
+    </integration:channel>
+    <integration:channel id="outboundSkittoValidateTopupRequestChannel">
+        <integration:queue capacity="200" />
+    </integration:channel>
+
+    <integration:channel id="outboundSetPinUssdRequestChannel">
+        <integration:queue capacity="200" />
+    </integration:channel>
+
+    <integration:channel id="outboundRegisterSubscriberServiceRequestChannel">
+        <integration:queue capacity="200" />
+    </integration:channel>
+
+    <integration:channel id="outboundDeregisterSubscriberServiceRequestChannel">
+        <integration:queue capacity="200" />
+    </integration:channel>
+
+    <integration:header-value-router id="gpOutBoundOperationRouter" input-channel="outboundSoapChannel" header-name="OPERATION">
+        <integration:mapping value="SKITTOVALIDATETOPUP" channel="outboundSkittoValidateTopupRequestChannel"/>
+        <integration:mapping value="SKITTOTOPUP" channel="outboundSkittoTopupRequestChannel"/>
+        <integration:mapping value="SETPINUSSD" channel="outboundSetPinUssdRequestChannel"/>
+        <integration:mapping value="REGISTERSUBSCRIBERSERVICE" channel="outboundRegisterSubscriberServiceRequestChannel"/>
+        <integration:mapping value="DEREGISTERSUBSCRIBERSERVICE" channel="outboundDeregisterSubscriberServiceRequestChannel"/>
+    </integration:header-value-router>
+
+</beans>

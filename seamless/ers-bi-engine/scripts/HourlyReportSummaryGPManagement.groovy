@@ -1,0 +1,181 @@
+package com.seamless.customer.bi.engine.scripts;
+
+
+import com.seamless.customer.bi.engine.request.ReportRequest;
+import com.seamless.customer.bi.engine.response.ReportResponse;
+import com.seamless.customer.bi.engine.response.ResultCode;
+import com.seamless.customer.bi.engine.service.IReportScriptBaseService;
+import com.seamless.customer.bi.engine.service.IReportScriptService;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.springframework.jdbc.core.JdbcTemplate
+
+import java.text.DecimalFormat;
+import java.util.Date;
+import org.springframework.stereotype.Component;
+import java.text.SimpleDateFormat;
+import java.util.logging.Logger;
+import com.fasterxml.jackson.databind.ObjectMapper
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.jdbc.core.ResultSetExtractor
+import java.sql.ResultSet
+import org.apache.http.entity.*
+
+
+@Component("HourlyReportSummaryGPManagement")
+public class HourlyReportSummaryGPManagement extends IReportScriptBaseService implements IReportScriptService {
+        java.util.logging.Logger log= Logger.getLogger("HourlyReportSummaryGPManagement");
+        @Autowired
+        private RestHighLevelClient restHighLevelClient;
+        @Autowired
+        protected JdbcTemplate jdbcTemplate
+
+        private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+
+    private final String OTOC = "{\"elasticIndex\":{\"indexName\":\"data_lake_\",\"isDataWeeklyIndexed\":true},\"elasticQuery\":{\"query\":{\"bool\":{\"filter\":[{\"terms\":{\"resultCode\":[0],\"boost\":1}},{\"bool\":{\"should\":[{\"wildcard\":{\"TRANSACTION_PROFILE.keyword\":{\"value\":\"SALE\"}}}]}},{\"terms\":{\"ReceiverResellerType.keyword\":\"<-:STDReceiverResellerType:->\",\"boost\":1}},{\"range\":{\"timestamp\":{\"from\":\"now/d\",\"to\":\"now+6h/d\",\"include_lower\":true,\"include_upper\":true,\"boost\":1}}}],\"adjust_pure_negative\":true,\"boost\":1}},\"aggregations\":{\"totalAmount\":{\"sum\":{\"field\":\"transactionAmount\"}}}}}";
+    private final String CTOC = "{\"elasticIndex\":{\"indexName\":\"data_lake_\",\"isDataWeeklyIndexed\":true},\"elasticQuery\":{\"query\":{\"bool\":{\"filter\":[{\"terms\":{\"resultCode\":[0],\"boost\":1}},{\"bool\":{\"should\":[{\"wildcard\":{\"productSKU.keyword\":{\"value\":\"C2C*\"}}}]}},{\"terms\":{\"ReceiverResellerType.keyword\":\"<-:STRReceiverResellerType:->\",\"boost\":1}},{\"range\":{\"timestamp\":{\"from\":\"now/d\",\"to\":\"now+6h/d\",\"include_lower\":true,\"include_upper\":true,\"boost\":1}}}],\"adjust_pure_negative\":true,\"boost\":1}},\"aggregations\":{\"totalAmount\":{\"sum\":{\"field\":\"transactionAmount\"}}}}}";
+    private final String CTOS = "{\"elasticIndex\":{\"indexName\":\"data_lake_\",\"isDataWeeklyIndexed\":true},\"elasticQuery\":{\"query\":{\"bool\":{\"filter\":[{\"terms\":{\"resultCode\":[0],\"boost\":1}},{\"bool\":{\"should\":[{\"wildcard\":{\"TRANSACTION_PROFILE.keyword\":{\"value\":\"C2S*\"}}}]}},{\"terms\":{\"SenderResellerType.keyword\":\"<-:STSSenderResellerType:->\",\"boost\":1}},{\"range\":{\"timestamp\":{\"from\":\"now/d\",\"to\":\"now+6h/d\",\"include_lower\":true,\"include_upper\":true,\"boost\":1}}}],\"adjust_pure_negative\":true,\"boost\":1}},\"aggregations\":{\"totalAmount\":{\"sum\":{\"field\":\"transactionAmount\"}}}}}";
+    private final String digitalSales = "{\"elasticIndex\":{\"indexName\":\"data_lake_\",\"isDataWeeklyIndexed\":true},\"elasticQuery\":{\"query\":{\"bool\":{\"filter\":[{\"terms\":{\"resultCode\":[0],\"boost\":1}},{\"bool\":{\"should\":[{\"wildcard\":{\"TRANSACTION_PROFILE.keyword\":{\"value\":\"C2S*\"}}}]}},{\"bool\":{\"must_not\":[{\"terms\":{\"SenderResellerType.keyword\":\"<-:exceptDigitalSalesSenderResellerType:->\",\"boost\":1}}]}},{\"range\":{\"timestamp\":{\"from\":\"now/d\",\"to\":\"now+6h/d\",\"include_lower\":true,\"include_upper\":true,\"boost\":1}}}],\"adjust_pure_negative\":true,\"boost\":1}},\"aggregations\":{\"totalAmount\":{\"sum\":{\"field\":\"transactionAmount\"}}}}}";
+
+        @Autowired
+        ObjectMapper objectMapper;
+
+        @Override
+    long getRowCount(ReportRequest reportRequest)
+    {
+        return 0L;
+    }
+
+        @Override
+        public ReportResponse getAllRecords(ReportRequest reportRequest) {
+                log.info("HourlyReportSummaryGPManagement method called for: [" + reportRequest.getReportData().getReportName() + "]");
+                // Custom logic to get the required result-data from elastic search
+                ReportResponse reportResponse=null;
+                Map<String, Map<String,Object>> transactionsMap= null;
+                try {
+                        transactionsMap = FetchHourlyReportSummaryGPManagement(reportRequest);
+                } catch (NoSuchFieldException e) {
+                        e.printStackTrace();
+                }
+                reportResponse=getResult(transactionsMap,reportRequest);
+                return reportResponse;
+
+        }
+
+        private ReportResponse getResult(Map<String,Double> transactionMap,ReportRequest reportRequest)
+        {
+                log.info("Started forming response for  Summary");
+                ReportResponse reportResponse = new ReportResponse();
+                List<Map<String, Double>> responseList = new ArrayList<>();
+
+                responseList.add(transactionMap);
+                reportResponse.setTotalRecordCount(1);
+                reportResponse.setList(responseList);
+                reportResponse.setResultCode(ResultCode.SUCCESS.getResultCode());
+                reportResponse.setResultDescription(ResultCode.SUCCESS.name());
+
+                return reportResponse;
+        }
+
+        private double fetchData() {
+            def sqlQuery = "select sum(balance) as total_amount from `bi`.`reseller_balance_aggregator` where reseller_type='RET'"
+                        Map<String, String> resultSetMap = new HashMap<String, String>()
+                        double totalCtosAmount=0.00;
+            try {
+                                resultSetMap = jdbcTemplate.query(sqlQuery,
+                        new ResultSetExtractor() {
+                            @Override
+                            Map<String, String> extractData(ResultSet rs) {
+                                                                Map<String, String> map = new HashMap<String, String>()
+                                                                while (rs.next()) {
+
+                                                                        map.put("total_amount", rs.getDouble("total_amount"))
+                                                                }
+                                                                return map
+                            }
+                        })
+            } catch (Exception e) {
+                                }
+                if(resultSetMap.containsKey("total_amount")){
+                        totalCtosAmount=resultSetMap.get("total_amount");
+                }
+                return totalCtosAmount;
+    }
+    private double fetchCumulativeData() {
+                def sqlQuery = "select aggregate_amount from C2S_Daily_Cumulative_balance where aggregate_date=cast(now() as date)"
+                double totalAggregateAmount=0.00;
+                                Map<String, String> resultSetMap = new HashMap<String, String>()
+
+                                try {
+                                        resultSetMap = jdbcTemplate.query(sqlQuery,
+                                                        new ResultSetExtractor() {
+                                                                @Override
+                                                                Map<String, String> extractData(ResultSet rs) {
+                                                                        Map<String, String> map = new HashMap<String, String>()
+                                                                        while (rs.next()) {
+
+                                                                                map.put("total_amount", rs.getDouble("aggregate_amount"))
+                                                                        }
+                                                                        return map
+                                                                }
+                                                        })
+                                } catch (Exception e) {
+                                }
+                if(resultSetMap.containsKey("total_amount")){
+                        totalAggregateAmount=resultSetMap.get("total_amount");
+                }
+                return totalAggregateAmount;
+        }
+
+        public Map<String, Map<String,Object>> FetchHourlyReportSummaryGPManagement(ReportRequest reportRequest) throws NoSuchFieldException {
+
+
+
+
+                Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy HH:mm");
+                DecimalFormat df= new DecimalFormat("#.##");
+
+        String responseMessage=" ["+formatter.format(date)+"] STD ";
+                final int scrollSize = 10000;
+
+                // Custom logic to get the required result-data from elastic search
+                Map<String,Double> transactionMap = new LinkedHashMap<>();
+
+                // O2C transaction STD section starts
+                Set<SearchResponse> searchResponses = executeElasticSearchQuery(reportRequest, objectMapper, restHighLevelClient, OTOC, scrollSize);
+        // responseMessage+=getAggregations(searchResponses).get(0).asMap().get("totalAmount").value()+", STR ";
+           responseMessage+=df.format(getAggregations(searchResponses).get(0).asMap().get("totalAmount").value()/1000000)+" MN, STR ";
+
+                // C2C transaction STR section starts
+       searchResponses = executeElasticSearchQuery(reportRequest, objectMapper, restHighLevelClient, CTOC, scrollSize);
+      //responseMessage+=df.format(getAggregations(searchResponses).get(0).asMap().get("totalAmount").value())+", STS ";
+        responseMessage+=df.format(getAggregations(searchResponses).get(0).asMap().get("totalAmount").value()/1000000)+" MN, STS ";
+
+                // C2S transaction STS section starts
+        searchResponses = executeElasticSearchQuery(reportRequest, objectMapper, restHighLevelClient, CTOS, scrollSize);
+       // responseMessage+=df.format(getAggregations(searchResponses).get(0).asMap().get("totalAmount").value())+", Digital sales ";
+          responseMessage+=df.format(getAggregations(searchResponses).get(0).asMap().get("totalAmount").value()/1000000)+" MN, Digital sales ";
+
+                // Digital Sales section starts
+                searchResponses = executeElasticSearchQuery(reportRequest, objectMapper, restHighLevelClient, digitalSales, scrollSize);
+               // responseMessage+=df.format(getAggregations(searchResponses).get(0).asMap().get("totalAmount").value())+", retail stock ";
+                 responseMessage+=df.format(getAggregations(searchResponses).get(0).asMap().get("totalAmount").value()/1000000)+" MN, retail stock ";
+                double spendAmount=fetchCumulativeData();
+                double balanceAmount=fetchData();
+
+        //  responseMessage+=df.format(balanceAmount)+" and securing ";
+          responseMessage+=df.format(balanceAmount/1000000)+" MN and securing ";
+        if(spendAmount!=0){
+            responseMessage+=df.format(balanceAmount/spendAmount);
+                }
+                else{
+                        responseMessage+="0";
+                }
+
+        transactionMap.put("ERS Report",responseMessage+=" days.");
+
+                return transactionMap;
+
+        }
+}

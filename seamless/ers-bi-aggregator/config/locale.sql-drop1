@@ -1,0 +1,57 @@
+TRUNCATE `report_list`;
+INSERT INTO `report_list` (`id`, `name`, `grouping`, `query`, `data_source`)
+VALUES
+	(1, 'last_transaction_report_resellerMsisdn', 'sales', '{\"elasticIndex\":{\"indexName\":\"data_lake_\",\"isDataWeeklyIndexed\":true},\"elasticQuery\":{\"size\":\"<:size:>\",\"sort\":[{\"timestamp\":{\"order\":\"desc\"}}],\"query\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"terms\":{\"SenderMSISDN.keyword\":\"<-:resellerMsisdn:->\",\"boost\":1}}]}},{\"range\":{\"timestamp\":{\"from\":\"<:fromDate:>\",\"to\":\"<:toDate:>\"}}}]}},\"_source\":{\"includes\":[\"ErsReference\",\"resultCode\",\"timestamp\",\"SenderResellerId\",\"SenderMSISDN\",\"SenderAccountType\",\"SenderBalanceValueAfter\",\"ReceiverMSISDN\",\"ReceiverResellerId\",\"ReceiverAccountType\",\"TransactionAmount\",\"TransactionType\",\"ProductSKU\",\"ProductName\",\"TransactionProfile\"],\"excludes\":[]}}}', 'elastic'),
+	(2, 'last_X_transactions_report_resellerMsisdn', 'sales', '{\"elasticIndex\":{\"indexName\":\"data_lake_\",\"isDataWeeklyIndexed\":true},\"elasticQuery\":{\"size\":\"<:size:>\",\"sort\":[{\"timestamp\":{\"order\":\"desc\"}}],\"query\":{\"bool\":{\"must\":[{\"bool\":{\"must\":[{\"terms\":{\"SenderMSISDN.keyword\":\"<-:resellerMsisdn:->\",\"boost\":1}},{\"regexp\":{\"ReceiverMSISDN.keyword\":\"<:receiverMsisdn:>\"}},{\"regexp\":{\"ProductSKU.keyword\":\"<:serviceType:>\"}}]}},{\"range\":{\"timestamp\":{\"from\":\"<:fromDate:>\",\"to\":\"<:toDate:>\"}}}]}},\"_source\":{\"includes\":[\"ErsReference\",\"resultCode\",\"timestamp\",\"SenderResellerId\",\"SenderMSISDN\",\"SenderAccountType\",\"SenderBalanceValueAfter\",\"ReceiverMSISDN\",\"ReceiverResellerId\",\"ReceiverAccountType\",\"TransactionAmount\",\"TransactionType\",\"ProductSKU\",\"ProductName\",\"TransactionProfile\"],\"excludes\":[]}}}', 'elastic'),
+	(3, 'last_transaction_report_resellerId', 'sales', '{\"elasticIndex\":{\"indexName\":\"data_lake_\",\"isDataWeeklyIndexed\":true},\"elasticQuery\":{\"size\":\"<:size:>\",\"sort\":[{\"timestamp\":{\"order\":\"desc\"}}],\"query\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"terms\":{\"SenderResellerId.keyword\":\"<-:resellerId:->\",\"boost\":1}}]}},{\"range\":{\"timestamp\":{\"from\":\"<:fromDate:>\",\"to\":\"<:toDate:>\"}}}]}},\"_source\":{\"includes\":[\"ErsReference\",\"resultCode\",\"timestamp\",\"SenderResellerId\",\"SenderMSISDN\",\"SenderAccountType\",\"SenderBalanceValueAfter\",\"ReceiverMSISDN\",\"ReceiverResellerId\",\"ReceiverAccountType\",\"TransactionAmount\",\"TransactionType\",\"ProductSKU\",\"ProductName\",\"TransactionProfile\"],\"excludes\":[]}}}', 'elastic'),
+	(4, 'last_X_transactions_report_resellerId', 'sales', '{\"elasticIndex\":{\"indexName\":\"data_lake_\",\"isDataWeeklyIndexed\":true},\"elasticQuery\":{\"size\":\"<:size:>\",\"sort\":[{\"timestamp\":{\"order\":\"desc\"}}],\"query\":{\"bool\":{\"must\":[{\"bool\":{\"must\":[{\"terms\":{\"SenderResellerId.keyword\":\"<-:resellerId:->\",\"boost\":1}},{\"regexp\":{\"ReceiverMSISDN.keyword\":\"<:receiverMsisdn:>\"}},{\"regexp\":{\"ProductSKU.keyword\":\"<:serviceType:>\"}}]}},{\"range\":{\"timestamp\":{\"from\":\"<:fromDate:>\",\"to\":\"<:toDate:>\"}}}]}},\"_source\":{\"includes\":[\"ErsReference\",\"resultCode\",\"timestamp\",\"SenderResellerId\",\"SenderMSISDN\",\"SenderAccountType\",\"SenderBalanceValueAfter\",\"ReceiverMSISDN\",\"ReceiverResellerId\",\"ReceiverAccountType\",\"TransactionAmount\",\"TransactionType\",\"ProductSKU\",\"ProductName\",\"TransactionProfile\"],\"excludes\":[]}}}', 'elastic'),
+    (5, 'search_daily_transaction', 'sales', '{\"elasticIndex\":{\"indexName\":\"data_lake_\",\"isDataWeeklyIndexed\":true},\"elasticQuery\":{\"size\":\"<:size:>\",\"query\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"wildcard\":{\"SenderMSISDN\":{\"value\":\"<:targetMsisdn:>\"}}}]}},{\"range\":{\"timestamp\":{\"from\":\"<:fromDate:>\",\"to\":\"<:toDate:>\"}}}]}},\"_source\":{\"includes\":[\"resultCode\",\"TransactionAmount\",\"ReceiverResellerName\",\"ReceiverMSISDN\",\"SenderMSISDN\",\"TransactionAmount\",\"timestamp\"],\"excludes\":[]}}}', 'elastic'),
+    (6, 'last_X_transaction_by_size_type_day_targetMsisdn', 'sales', '{\"elasticIndex\":{\"indexName\":\"data_lake_\",\"isDataWeeklyIndexed\":true},\"elasticQuery\":{\"size\":\"<:size:>\",\"sort\":[{\"@timestamp\":{\"order\":\"desc\"}}],\"query\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"bool\":{\"must\":[{\"query_string\":{\"query\":\"<:transactionType:>\",\"fields\":[\"externalRequestType\",\"type\"]}},{\"wildcard\":{\"ReceiverMSISDN\":{\"value\":\"<:targetMsisdn:>\"}}}]}},{\"bool\":{\"must\":[{\"query_string\":{\"query\":\"<:transactionType:>\",\"fields\":[\"externalRequestType\",\"type\"]}},{\"wildcard\":{\"SenderMSISDN\":{\"value\":\"<:targetMsisdn:>\"}}}]}}]}},{\"range\":{\"timestamp\":{\"from\":\"<:fromDate:>\",\"to\":\"<:toDate:>\"}}}]}},\"_source\":{\"includes\":[\"timestamp\",\"ReceiverMSISDN\",\"TransactionAmount\",\"resultCode\",\"SenderResellerName\",\"Channel\",\"SenderMSISDN\",\"RECEIVER_COMMISSION\",\"ResultStatus\",\"externalRequestType\",\"type\",\"ErsReference\"]}}}', 'elastic'),
+    (8, 'last_tranasction_status', 'sales', '{\"elasticIndex\":{\"indexName\":\"data_lake_\",\"isDataWeeklyIndexed\":true},\"elasticQuery\":{\"query\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"wildcard\":{\"SenderMSISDN\":{\"value\":\"<:targetMsisdn:>\"}}}]}}]}},\"sort\":[{\"@timestamp\":{\"order\":\"desc\"}}],\"_source\":{\"includes\":[\"timestamp\",\"ReceiverMSISDN\",\"TransactionAmount\",\"resultCode\",\"SenderResellerName\",\"Channel\",\"SenderMSISDN\",\"RECEIVER_COMMISSION\",\"ResultStatus\",\"externalRequestType\",\"type\",\"ErsReference\"]},\"size\":\"<:size:>\"}}', 'elastic');
+
+
+TRUNCATE `report_metadata`;
+INSERT INTO `report_metadata` (`id`, `report_id`, `name`, `type`, `default_value`, `values`, `reg_ex`, `extra_field_1`, `extra_field_2`)
+VALUES
+	(1, '1', 'resellerMsisdn', 'text', 'ALL', NULL, NULL, NULL, NULL),
+	(2, '1', 'size', 'text', '5', NULL, NULL, NULL, NULL),
+	(3, '1', 'fromDate', 'date', NULL, NULL, NULL, NULL, NULL),
+	(4, '1', 'toDate', 'date', NULL, NULL, NULL, NULL, NULL),
+	(5, '2', 'resellerMsisdn', 'text', 'ALL', NULL, NULL, NULL, NULL),
+	(6, '2', 'size', 'text', '5', NULL, NULL, NULL, NULL),
+	(7, '2', 'receiverMsisdn', 'text', 'ALL', NULL, NULL, NULL, NULL),
+	(8, '2', 'serviceType', 'text', 'ALL', NULL, NULL, NULL, NULL),
+	(9, '2', 'fromDate', 'date', NULL, NULL, NULL, NULL, NULL),
+	(10, '2', 'toDate', 'date', NULL, NULL, NULL, NULL, NULL),
+	(11, '3', 'resellerId', 'text', 'ALL', NULL, NULL, NULL, NULL),
+	(12, '3', 'size', 'text', '5', NULL, NULL, NULL, NULL),
+	(13, '3', 'fromDate', 'date', NULL, NULL, NULL, NULL, NULL),
+	(14, '3', 'toDate', 'date', NULL, NULL, NULL, NULL, NULL),
+	(15, '4', 'resellerId', 'text', 'ALL', NULL, NULL, NULL, NULL),
+	(16, '4', 'receiverMsisdn', 'text', 'ALL', NULL, NULL, NULL, NULL),
+	(17, '4', 'size', 'text', '5', NULL, NULL, NULL, NULL),
+	(18, '4', 'serviceType', 'text', 'ALL', NULL, NULL, NULL, NULL),
+	(19, '4', 'fromDate', 'date', NULL, NULL, NULL, NULL, NULL),
+	(20, '4', 'toDate', 'date', NULL, NULL, NULL, NULL, NULL),
+    (21, '5', 'fromDate', 'date', NULL, NULL, NULL, NULL, NULL),
+    (22, '5', 'toDate', 'date', NULL, NULL, NULL, NULL, NULL),
+    (23, '5', 'size', 'text', '5', NULL, NULL, NULL, NULL),
+    (24, '5', 'targetMsisdn', 'text', 'ALL', NULL, NULL, NULL, NULL),
+    (25, '6', 'transactionType', 'text', NULL, NULL, NULL, NULL, NULL),
+    (26, '6', 'fromDate', 'date', NULL, NULL, NULL, NULL, NULL),
+    (27, '6', 'toDate', 'date', NULL, NULL, NULL, NULL, NULL),
+    (28, '6', 'size', 'text', '5', NULL, NULL, NULL, NULL),
+    (29, '6', 'targetMsisdn', 'text', NULL, NULL, NULL, NULL, NULL),
+    (34, '8', 'targetMsisdn', 'text', NULL, NULL, NULL, NULL, NULL),
+    (35, '8', 'size', 'text', '1', NULL, NULL, NULL, NULL);
+
+
+TRUNCATE `report_access_control`;
+INSERT INTO `report_access_control` (`id`,`type_role`,`name`,`report_list_ids`,`dashboard_url_ids`,`status`,`settings`)
+VALUES (1,'Super user',NULL,'1,2,3,4','','active',1)
+ , (2,'Reseller admin',NULL,'1,2,3,4','','active',1)
+ , (3,'OPERATOR',NULL,'1,2,3,4,5,6,8','','active',1);
+
+TRUNCATE `report_category_mapping`;
+INSERT INTO `report_category_mapping` (`id`,`category_name`,`report_list_ids`)
+VALUES (1,'Report','1,2,3,4,5,6,8');

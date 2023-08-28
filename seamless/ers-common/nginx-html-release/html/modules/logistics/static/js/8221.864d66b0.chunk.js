@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_logistics=self.webpackChunk_unified_logistics||[]).push([[8221],{8221:(i,e,s)=>{"use strict";s.r(e),s.d(e,{default:()=>t});const t=[{name:"billing",path:"logistics/billing"},{name:"settlement",path:"logistics/settlement"}]}}]);

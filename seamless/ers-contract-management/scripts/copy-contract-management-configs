@@ -1,0 +1,11 @@
+#!/bin/bash
+name=`echo ${POD_NAME} | rev |cut -d'-' -f1 | rev `
+
+mkdir -p /opt/seamless/conf/contract-management-system 
+
+
+cp /ers-common-config/* /opt/seamless/conf/
+cp /contract-config/* /opt/seamless/conf/contract-management-system 
+
+#sed -i "s+/var/seamless/log/contract-management-system/+/var/seamless/log/contract-management-system/${name}/+g" /opt/seamless/conf/contract-management-system/log4j.properties
+sed -i "s+/var/seamless/log/contract-management-system+/var/seamless/log/contract-management-system/${name}+g" /opt/seamless/conf/contract-management-system/log4j2.xml

@@ -1,0 +1,53 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: maxscale-node-01 
+  namespace: ers-prod
+  labels:
+    app: maxscale-node-01 
+spec:
+  clusterIP: None
+  ports:
+  - protocol: TCP
+    port: 9100
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: maxscale-node-01 
+  namespace: ers-prod
+  labels:
+    app: maxscale-node-01 
+subsets:
+  - addresses:
+    - ip: 10.18.65.2 
+    ports:
+    - port: 9100
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: maxscale-node-02
+  namespace: ers-prod
+  labels:
+    app: maxscale-node-02
+spec:
+  clusterIP: None
+  ports:
+  - protocol: TCP
+    port: 9100
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: maxscale-node-02
+  namespace: ers-prod
+  labels:
+    app: maxscale-node-02
+subsets:
+  - addresses:
+    - ip: 10.18.65.3
+    ports:
+    - port: 9100
+      

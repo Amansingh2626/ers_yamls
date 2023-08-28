@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_config_djb=self.webpackChunk_unified_config_djb||[]).push([[414],{9414:(e,n,i)=>{"use strict";i.r(n),i.d(n,{default:()=>u});var t=i(2411),c=i(1515),s=i.n(c);const u=function(){return t.createElement("img",{src:s(),height:80,width:70})}},1515:(e,n,i)=>{e.exports=i.p+"images/djbHome.png"}}]);

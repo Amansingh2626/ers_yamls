@@ -1,0 +1,1 @@
+(self.webpackChunk_unified_survey=self.webpackChunk_unified_survey||[]).push([[8221],{8221:(e,u,s)=>{"use strict";s.r(u),s.d(u,{default:()=>r});const r=[{name:"question category",path:"survey/question-category"},{name:"type",path:"survey/type"},{name:"survey",path:"survey/survey"},{name:"report",path:"survey/report"},{name:"submit survey",path:"survey/submit-survey"}]}}]);
